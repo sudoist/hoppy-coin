@@ -16,8 +16,6 @@
 
 var config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
     physics: {
         default: 'arcade',
         arcade: {
@@ -29,7 +27,14 @@ var config = {
         preload: preload,
         create: create,
         update: update
-    }
+    },
+    // Allows Phaser canvas to be responsive to browser sizing
+    scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+        width: 800,
+        height: 600,
+    },
 };
 
 var player;
