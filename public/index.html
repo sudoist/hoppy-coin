@@ -6,6 +6,10 @@
     <script src="https://cdn.jsdelivr.net/npm/phaser@v3.80.1/dist/phaser.min.js"></script>
     <style type="text/css">
         body {
+            background-image: url("assets/phaser-planet-web.png");
+            background-size: 20%;
+            background-repeat: repeat;
+            border: 1px solid #990000;
             margin: 0;
         }
     </style>
@@ -16,8 +20,6 @@
 
 var config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
     physics: {
         default: 'arcade',
         arcade: {
@@ -29,7 +31,14 @@ var config = {
         preload: preload,
         create: create,
         update: update
-    }
+    },
+    // Allows Phaser canvas to be responsive to browser sizing
+    scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+        width: 800,
+        height: 600,
+    },
 };
 
 var player;
