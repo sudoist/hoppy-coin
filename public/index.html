@@ -18,7 +18,7 @@
 
 <script type="text/javascript">
 
-var config = {
+let configDesktop = {
     type: Phaser.AUTO,
     physics: {
         default: 'arcade',
@@ -37,8 +37,35 @@ var config = {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
         width: 800,
-        height: 700,
+        height: 600,
     },
+    device: 'desktop',
+    instructions: 'Move with W, A, S, D'
+};
+
+let configMobile = {
+    type: Phaser.AUTO,
+    physics: {
+        default: 'arcade',
+        arcade: {
+            gravity: { y: 300 },
+            debug: false
+        }
+    },
+    scene: {
+        preload: preload,
+        create: create,
+        update: update
+    },
+    // Allows Phaser canvas to be responsive to browser sizing
+    scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+        width: 800,
+        height: 750,
+    },
+    device: 'mobile',
+    instructions: 'Move by using the joystick'
 };
 
 let player;
@@ -50,8 +77,20 @@ let score = 0;
 let gameOver = false;
 let scoreText;
 let instructions;
+let instructionsText;
 
-let game = new Phaser.Game(config);
+let game
+
+window.onload = function(){
+    // Check if the user is accessing the page on a mobile device
+    const isMobile = this.isMobile()
+
+    if (isMobile) {
+        game = new Phaser.Game(configMobile);
+    } else {
+        game = new Phaser.Game(configDesktop);
+    }
+}
 
 function preload ()
 {
@@ -136,7 +175,7 @@ function create ()
     bombs = this.physics.add.group();
 
     //  The score
-    scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+    scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' });
 
     //  Collide the player and the stars with the platforms
     this.physics.add.collider(player, platforms);
@@ -151,8 +190,8 @@ function create ()
     // Add joystick
     // TODO: Doesn't work as expected. It holds the pressed cursor but should do for now.
     this.joyStick = this.plugins.get('rexvirtualjoystickplugin').add(this, {
-        x: 70,
-        y: 650,
+        x: 400,
+        y: 675,
         radius: 100,
         base: this.add.circle(0, 0, 40, 0x888888),
         thumb: this.add.circle(0, 0, 30, 0xcccccc),
@@ -162,8 +201,18 @@ function create ()
     })
         .on('update', joyStickState, this);
 
+    // Setup instructions
+    // Not sure why isMobile() is not working here, doing this for now.
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (isMobile) {
+        this.instructionsText = configMobile.instructions
+    } else {
+        this.instructionsText = configDesktop.instructions
+    }
+
     // Instructions
-    instructions = this.add.text(16, 560, 'Move with W, A, S, D', { fontSize: '32px', fill: '#fff' });
+    instructions = this.add.text(16, 560, this.instructionsText, { fontSize: '32px', fill: '#fff' });
 }
 
 function update ()
@@ -245,6 +294,23 @@ function hitBomb (player, bomb)
     player.anims.play('turn');
 
     gameOver = true;
+}
+
+function isMobile()
+{
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (isMobile) {
+        // User is accessing the page on a mobile device
+        // console.log("Mobile device detected");
+
+        return true
+    } else {
+        // User is accessing the page on a desktop device
+        // console.log("Desktop device detected");
+
+        return false
+    }
 }
 
 </script>
