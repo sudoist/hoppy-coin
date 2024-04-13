@@ -37,7 +37,7 @@ var config = {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
         width: 800,
-        height: 600,
+        height: 700,
     },
 };
 
@@ -59,6 +59,11 @@ function preload ()
     this.load.image('star', 'assets/star.png');
     this.load.image('bomb', 'assets/bomb.png');
     this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
+
+    let url;
+
+    url = 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexvirtualjoystickplugin.min.js';
+    this.load.plugin('rexvirtualjoystickplugin', url, true);
 }
 
 function create ()
@@ -137,6 +142,20 @@ function create ()
     this.physics.add.overlap(player, stars, collectStar, null, this);
 
     this.physics.add.collider(player, bombs, hitBomb, null, this);
+
+    // Add joystick
+    // TODO: Doesn't work as expected. It holds the pressed cursor but should do for now.
+    this.joyStick = this.plugins.get('rexvirtualjoystickplugin').add(this, {
+        x: 70,
+        y: 650,
+        radius: 100,
+        base: this.add.circle(0, 0, 40, 0x888888),
+        thumb: this.add.circle(0, 0, 30, 0xcccccc),
+        // dir: '8dir',   // 'up&down'|0|'left&right'|1|'4dir'|2|'8dir'|3
+        // forceMin: 16,
+        // enable: true
+    })
+        .on('update', joyStickState, this);
 }
 
 function update ()
@@ -146,13 +165,14 @@ function update ()
         return;
     }
 
-    if (cursors.left.isDown)
+    // Keyboard and mobile joystick
+    if (cursors.left.isDown || this.mobileCursorKeys === 'left')
     {
         player.setVelocityX(-160);
 
         player.anims.play('left', true);
     }
-    else if (cursors.right.isDown)
+    else if (cursors.right.isDown || this.mobileCursorKeys === 'right')
     {
         player.setVelocityX(160);
 
@@ -165,9 +185,18 @@ function update ()
         player.anims.play('turn');
     }
 
-    if (cursors.up.isDown && player.body.touching.down)
+    if ((cursors.up.isDown  || this.mobileCursorKeys === 'up') && player.body.touching.down)
     {
         player.setVelocityY(-330);
+    }
+}
+
+function joyStickState() {
+    const cursorKeys = this.joyStick.createCursorKeys();
+    for (const name in cursorKeys) {
+        if (cursorKeys[name].isDown) {
+            this.mobileCursorKeys = `${name}`
+        }
     }
 }
 
