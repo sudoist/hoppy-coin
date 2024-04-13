@@ -117,33 +117,6 @@
                     Score Ranking
                 </div>
             </li>
-
-            <li class="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6">
-                <div class="flex items-center shrink-0 items-center gap-x-4">
-                    <p class="text-2xl font-semibold leading-6 text-gray-900">
-                        <span class="absolute inset-x-0 -top-px bottom-0"></span>
-                        Rank
-                    </p>
-                </div>
-                <div class="flex items-center shrink-0 items-center gap-x-4">
-                    <p class="text-2xl font-semibold leading-6 text-gray-900">
-                        <span class="absolute inset-x-0 -top-px bottom-0"></span>
-                        Name
-                    </p>
-                </div>
-                <div class="flex items-center shrink-0 items-center gap-x-4">
-                    <p class="text-2xl font-semibold leading-6 text-gray-900">
-                        <span class="absolute inset-x-0 -top-px bottom-0"></span>
-                        Score
-                    </p>
-                </div>
-                <div class="flex items-center shrink-0 items-center gap-x-4">
-                    <p class="text-2xl font-semibold leading-6 text-gray-900">
-                        <span class="absolute inset-x-0 -top-px bottom-0"></span>
-                        Date
-                    </p>
-                </div>
-            </li>
         </ul>
     </div>
 </div>
@@ -232,6 +205,8 @@
 
         let item = "#list";
 
+        let rank = 0;
+
         for (let i = 0; i < packets.length; i++) {
             console.log(packets[i])
             console.log(packets[i].name)
@@ -240,7 +215,7 @@
                     '<div class="flex items-center shrink-0 items-center gap-x-4">' +
                         '<p class="text-2xl font-semibold leading-6 text-gray-900">' +
                             '<span class="absolute inset-x-0 -top-px bottom-0"></span>' +
-                            packets[i].name +
+                            ++rank +
                         '</p>' +
                     '</div>' +
                     '<div class="flex items-center shrink-0 items-center gap-x-4">' +
