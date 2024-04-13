@@ -37,20 +37,21 @@ var config = {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
         width: 800,
-        height: 600,
+        height: 700,
     },
 };
 
-var player;
-var stars;
-var bombs;
-var platforms;
-var cursors;
-var score = 0;
-var gameOver = false;
-var scoreText;
+let player;
+let stars;
+let bombs;
+let platforms;
+let cursors;
+let score = 0;
+let gameOver = false;
+let scoreText;
+let instructions;
 
-var game = new Phaser.Game(config);
+let game = new Phaser.Game(config);
 
 function preload ()
 {
@@ -59,6 +60,11 @@ function preload ()
     this.load.image('star', 'assets/star.png');
     this.load.image('bomb', 'assets/bomb.png');
     this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
+
+    let url;
+
+    url = 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexvirtualjoystickplugin.min.js';
+    this.load.plugin('rexvirtualjoystickplugin', url, true);
 }
 
 function create ()
@@ -107,7 +113,11 @@ function create ()
     });
 
     //  Input Events
-    cursors = this.input.keyboard.createCursorKeys();
+    cursors = this.input.keyboard.addKeys(
+        {up:Phaser.Input.Keyboard.KeyCodes.W,
+            down:Phaser.Input.Keyboard.KeyCodes.S,
+            left:Phaser.Input.Keyboard.KeyCodes.A,
+            right:Phaser.Input.Keyboard.KeyCodes.D});
 
     //  Some stars to collect, 12 in total, evenly spaced 70 pixels apart along the x axis
     stars = this.physics.add.group({
@@ -137,6 +147,23 @@ function create ()
     this.physics.add.overlap(player, stars, collectStar, null, this);
 
     this.physics.add.collider(player, bombs, hitBomb, null, this);
+
+    // Add joystick
+    // TODO: Doesn't work as expected. It holds the pressed cursor but should do for now.
+    this.joyStick = this.plugins.get('rexvirtualjoystickplugin').add(this, {
+        x: 70,
+        y: 650,
+        radius: 100,
+        base: this.add.circle(0, 0, 40, 0x888888),
+        thumb: this.add.circle(0, 0, 30, 0xcccccc),
+        // dir: '8dir',   // 'up&down'|0|'left&right'|1|'4dir'|2|'8dir'|3
+        // forceMin: 16,
+        // enable: true
+    })
+        .on('update', joyStickState, this);
+
+    // Instructions
+    instructions = this.add.text(16, 560, 'Move with W, A, S, D', { fontSize: '32px', fill: '#fff' });
 }
 
 function update ()
@@ -146,13 +173,14 @@ function update ()
         return;
     }
 
-    if (cursors.left.isDown)
+    // Keyboard and mobile joystick
+    if (cursors.left.isDown || this.mobileCursorKeys === 'left')
     {
         player.setVelocityX(-160);
 
         player.anims.play('left', true);
     }
-    else if (cursors.right.isDown)
+    else if (cursors.right.isDown || this.mobileCursorKeys === 'right')
     {
         player.setVelocityX(160);
 
@@ -165,9 +193,18 @@ function update ()
         player.anims.play('turn');
     }
 
-    if (cursors.up.isDown && player.body.touching.down)
+    if ((cursors.up.isDown  || this.mobileCursorKeys === 'up') && player.body.touching.down)
     {
         player.setVelocityY(-330);
+    }
+}
+
+function joyStickState() {
+    const cursorKeys = this.joyStick.createCursorKeys();
+    for (const name in cursorKeys) {
+        if (cursorKeys[name].isDown) {
+            this.mobileCursorKeys = `${name}`
+        }
     }
 }
 
