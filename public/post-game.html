@@ -179,7 +179,8 @@
 
             let lowest
 
-            for (let i = 0; i < scores.length; i++) {
+            // Only get 9
+            for (let i = 0; i < scores.length - 1; i++) {
 
                 // Set lowest score
                 lowest = scores[i].score
@@ -242,6 +243,11 @@
                 '<li class="px-4 py-5 sm:px-6">' +
                     '<div class="text-center">' +
                         '<a href="/">' +
+                            '<button id="reset" type="button" class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">' +
+                            'MAIN MENU</a> ' +
+                            '</button>' +
+                        '</a> ' +
+                        '<a href="/ranked.html?name=' + player.name.toUpperCase() + '">' +
                             '<button id="reset" type="button" class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">' +
                             'PLAY AGAIN</a> ' +
                             '</button>' +

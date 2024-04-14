@@ -1,326 +1,176 @@
-<!doctype html> 
-<html lang="en"> 
-<head> 
-    <meta charset="UTF-8" />
-    <title>Making your first Phaser 3 Game - Part 10</title>
-    <script src="https://cdn.jsdelivr.net/npm/phaser@v3.80.1/dist/phaser.min.js"></script>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Main Menu - Making your first Phaser 3 Game</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
     <style type="text/css">
-        body {
+        @font-face {
+            font-family: "Press Start 2P";
+            src: url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap") format("truetype");
+            src: url(https://fonts.gstatic.com/s/pressstart2p/v15/e3t4euO8T-267oIAQAu6jDQyK3nWivN04w.woff2) format('woff2');
+        }
+
+        #main {
             background-image: url("assets/phaser-planet-web.png");
             background-size: 20%;
             background-repeat: repeat;
             border: 1px solid #990000;
             margin: 0;
+            font-family: 'Press Start 2P', cursive;
+            text-transform: uppercase;
+        }
+
+        #content {
+            width: 50% !important;
+        }
+
+        /* Form */
+        #name-text {
+            width: 100%;
+        }
+
+        textarea:focus, input:focus {
+            outline: none;
+        }
+
+        input[type="text"]:disabled {
+            background: none;
         }
     </style>
 </head>
 <body>
 
+<div id="main" class="py-12 sm:px-6 lg:px-8 h-screen flex items-center justify-center">
+
+    <div id="content">
+
+        <form action="/ranked.html" method="get">
+
+            <ul id="list"
+                role="list"
+                class="divide-y divide-gray-100 overflow-hidden bg-white shadow-sm ring-8 ring-gray-900/4 sm:rounded-xl">
+
+                <li class="px-4 py-5 sm:px-6">
+                    <div class="flex items-center justify-center font-bold">
+                        <a href="https://github.com/sudoist/phaser3-tutorial">
+                            <svg class="" width="98" height="96" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                      d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z"
+                                      fill="#24292f"/>
+                            </svg>
+                        </a>
+                    </div>
+                </li>
+
+                <li class="px-4 py-5 sm:px-6">
+                    <div class="text-center text-3xl font-bold">
+                        Please enter your name
+                    </div>
+
+                    <div class="cursor text-4xl py-4">
+                        <input type="text" id="name-text" name="name-text" class="uppercase text-center" maxlength="3"
+                               disabled/>
+                        <input type="hidden" id="name-submit" name="name" maxlength="3"/>
+                    </div>
+                </li>
+
+                <li class="px-4 py-5 sm:px-6">
+                    <div class="text-center text-3xl font-bold">
+                        <!-- https://stackoverflow.com/a/30619615 -->
+                        <div id="buttonsHolder"></div>
+                        <div id="name" class="hidden"></div>
+                    </div>
+                </li>
+
+                <li class="px-4 py-5 sm:px-6">
+                    <div class="text-center text-3xl font-bold">
+                        <button type="submit"
+                                class="rounded-md bg-white m-1 px-3.5 py-2.5 pt-0 text-3xl font-bold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                            PLAY
+                        </button>
+                    </div>
+                </li>
+            </ul>
+
+        </form>
+    </div>
+</div>
+
 <script type="text/javascript">
+    $('form').on('submit', function () {
 
-let configDesktop = {
-    type: Phaser.AUTO,
-    physics: {
-        default: 'arcade',
-        arcade: {
-            gravity: { y: 300 },
-            debug: false
+        // Do validation here
+        let name = $('#name').text();
+
+        if (name.length !== 3) {
+            return false;
         }
-    },
-    scene: {
-        preload: preload,
-        create: create,
-        update: update
-    },
-    // Allows Phaser canvas to be responsive to browser sizing
-    scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
-        width: 800,
-        height: 600,
-    },
-    device: 'desktop',
-    instructions: 'Move with W, A, S, D'
-};
 
-let configMobile = {
-    type: Phaser.AUTO,
-    physics: {
-        default: 'arcade',
-        arcade: {
-            gravity: { y: 300 },
-            debug: false
+        $('#name-submit').val($('#name').text())
+
+        return true;
+
+    });
+
+    blinker()
+
+    function blinker() {
+        if ($('input[type=text]').attr('placeholder')) {
+            // get the placeholder text
+            $('input[type=text]').attr('placeholder', '');
+        } else {
+            $('input[type=text]').attr('placeholder', 'AAA');
         }
-    },
-    scene: {
-        preload: preload,
-        create: create,
-        update: update
-    },
-    // Allows Phaser canvas to be responsive to browser sizing
-    scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
-        width: 800,
-        height: 750,
-    },
-    device: 'mobile',
-    instructions: 'Move by using the joystick'
-};
 
-let player;
-let stars;
-let bombs;
-let platforms;
-let cursors;
-let score = 0;
-let gameOver = false;
-let scoreText;
-let instructions;
-let instructionsText;
-
-let game
-
-window.onload = function(){
-    // Check if the user is accessing the page on a mobile device
-    const isMobile = this.isMobile()
-
-    if (isMobile) {
-        game = new Phaser.Game(configMobile);
-    } else {
-        game = new Phaser.Game(configDesktop);
-    }
-}
-
-function preload ()
-{
-    this.load.image('sky', 'assets/aleksandra-khaprenko-0PPw9irzLIw-unsplash.jpg');
-    this.load.image('ground', 'assets/platform.png');
-    this.load.image('star', 'assets/star.png');
-    this.load.image('bomb', 'assets/bomb.png');
-    this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
-
-    let url;
-
-    url = 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexvirtualjoystickplugin.min.js';
-    this.load.plugin('rexvirtualjoystickplugin', url, true);
-}
-
-function create ()
-{
-    //  A simple background for our game
-    this.add.image(400, 300, 'sky');
-
-    //  The platforms group contains the ground and the 2 ledges we can jump on
-    platforms = this.physics.add.staticGroup();
-
-    //  Here we create the ground.
-    //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-    platforms.create(400, 568, 'ground').setScale(2).refreshBody();
-
-    //  Now let's create some ledges
-    platforms.create(600, 400, 'ground');
-    platforms.create(50, 250, 'ground');
-    platforms.create(750, 220, 'ground');
-
-    // The player and its settings
-    player = this.physics.add.sprite(100, 450, 'dude');
-
-    //  Player physics properties. Give the little guy a slight bounce.
-    player.setBounce(0.2);
-    player.setCollideWorldBounds(true);
-
-    //  Our player animations, turning, walking left and walking right.
-    this.anims.create({
-        key: 'left',
-        frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
-        frameRate: 10,
-        repeat: -1
-    });
-
-    this.anims.create({
-        key: 'turn',
-        frames: [ { key: 'dude', frame: 4 } ],
-        frameRate: 20
-    });
-
-    this.anims.create({
-        key: 'right',
-        frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
-        frameRate: 10,
-        repeat: -1
-    });
-
-    //  Input Events
-    cursors = this.input.keyboard.addKeys(
-        {up:Phaser.Input.Keyboard.KeyCodes.W,
-            down:Phaser.Input.Keyboard.KeyCodes.S,
-            left:Phaser.Input.Keyboard.KeyCodes.A,
-            right:Phaser.Input.Keyboard.KeyCodes.D});
-
-    //  Some stars to collect, 12 in total, evenly spaced 70 pixels apart along the x axis
-    stars = this.physics.add.group({
-        key: 'star',
-        repeat: 11,
-        setXY: { x: 12, y: 0, stepX: 70 }
-    });
-
-    stars.children.iterate(function (child) {
-
-        //  Give each star a slightly different bounce
-        child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-
-    });
-
-    bombs = this.physics.add.group();
-
-    //  The score
-    scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' });
-
-    //  Collide the player and the stars with the platforms
-    this.physics.add.collider(player, platforms);
-    this.physics.add.collider(stars, platforms);
-    this.physics.add.collider(bombs, platforms);
-
-    //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
-    this.physics.add.overlap(player, stars, collectStar, null, this);
-
-    this.physics.add.collider(player, bombs, hitBomb, null, this);
-
-    // Add joystick
-    // TODO: Doesn't work as expected. It holds the pressed cursor but should do for now.
-    this.joyStick = this.plugins.get('rexvirtualjoystickplugin').add(this, {
-        x: 400,
-        y: 675,
-        radius: 100,
-        base: this.add.circle(0, 0, 40, 0x888888),
-        thumb: this.add.circle(0, 0, 30, 0xcccccc),
-        // dir: '8dir',   // 'up&down'|0|'left&right'|1|'4dir'|2|'8dir'|3
-        // forceMin: 16,
-        // enable: true
-    })
-        .on('update', joyStickState, this);
-
-    // Setup instructions
-    // Not sure why isMobile() is not working here, doing this for now.
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-    if (isMobile) {
-        this.instructionsText = configMobile.instructions
-    } else {
-        this.instructionsText = configDesktop.instructions
+        setTimeout(blinker, 1100);
     }
 
-    // Instructions
-    instructions = this.add.text(16, 560, this.instructionsText, { fontSize: '32px', fill: '#fff' });
+    window.addEventListener("load", function (windowLoadE) {
+        var p, letter, button, holder;
+        holder = document.getElementById("buttonsHolder");
+        for (var i = 65; i <= 90; i++) {
+            if (i == 65 || i == 75 || i == 84) {
+                p = document.createElement("p");
+            }
+            letter = String.fromCharCode(i);
+            button = document.createElement("button");
+            button.type = "button";
+            button.className = "rounded-md bg-white m-1 px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+            button.innerHTML = letter;
+            button.setAttribute("data-letter", letter);
+            button.onclick = function (e) {
+                setLetter(this.getAttribute("data-letter"));
 
-    // Start game with bomb
-    var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+                // Get only last 3 characters
+                let name = $('#name').text();
 
-    var bomb = bombs.create(x, 16, 'bomb');
-    bomb.setBounce(1);
-    bomb.setCollideWorldBounds(true);
-    bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
-    bomb.allowGravity = false;
-}
+                let lastThree = name.substr(name.length - 3);
 
-function update ()
-{
-    if (gameOver)
-    {
-        window.location = "/post-game.html?name=" + "JMC" + "&score=" + scoreText.text.replace('Score: ', '')
-    }
+                if (name.length < 3) {
+                    lastThree = name
+                }
 
-    // Keyboard and mobile joystick
-    if (cursors.left.isDown || this.mobileCursorKeys === 'left')
-    {
-        player.setVelocityX(-160);
-
-        player.anims.play('left', true);
-    }
-    else if (cursors.right.isDown || this.mobileCursorKeys === 'right')
-    {
-        player.setVelocityX(160);
-
-        player.anims.play('right', true);
-    }
-    else
-    {
-        player.setVelocityX(0);
-
-        player.anims.play('turn');
-    }
-
-    if ((cursors.up.isDown  || this.mobileCursorKeys === 'up') && player.body.touching.down)
-    {
-        player.setVelocityY(-330);
-    }
-}
-
-function joyStickState() {
-    const cursorKeys = this.joyStick.createCursorKeys();
-    for (const name in cursorKeys) {
-        if (cursorKeys[name].isDown) {
-            this.mobileCursorKeys = `${name}`
+                $('#name-text').val(lastThree);
+            };
+            p.appendChild(button);
+            if (i == 74 || i == 83 || i == 90) {
+                holder.appendChild(p);
+            }
         }
+    });
+
+    function setLetter(letter) {
+        var div = document.getElementById("name");
+        div.innerHTML = div.innerHTML + letter;
     }
-}
-
-function collectStar (player, star)
-{
-    star.disableBody(true, true);
-
-    //  Add and update the score
-    score += 10;
-    scoreText.setText('Score: ' + score);
-
-    if (stars.countActive(true) === 0)
-    {
-        //  A new batch of stars to collect
-        stars.children.iterate(function (child) {
-
-            child.enableBody(true, child.x, 0, true, true);
-
-        });
-
-        var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
-
-        var bomb = bombs.create(x, 16, 'bomb');
-        bomb.setBounce(1);
-        bomb.setCollideWorldBounds(true);
-        bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
-        bomb.allowGravity = false;
-
-    }
-}
-
-function hitBomb (player, bomb)
-{
-    this.physics.pause();
-
-    player.setTint(0xff0000);
-
-    player.anims.play('turn');
-
-    gameOver = true;
-}
-
-function isMobile()
-{
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-    if (isMobile) {
-        // User is accessing the page on a mobile device
-        // console.log("Mobile device detected");
-
-        return true
-    } else {
-        // User is accessing the page on a desktop device
-        // console.log("Desktop device detected");
-
-        return false
-    }
-}
 
 </script>
 
