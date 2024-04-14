@@ -155,20 +155,10 @@
 
         const player = await getResult()
 
-        // const response = await fetch(env.API_URL + "/scores", {
-        //     method: 'GET',
-        //     headers: {
-        //         'Accept': 'application/json',
-        //         'Content-Type': 'application/json'
-        //     },
-        // });
-
         const body = {
             "name": player.name,
             "score": player.score,
         }
-
-        console.log(body)
 
         const response = await fetch(env.API_URL + "/scores", {
             method: 'POST',
@@ -190,8 +180,6 @@
             let lowest
 
             for (let i = 0; i < scores.length; i++) {
-                console.log(scores[i])
-                console.log(scores[i].name)
 
                 // Set lowest score
                 lowest = scores[i].score
@@ -199,61 +187,72 @@
                 // Format date
                 const date = new Date(scores[i].created_at).toISOString().slice(0, 10);
 
+                let placeBg = "bg-blue-200"
+
+                if (i === 0) {
+                    placeBg = "bg-amber-300"
+                }
+
+                if (i === 1) {
+                    placeBg = "bg-zinc-50"
+                }
+
+                if (i === 2) {
+                    placeBg = "bg-amber-700"
+                }
+
                 $(item).append(
-                    '<li class="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6">' +
-                    '<div class="flex items-center shrink-0 items-center gap-x-4">' +
-                    '<p class="text-2xl font-semibold leading-6 text-gray-900">' +
-                    '<span class="absolute inset-x-0 -top-px bottom-0"></span>' +
-                    ++rank +
-                    '</p>' +
-                    '</div>' +
-                    '<div class="flex items-center shrink-0 items-center gap-x-4">' +
-                    '<p class="text-2xl font-semibold leading-6 text-gray-900">' +
-                    '<span class="absolute inset-x-0 -top-px bottom-0"></span>' +
-                    scores[i].name +
-                    '</p>' +
-                    '</div>' +
-                    '<div class="flex items-center shrink-0 items-center gap-x-4">' +
-                    '<p class="text-2xl font-semibold leading-6 text-gray-900">' +
-                    '<span class="absolute inset-x-0 -top-px bottom-0"></span>' +
-                    scores[i].score +
-                    '</p>' +
-                    '</div>' +
-                    '<div class="flex items-center shrink-0 items-center gap-x-4">' +
-                    '<p class="text-2xl font-semibold leading-6 text-gray-900">' +
-                    '<span class="absolute inset-x-0 -top-px bottom-0"></span>' +
-                    date +
-                    '</p>' +
-                    '</div>' +
+                    '<li class="relative flex justify-between gap-x-6 px-4 py-5 sm:px-6 ' + placeBg + '">' +
+                        '<div class="flex items-center shrink-0 items-center gap-x-4">' +
+                            '<p class="text-2xl font-semibold leading-6 text-gray-900">' +
+                                '<span class="absolute inset-x-0 -top-px bottom-0"></span>' +
+                                ++rank +
+                            '</p>' +
+                        '</div>' +
+                        '<div class="flex items-center shrink-0 items-center gap-x-4">' +
+                            '<p class="text-2xl font-semibold leading-6 text-gray-900">' +
+                                '<span class="absolute inset-x-0 -top-px bottom-0"></span>' +
+                                scores[i].name +
+                            '</p>' +
+                        '</div>' +
+                        '<div class="flex items-center shrink-0 items-center gap-x-4">' +
+                            '<p class="text-2xl font-semibold leading-6 text-gray-900">' +
+                                '<span class="absolute inset-x-0 -top-px bottom-0"></span>' +
+                                scores[i].score +
+                            '</p>' +
+                        '</div>' +
+                        '<div class="flex items-center shrink-0 items-center gap-x-4">' +
+                            '<p class="text-2xl font-semibold leading-6 text-gray-900">' +
+                                '<span class="absolute inset-x-0 -top-px bottom-0"></span>' +
+                                date +
+                            '</p>' +
+                        '</div>' +
                     '</li>'
                 );
             }
 
             $(item).append(
-                '<li class="px-4 py-5 hover:bg-gray-50 sm:px-6">' +
-                '<div class="text-center">' +
-                '<p class="text-2xl font-semibold leading-6 text-gray-900">' +
-                '<span id="name"></span> your score is <span id="score"></span>! ' +
-                '</p>' +
-                '</div>' +
+                '<li class="px-4 py-5 sm:px-6">' +
+                    '<div class="text-center">' +
+                        '<p class="text-2xl font-semibold leading-6 text-gray-900">' +
+                            '<span id="name"></span> your score is <span id="score"></span>! ' +
+                        '</p>' +
+                    '</div>' +
                 '</li>' +
-                '<li class="px-4 py-5 hover:bg-gray-50 sm:px-6">' +
-                '<div class="text-center">' +
-                '<a href="/">' +
-                '<button id="reset" type="button" class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">' +
-                'PLAY AGAIN</a> ' +
-                '</button>' +
-                '</a> ' +
-                '</div>' +
+                '<li class="px-4 py-5 sm:px-6">' +
+                    '<div class="text-center">' +
+                        '<a href="/">' +
+                            '<button id="reset" type="button" class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">' +
+                            'PLAY AGAIN</a> ' +
+                            '</button>' +
+                        '</a> ' +
+                    '</div>' +
                 '</li>'
             );
 
             // Add name and score in message
             document.getElementById('name').innerText = player.name
             document.getElementById('score').innerText = player.score.toString()
-
-            console.log("lowerst scotre is " + lowest)
-            // getScore(lowest)
         });
     }
 
