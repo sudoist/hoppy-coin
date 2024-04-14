@@ -1,1 +1,6 @@
+# Dev
 /laradock
+/.idea
+
+# Env
+/public/config.js
