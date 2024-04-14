@@ -177,84 +177,85 @@
 
             let rank = 0;
 
-            let lowest
+            for (const [key, value] of Object.entries(scores)) {
+                ++rank
 
-            console.log(scores)
+                // Only get 9
+                if (rank < 10) {
 
-            // Only get 9
-            for (let i = 0; i < scores.length - 1; i++) {
+                    // console.log(rank)
+                    // console.log(`Key: ${key}, Value: ${value.name} ${value.score}`);
 
-                // Set lowest score
-                lowest = scores[i].score
+                    // Format date
+                    const date = new Date(`${value.date}`).toISOString().slice(0, 10);
 
-                // Format date
-                const date = new Date(scores[i].created_at).toISOString().slice(0, 10);
+                    let placeBg = "bg-blue-200"
 
-                let placeBg = "bg-blue-200"
+                    if (rank === 1) {
+                        placeBg = "bg-amber-300"
+                    }
 
-                if (i === 0) {
-                    placeBg = "bg-amber-300"
+                    if (rank === 2) {
+                        placeBg = "bg-zinc-50"
+                    }
+
+                    if (rank === 3) {
+                        placeBg = "bg-amber-700"
+                    }
+
+                    $(item).append(
+                        '<li class="relative flex justify-between gap-x-6 px-4 py-5 sm:px-6 ' + placeBg + '">' +
+                            '<div class="flex items-center shrink-0 items-center gap-x-4">' +
+                                '<p class="text-2xl font-semibold leading-6 text-gray-900">' +
+                                    '<span class="absolute inset-x-0 -top-px bottom-0"></span>' +
+                                    rank +
+                                '</p>' +
+                            '</div>' +
+                            '<div class="flex items-center shrink-0 items-center gap-x-4">' +
+                                '<p class="text-2xl font-semibold leading-6 text-gray-900">' +
+                                    '<span class="absolute inset-x-0 -top-px bottom-0"></span>' +
+                                    `${value.name}` +
+                                '</p>' +
+                            '</div>' +
+                            '<div class="flex items-center shrink-0 items-center gap-x-4">' +
+                                '<p class="text-2xl font-semibold leading-6 text-gray-900">' +
+                                    '<span class="absolute inset-x-0 -top-px bottom-0"></span>' +
+                                    `${value.score}` +
+                                '</p>' +
+                            '</div>' +
+                            '<div class="flex items-center shrink-0 items-center gap-x-4">' +
+                                '<p class="text-2xl font-semibold leading-6 text-gray-900">' +
+                                    '<span class="absolute inset-x-0 -top-px bottom-0"></span>' +
+                                    date +
+                                '</p>' +
+                            '</div>' +
+                        '</li>'
+                    );
+
                 }
-
-                if (i === 1) {
-                    placeBg = "bg-zinc-50"
-                }
-
-                if (i === 2) {
-                    placeBg = "bg-amber-700"
-                }
-
-                $(item).append(
-                    '<li class="relative flex justify-between gap-x-6 px-4 py-5 sm:px-6 ' + placeBg + '">' +
-                        '<div class="flex items-center shrink-0 items-center gap-x-4">' +
-                            '<p class="text-2xl font-semibold leading-6 text-gray-900">' +
-                                '<span class="absolute inset-x-0 -top-px bottom-0"></span>' +
-                                ++rank +
-                            '</p>' +
-                        '</div>' +
-                        '<div class="flex items-center shrink-0 items-center gap-x-4">' +
-                            '<p class="text-2xl font-semibold leading-6 text-gray-900">' +
-                                '<span class="absolute inset-x-0 -top-px bottom-0"></span>' +
-                                scores[i].name +
-                            '</p>' +
-                        '</div>' +
-                        '<div class="flex items-center shrink-0 items-center gap-x-4">' +
-                            '<p class="text-2xl font-semibold leading-6 text-gray-900">' +
-                                '<span class="absolute inset-x-0 -top-px bottom-0"></span>' +
-                                scores[i].score +
-                            '</p>' +
-                        '</div>' +
-                        '<div class="flex items-center shrink-0 items-center gap-x-4">' +
-                            '<p class="text-2xl font-semibold leading-6 text-gray-900">' +
-                                '<span class="absolute inset-x-0 -top-px bottom-0"></span>' +
-                                date +
-                            '</p>' +
-                        '</div>' +
-                    '</li>'
-                );
             }
 
             $(item).append(
                 '<li class="px-4 py-5 sm:px-6">' +
-                    '<div class="text-center">' +
-                        '<p class="text-2xl font-semibold leading-6 text-gray-900">' +
-                            '<span id="name"></span> your score is <span id="score"></span>! ' +
-                        '</p>' +
-                    '</div>' +
+                '<div class="text-center">' +
+                '<p class="text-2xl font-semibold leading-6 text-gray-900">' +
+                '<span id="name"></span> your score is <span id="score"></span>! ' +
+                '</p>' +
+                '</div>' +
                 '</li>' +
                 '<li class="px-4 py-5 sm:px-6">' +
-                    '<div class="text-center">' +
-                        '<a href="/">' +
-                            '<button id="reset" type="button" class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">' +
-                            'MAIN MENU</a> ' +
-                            '</button>' +
-                        '</a> ' +
-                        '<a href="/ranked/game/index.html?name=' + player.name.toUpperCase() + '">' +
-                            '<button id="reset" type="button" class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">' +
-                            'PLAY AGAIN</a> ' +
-                            '</button>' +
-                        '</a> ' +
-                    '</div>' +
+                '<div class="text-center">' +
+                '<a href="/">' +
+                '<button id="reset" type="button" class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">' +
+                'MAIN MENU</a> ' +
+                '</button>' +
+                '</a> ' +
+                '<a href="/ranked/game/index.html?name=' + player.name.toUpperCase() + '">' +
+                '<button id="reset" type="button" class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">' +
+                'PLAY AGAIN</a> ' +
+                '</button>' +
+                '</a> ' +
+                '</div>' +
                 '</li>'
             );
 

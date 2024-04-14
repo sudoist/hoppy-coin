@@ -11,7 +11,9 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
             integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
+    <!-- Phaser -->
     <script src="https://cdn.jsdelivr.net/npm/phaser@v3.80.1/dist/phaser.min.js"></script>
+
     <style type="text/css">
         @font-face {
             font-family: "Press Start 2P";
@@ -91,7 +93,7 @@
 
 </div>
 
-<div id="game" class="h-screen">
+<div id="game" class="h-screen"></div>
 
 <script type="text/javascript">
 
@@ -308,11 +310,6 @@
 
             console.log("game over")
 
-            // console.log($('#prompt').text)
-
-            // document.getElementById("prompt").classList.remove("hidden");
-            // index.html
-
             $('#main').removeClass('hidden')
             $('#main').addClass('z-10')
 
@@ -320,9 +317,6 @@
 
             game.destroy()
 
-            // alert("play again")
-            // console.log(playerName)
-            // window.location = "/ranked/scores/index.html?name=" + playerName + "&score=" + scoreText.text.replace('Score: ', '')
             return false
         }
 

@@ -3,18 +3,84 @@
 <head> 
     <meta charset="UTF-8" />
     <title>Making your first Phaser 3 Game - Part 10</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+    <!-- Phaser -->
     <script src="https://cdn.jsdelivr.net/npm/phaser@v3.80.1/dist/phaser.min.js"></script>
+
     <style type="text/css">
+
         body {
-            background-image: url("../assets/phaser-planet-web.png");
+            background-image: url("../../assets/phaser-planet-web.png");
             background-size: 20%;
             background-repeat: repeat;
-            border: 1px solid #990000;
+        }
+
+        @font-face {
+            font-family: "Press Start 2P";
+            src: url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap") format("truetype");
+            src: url(https://fonts.gstatic.com/s/pressstart2p/v15/e3t4euO8T-267oIAQAu6jDQyK3nWivN04w.woff2) format('woff2');
+        }
+
+        #main, #game {
             margin: 0;
+            font-family: 'Press Start 2P', cursive;
+            text-transform: uppercase;
+        }
+
+        #content {
+            /*width: 50% !important;*/
+        }
+
+        /* Main */
+        #main {
+            position: sticky;
+        }
+
+        /* Game */
+        #game {
+        }
+
+        /* Game over */
+        .game-over {
+            position: fixed;
+            top: 50%;
+            left: 45%;
+            transform: translate(-51%, -50%);
         }
     </style>
 </head>
 <body>
+
+<div id="main" class="py-12 sm:px-6 lg:px-8 h-screen flex items-center justify-center hidden">
+
+    <div id="content">
+
+        <ul id="list"
+            role="list"
+            class="divide-y divide-gray-100 overflow-hidden bg-white shadow-sm ring-8 ring-gray-900/4 sm:rounded-xl">
+
+            <li class="px-4 py-5 sm:px-6 flex items-center justify-center">
+                <img src="../../assets/loading.gif" class="h-20"/>
+            </li>
+
+            <li class="px-4 py-5 sm:px-6 flex items-center justify-center">
+                <div id="loading-text" class="text-center text-3xl font-bold">
+                    Loading . . . .
+                </div>
+            </li>
+        </ul>
+    </div>
+
+</div>
+
+<div id="game" class="h-screen"></div>
 
 <script type="text/javascript">
 
@@ -40,7 +106,8 @@ let configDesktop = {
         height: 600,
     },
     device: 'desktop',
-    instructions: 'Move with W, A, S, D'
+    instructions: 'Move with W, A, S, D',
+    parent: 'game',
 };
 
 let configMobile = {
@@ -65,7 +132,8 @@ let configMobile = {
         height: 750,
     },
     device: 'mobile',
-    instructions: 'Move by using the joystick'
+    instructions: 'Move by using the joystick',
+    parent: 'game',
 };
 
 let player;
@@ -239,10 +307,19 @@ function update ()
 {
     if (gameOver)
     {
+        game.destroy()
 
         console.log("game over")
         console.log(playerName)
+
+        $('#main').removeClass('hidden')
+        $('#main').addClass('z-10')
+        $('#main').addClass('opacity-90')
+
+        $('#game').addClass('game-over')
+
         window.location = "/ranked/scores/index.html?name=" + playerName + "&score=" + scoreText.text.replace('Score: ', '')
+
         return false
     }
 
