@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8"/>
-    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
     <title>Making your first Phaser 3 Game - Part 10</title>
 
     <!-- Tailwind -->
@@ -166,7 +166,8 @@
     let bombs;
     let sky;
     let skyIndex = 1;
-    let platforms;
+    let platforms = [];
+    let platformIndex = 1;
     let cursors;
     let score = 0;
     let gameOver = false;
@@ -196,6 +197,8 @@
         this.load.image('sky5', '../../assets/bg/nathan-dumlao-kME9jbKd--s-unsplash.jpg');
         this.load.image('sky6', '../../assets/bg/dan-asaki-K0mJQlbu9Yo-unsplash.jpg');
         this.load.image('ground', '../../assets/platform.png');
+        this.load.image('ground-m', '../../assets/platform-50.png');
+        this.load.image('ground-s', '../../assets/platform-25.png');
         this.load.image('star', '../../assets/star.png');
         this.load.image('bomb', '../../assets/bomb.png');
 
@@ -214,16 +217,19 @@
         sky = this.add.image(400, 300, 'sky' + skyIndex);
 
         //  The platforms group contains the ground and the 2 ledges we can jump on
-        platforms = this.physics.add.staticGroup();
+        //  Add at least 3 platforms for now
+        platforms[1] = this.physics.add.staticGroup();
+        platforms[2] = this.physics.add.staticGroup();
+        platforms[3] = this.physics.add.staticGroup();
 
         //  Here we create the ground.
         //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-        platforms.create(400, 568, 'ground').setScale(2).refreshBody();
+        platforms[platformIndex].create(400, 568, 'ground').setScale(2).refreshBody();
 
         //  Now let's create some ledges
-        platforms.create(600, 400, 'ground');
-        platforms.create(50, 250, 'ground');
-        platforms.create(750, 220, 'ground');
+        platforms[platformIndex].create(600, 400, 'ground');
+        platforms[platformIndex].create(50, 250, 'ground');
+        platforms[platformIndex].create(750, 220, 'ground');
 
         // The player and its settings
 
@@ -233,7 +239,7 @@
             'dude2'
         ];
 
-        let randomDude = Math.floor(Math.random()*dudeArray.length);
+        let randomDude = Math.floor(Math.random() * dudeArray.length);
 
         const dude = dudeArray[randomDude];
 
@@ -293,9 +299,9 @@
         scoreText = this.add.text(16, 16, 'Score: 0', {fontSize: '32px', fill: '#FFF'});
 
         //  Collide the player and the stars with the platforms
-        this.physics.add.collider(player, platforms);
-        this.physics.add.collider(stars, platforms);
-        this.physics.add.collider(bombs, platforms);
+        this.physics.add.collider(player, platforms[platformIndex]);
+        this.physics.add.collider(stars, platforms[platformIndex]);
+        this.physics.add.collider(bombs, platforms[platformIndex]);
 
         //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
         this.physics.add.overlap(player, stars, collectStar, null, this);
@@ -393,6 +399,28 @@
         // Change background on score
         if ((score % 360) === 0) {
 
+            // Platforms
+            platforms[platformIndex].clear(true, true);
+
+            platformIndex++
+
+            console.log("platformIndex")
+            console.log(platformIndex)
+
+            // Reset background
+            if (platformIndex === 4) {
+                platformIndex = 1
+            }
+
+            changePlatform(platformIndex)
+
+            //  Reset colliders
+            //  Collide the player and the stars with the platforms
+            this.physics.add.collider(player, platforms[platformIndex]);
+            this.physics.add.collider(stars, platforms[platformIndex]);
+            this.physics.add.collider(bombs, platforms[platformIndex]);
+
+            // Backgrounds
             skyIndex++
 
             // Reset background
@@ -451,6 +479,98 @@
     function changeBackground(key) {
 
         sky.setTexture(key, 0);
+    }
+
+    function changePlatform(platformIndex) {
+
+        // Default
+        if (platformIndex === 1) {
+
+            // Ground
+            platforms[platformIndex].create(400, 568, 'ground').setScale(2).refreshBody();
+
+            // Ledges
+            platforms[platformIndex].create(600, 400, 'ground');
+            platforms[platformIndex].create(50, 250, 'ground');
+            platforms[platformIndex].create(750, 220, 'ground');
+        } else if (platformIndex === 2) {
+
+            // Ground
+            platforms[platformIndex].create(400, 568, 'ground').setScale(2).refreshBody();
+
+            // Ledges
+            platforms[platformIndex].create(18, 170, 'ground-s');
+            platforms[platformIndex].create(325, 220, 'ground-s');
+            platforms[platformIndex].create(609, 190, 'ground-s');
+            platforms[platformIndex].create(800, 390, 'ground-s');
+            platforms[platformIndex].create(260, 370, 'ground');
+        } else if (platformIndex === 3) {
+
+            // Ground
+            platforms[platformIndex].create(150, 568, 'ground-s').setScale(2).refreshBody();
+            platforms[platformIndex].create(450, 568, 'ground-s').setScale(2).refreshBody();
+
+            // Ledges
+            platforms[platformIndex].create(18, 170, 'ground-s');
+            platforms[platformIndex].create(325, 220, 'ground-s');
+            platforms[platformIndex].create(609, 190, 'ground-s');
+            platforms[platformIndex].create(710, 410, 'ground-s');
+            platforms[platformIndex].create(750, 410, 'ground-s');
+            platforms[platformIndex].create(260, 370, 'ground');
+
+            // Add bombs
+
+            // Left
+            bombs.create(3, 595, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(10, 595, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(20, 594, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(30, 598, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(37, 597, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(50, 596, 'bomb').setImmovable(false).body.allowGravity = false;
+
+            // Mid
+            bombs.create(249, 597, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(260, 595, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(267, 599, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(289, 598, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(280, 595, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(309, 599, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(330, 599, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(330, 594, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(353, 595, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(300, 596, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(320, 594, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(340, 598, 'bomb').setImmovable(false).body.allowGravity = false;
+
+            // Right
+            bombs.create(550, 595, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(560, 596, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(571, 599, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(580, 598, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(589, 598, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(600, 595, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(609, 594, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(620, 597, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(627, 594, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(640, 598, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(651, 594, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(660, 597, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(671, 599, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(680, 597, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(690, 593, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(700, 595, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(710, 599, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(720, 596, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(730, 593, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(740, 600, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(748, 598, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(760, 594, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(772, 596, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(780, 599, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(788, 597, 'bomb').setImmovable(false).body.allowGravity = false;
+            bombs.create(792, 597, 'bomb').setImmovable(false).body.allowGravity = false;
+        }
+
     }
 
 </script>
