@@ -90,7 +90,7 @@
                     <div class="cursor text-4xl py-4">
                         <input type="text" id="name-text" name="name-text" class="uppercase text-center" maxlength="3"
                                disabled/>
-                        <input type="hidden" id="name-submit" name="name" maxlength="3"/>
+                        <input type="text" id="name-submit" name="name" maxlength="3"/>
                     </div>
                 </li>
 
@@ -122,11 +122,15 @@
         // Do validation here
         let name = $('#name').text();
 
-        if (name.length !== 3) {
+        if (name.length <= 2) {
             return false;
         }
 
-        $('#name-submit').val($('#name').text())
+        if (name.length > 3) {
+            name = name.substr(name.length - 3)
+        }
+
+        $('#name-submit').val(name)
 
         return true;
 
