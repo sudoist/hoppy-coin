@@ -28,7 +28,7 @@
         }
 
         body {
-            background-image: url("../assets/phaser-planet-small.png");
+            background-image: url("../assets/bg/phaser-planet-small.png");
             background-size: 20%;
             background-repeat: repeat;
         }
@@ -164,6 +164,8 @@
     let player;
     let stars;
     let bombs;
+    let sky;
+    let skyIndex = 1;
     let platforms;
     let cursors;
     let score = 0;
@@ -186,7 +188,13 @@
     }
 
     function preload() {
-        this.load.image('sky', '../../assets/aleksandra-khaprenko-0PPw9irzLIw-unsplash.jpg');
+        // Backgrounds
+        this.load.image('sky1', '../../assets/bg/sky.png');
+        this.load.image('sky2', '../../assets/bg/john-cosio-xCZ8ynsCfrw-unsplash.jpg');
+        this.load.image('sky3', '../../assets/bg/john-cosio-RxjSW-seIp0-unsplash.jpg');
+        this.load.image('sky4', '../../assets/bg/aleksandra-khaprenko-0PPw9irzLIw-unsplash.jpg');
+        this.load.image('sky5', '../../assets/bg/nathan-dumlao-kME9jbKd--s-unsplash.jpg');
+        this.load.image('sky6', '../../assets/bg/dan-asaki-K0mJQlbu9Yo-unsplash.jpg');
         this.load.image('ground', '../../assets/platform.png');
         this.load.image('star', '../../assets/star.png');
         this.load.image('bomb', '../../assets/bomb.png');
@@ -200,7 +208,7 @@
 
     function create() {
         //  A simple background for our game
-        this.add.image(400, 300, 'sky');
+        sky = this.add.image(400, 300, 'sky' + skyIndex);
 
         //  The platforms group contains the ground and the 2 ledges we can jump on
         platforms = this.physics.add.staticGroup();
@@ -268,7 +276,7 @@
         bombs = this.physics.add.group();
 
         //  The score
-        scoreText = this.add.text(16, 16, 'Score: 0', {fontSize: '32px', fill: '#000'});
+        scoreText = this.add.text(16, 16, 'Score: 0', {fontSize: '32px', fill: '#FFF'});
 
         //  Collide the player and the stars with the platforms
         this.physics.add.collider(player, platforms);
@@ -368,6 +376,19 @@
         score += 10;
         scoreText.setText('Score: ' + score);
 
+        // Change background on score
+        if ((score % 360) === 0) {
+
+            skyIndex++
+
+            // Reset background
+            if (skyIndex === 7) {
+                skyIndex = 1
+            }
+
+            changeBackground('sky' + skyIndex)
+        }
+
         if (stars.countActive(true) === 0) {
             //  A new batch of stars to collect
             stars.children.iterate(function (child) {
@@ -411,6 +432,11 @@
 
             return false
         }
+    }
+
+    function changeBackground(key) {
+
+        sky.setTexture(key, 0);
     }
 
 </script>
