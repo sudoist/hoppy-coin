@@ -518,6 +518,18 @@
             }
 
             changeBackground('sky' + skyIndex)
+
+            // Re add instructions
+            // Setup instructions
+            // Not sure why isMobile() is not working here, doing this for now.
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+            if (isMobile) {
+                this.instructionsText = configMobile.instructions
+            } else {
+                this.instructionsText = configDesktop.instructions
+            }
+            this.add.text(16, 560, this.instructionsText, {fontSize: '32px', fill: '#fff'});
         }
 
         if (stars.countActive(true) === 0) {
@@ -543,9 +555,7 @@
     function hitBomb(player, bomb) {
         this.physics.pause();
 
-        player.setTint(0xff0000);
-
-        player.anims.play('turn');
+        bomb.destroy();
 
         gameOver = true;
     }
