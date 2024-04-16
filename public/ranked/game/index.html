@@ -1,8 +1,8 @@
-<!doctype html> 
-<html lang="en"> 
-<head> 
-    <meta charset="UTF-8" />
-    <meta content="width=device-width, initial-scale=1" name="viewport" />
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
     <title>Making your first Phaser 3 Game - Part 10</title>
 
     <!-- Tailwind -->
@@ -95,340 +95,281 @@
 
 <script type="text/javascript">
 
-let configDesktop = {
-    type: Phaser.AUTO,
-    physics: {
-        default: 'arcade',
-        arcade: {
-            gravity: { y: 300 },
-            debug: false
+    let configDesktop = {
+        type: Phaser.AUTO,
+        physics: {
+            default: 'arcade',
+            arcade: {
+                gravity: {y: 300},
+                debug: false
+            }
+        },
+        scene: {
+            preload: preload,
+            create: create,
+            update: update
+        },
+        // Allows Phaser canvas to be responsive to browser sizing
+        scale: {
+            mode: Phaser.Scale.FIT,
+            autoCenter: Phaser.Scale.CENTER_BOTH,
+            width: 800,
+            height: 600,
+        },
+        device: 'desktop',
+        instructions: 'Move with W, A, S, D',
+        parent: 'game',
+        audio: {
+            disableWebAudio: true
         }
-    },
-    scene: {
-        preload: preload,
-        create: create,
-        update: update
-    },
-    // Allows Phaser canvas to be responsive to browser sizing
-    scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
-        width: 800,
-        height: 600,
-    },
-    device: 'desktop',
-    instructions: 'Move with W, A, S, D',
-    parent: 'game',
-};
+    };
 
-let configMobile = {
-    type: Phaser.AUTO,
-    physics: {
-        default: 'arcade',
-        arcade: {
-            gravity: { y: 300 },
-            debug: false
+    let configMobile = {
+        type: Phaser.AUTO,
+        physics: {
+            default: 'arcade',
+            arcade: {
+                gravity: {y: 300},
+                debug: false
+            }
+        },
+        scene: {
+            preload: preload,
+            create: create,
+            update: update
+        },
+        // Allows Phaser canvas to be responsive to browser sizing
+        scale: {
+            mode: Phaser.Scale.FIT,
+            autoCenter: Phaser.Scale.CENTER_BOTH,
+            width: 800,
+            height: 750,
+        },
+        device: 'mobile',
+        instructions: 'Move by using the joystick',
+        parent: 'game',
+        audio: {
+            disableWebAudio: true
         }
-    },
-    scene: {
-        preload: preload,
-        create: create,
-        update: update
-    },
-    // Allows Phaser canvas to be responsive to browser sizing
-    scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
-        width: 800,
-        height: 750,
-    },
-    device: 'mobile',
-    instructions: 'Move by using the joystick',
-    parent: 'game',
-};
+    };
 
-let player;
-let playerName;
-let stars;
-let bombs;
-let sky;
-let skyIndex = 1;
-let platforms;
-let cursors;
-let score = 0;
-let scoreText;
-let gameOver = false;
-let stage = 1;
-let stageText;
-let instructions;
-let instructionsText;
+    let player;
+    let playerName;
+    let stars;
+    let bombs;
+    let sky;
+    let skyIndex = 1;
+    let platforms;
+    let cursors;
+    let score = 0;
+    let scoreText;
+    let gameOver = false;
+    let stage = 1;
+    let stageText;
+    let instructions;
+    let instructionsText;
+    let sfx;
+    let music;
+    let muteButton;
+    let isMute = true;
 
-let game
+    let game
 
-window.onload = function(){
-    // Check if the user is accessing the page on a mobile device
-    const isMobile = this.isMobile()
+    window.onload = function () {
+        // Check if the user is accessing the page on a mobile device
+        const isMobile = this.isMobile()
 
-    if (isMobile) {
-        game = new Phaser.Game(configMobile);
-    } else {
-        game = new Phaser.Game(configDesktop);
-    }
-}
-
-function preload ()
-{
-    // Backgrounds
-    this.load.image('sky1', '../../assets/bg/sky.png');
-    this.load.image('sky2', '../../assets/bg/john-cosio-xCZ8ynsCfrw-unsplash.jpg');
-    this.load.image('sky3', '../../assets/bg/john-cosio-RxjSW-seIp0-unsplash.jpg');
-    this.load.image('sky4', '../../assets/bg/aleksandra-khaprenko-0PPw9irzLIw-unsplash.jpg');
-    this.load.image('sky5', '../../assets/bg/nathan-dumlao-kME9jbKd--s-unsplash.jpg');
-    this.load.image('sky6', '../../assets/bg/dan-asaki-K0mJQlbu9Yo-unsplash.jpg');
-    this.load.image('ground', '../../assets/platform.png');
-    this.load.image('star', '../../assets/star.png');
-    this.load.image('bomb', '../../assets/bomb.png');
-
-    // Player sprites
-    this.load.spritesheet('dude1', '../../assets/dude.png', {frameWidth: 32, frameHeight: 48});
-    this.load.spritesheet('dude2', '../../assets/piccolo.png', {frameWidth: 32, frameHeight: 48});
-
-    let url;
-
-    url = '../../assets/rexvirtualjoystickplugin.min.js';
-    this.load.plugin('rexvirtualjoystickplugin', url, true);
-}
-
-function create ()
-{
-    const searchParams = new URLSearchParams(window.location.search)
-
-    if (!searchParams.has('name')) {
-        window.location = "/"
+        if (isMobile) {
+            game = new Phaser.Game(configMobile);
+        } else {
+            game = new Phaser.Game(configDesktop);
+        }
     }
 
-    playerName = searchParams.get('name')
+    function preload() {
+        // Backgrounds
+        this.load.image('sky1', '../../assets/bg/sky.png');
+        this.load.image('sky2', '../../assets/bg/john-cosio-xCZ8ynsCfrw-unsplash.jpg');
+        this.load.image('sky3', '../../assets/bg/john-cosio-RxjSW-seIp0-unsplash.jpg');
+        this.load.image('sky4', '../../assets/bg/aleksandra-khaprenko-0PPw9irzLIw-unsplash.jpg');
+        this.load.image('sky5', '../../assets/bg/nathan-dumlao-kME9jbKd--s-unsplash.jpg');
+        this.load.image('sky6', '../../assets/bg/dan-asaki-K0mJQlbu9Yo-unsplash.jpg');
+        this.load.image('ground', '../../assets/platform.png');
+        this.load.image('star', '../../assets/star.png');
+        this.load.image('bomb', '../../assets/bomb-r.png');
 
-    console.log(playerName)
+        // Player sprites
+        this.load.spritesheet('dude1', '../../assets/dude.png', {frameWidth: 32, frameHeight: 48});
+        this.load.spritesheet('dude2', '../../assets/piccolo.png', {frameWidth: 32, frameHeight: 48});
 
-    //  A simple background for our game
-    sky = this.add.image(400, 300, 'sky' + skyIndex);
+        // Buttons
+        this.load.image('mute', '../../assets/objects/mute-32.png');
+        this.load.image('sound', '../../assets/objects/sound-32.png');
 
-    //  The platforms group contains the ground and the 2 ledges we can jump on
-    platforms = this.physics.add.staticGroup();
+        // Audio
 
-    //  Here we create the ground.
-    //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-    platforms.create(400, 568, 'ground').setScale(2).refreshBody();
+        // https://github.com/phaserjs/examples/blob/master/public/src/audio/HTML5%20Audio/audiosprite.js
+        // SFX
+        this.load.audioSprite('sfx', '../../assets/audio/sfx/fx_mixdown.json', [
+            '../../assets/audio/sfx/fx_mixdown.ogg',
+            '../../assets/audio/sfx/fx_mixdown.mp3'
+        ]);
 
-    //  Now let's create some ledges
-    platforms.create(600, 400, 'ground');
-    platforms.create(50, 250, 'ground');
-    platforms.create(750, 220, 'ground');
+        // Music
+        this.load.audio('start', ['../../assets/audio/music/Hawaii.mp3']);
+        this.load.audio('hard', ['../../assets/audio/music/Tyechestra.mp3']);
 
-    // The player and its settings
+        // Plugins
 
-    // Randomize player sprite
-    let dudeArray = [
-        'dude1',
-        'dude2'
-    ];
-
-    let randomDude = Math.floor(Math.random()*dudeArray.length);
-
-    const dude = dudeArray[randomDude];
-
-    player = this.physics.add.sprite(100, 450, dude);
-
-    //  Player physics properties. Give the little guy a slight bounce.
-    player.setBounce(0.2);
-    player.setCollideWorldBounds(true);
-
-    //  Our player animations, turning, walking left and walking right.
-    this.anims.create({
-        key: 'left',
-        frames: this.anims.generateFrameNumbers(dude, { start: 0, end: 3 }),
-        frameRate: 10,
-        repeat: -1
-    });
-
-    this.anims.create({
-        key: 'turn',
-        frames: [ { key: dude, frame: 4 } ],
-        frameRate: 20
-    });
-
-    this.anims.create({
-        key: 'right',
-        frames: this.anims.generateFrameNumbers(dude, { start: 5, end: 8 }),
-        frameRate: 10,
-        repeat: -1
-    });
-
-    //  Input Events
-    cursors = this.input.keyboard.addKeys(
-        {up:Phaser.Input.Keyboard.KeyCodes.W,
-            down:Phaser.Input.Keyboard.KeyCodes.S,
-            left:Phaser.Input.Keyboard.KeyCodes.A,
-            right:Phaser.Input.Keyboard.KeyCodes.D});
-
-    //  Some stars to collect, 12 in total, evenly spaced 70 pixels apart along the x axis
-    stars = this.physics.add.group({
-        key: 'star',
-        repeat: 11,
-        setXY: { x: 12, y: 0, stepX: 70 }
-    });
-
-    stars.children.iterate(function (child) {
-
-        //  Give each star a slightly different bounce
-        child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-
-    });
-
-    bombs = this.physics.add.group();
-
-    //  The score
-    scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#FFF' });
-
-    //  The stage
-    stageText = this.add.text(16, 46, 'Stage: 1', {fontSize: '32px', fill: '#FFF'});
-
-    //  Collide the player and the stars with the platforms
-    this.physics.add.collider(player, platforms);
-    this.physics.add.collider(stars, platforms);
-    this.physics.add.collider(bombs, platforms);
-
-    //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
-    this.physics.add.overlap(player, stars, collectStar, null, this);
-
-    this.physics.add.collider(player, bombs, hitBomb, null, this);
-
-    // Add joystick
-    // TODO: Doesn't work as expected. It holds the pressed cursor but should do for now.
-    this.joyStick = this.plugins.get('rexvirtualjoystickplugin').add(this, {
-        x: 400,
-        y: 675,
-        radius: 100,
-        base: this.add.circle(0, 0, 40, 0x888888),
-        thumb: this.add.circle(0, 0, 30, 0xcccccc),
-        // dir: '8dir',   // 'up&down'|0|'left&right'|1|'4dir'|2|'8dir'|3
-        // forceMin: 16,
-        // enable: true
-    })
-        .on('update', joyStickState, this);
-
-    // Setup instructions
-    // Not sure why isMobile() is not working here, doing this for now.
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-    if (isMobile) {
-        this.instructionsText = configMobile.instructions
-    } else {
-        this.instructionsText = configDesktop.instructions
+        // Joystick
+        let url = '../../assets/rexvirtualjoystickplugin.min.js';
+        this.load.plugin('rexvirtualjoystickplugin', url, true);
     }
 
-    // Instructions
-    instructions = this.add.text(16, 560, this.instructionsText, { fontSize: '32px', fill: '#fff' });
+    function create() {
+        const searchParams = new URLSearchParams(window.location.search)
 
-    // Start game with bomb
-    var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+        if (!searchParams.has('name')) {
+            window.location = "/"
+        }
 
-    var bomb = bombs.create(x, 16, 'bomb');
-    bomb.setBounce(1);
-    bomb.setCollideWorldBounds(true);
-    bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
-    bomb.allowGravity = false;
-}
+        playerName = searchParams.get('name')
 
-function update ()
-{
-    if (gameOver)
-    {
-        game.destroy()
-
-        console.log("game over")
         console.log(playerName)
 
-        $('#main').removeClass('hidden')
-        $('#main').addClass('z-10')
-        $('#main').addClass('opacity-90')
+        //  A simple background for our game
+        sky = this.add.image(400, 300, 'sky' + skyIndex);
 
-        $('#game').addClass('game-over')
+        //  The platforms group contains the ground and the 2 ledges we can jump on
+        platforms = this.physics.add.staticGroup();
 
-        window.location = "/ranked/scores/index.html?name=" + playerName + "&score=" + scoreText.text.replace('Score: ', '')
+        //  Here we create the ground.
+        //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
+        platforms.create(400, 568, 'ground').setScale(2).refreshBody();
 
-        return false
-    }
+        //  Now let's create some ledges
+        platforms.create(600, 400, 'ground');
+        platforms.create(50, 250, 'ground');
+        platforms.create(750, 220, 'ground');
 
-    // Keyboard and mobile joystick
-    if (cursors.left.isDown || this.mobileCursorKeys === 'left')
-    {
-        player.setVelocityX(-160);
+        // Add buttons
+        muteButton = this.add.image(770, 30, 'mute')
+            .setInteractive()
+            .on('pointerdown', () => toggleSound())
 
-        player.anims.play('left', true);
-    }
-    else if (cursors.right.isDown || this.mobileCursorKeys === 'right')
-    {
-        player.setVelocityX(160);
+        // The player and its settings
+        // Randomize player sprite
+        let dudeArray = [
+            'dude1',
+            'dude2'
+        ];
 
-        player.anims.play('right', true);
-    }
-    else
-    {
-        player.setVelocityX(0);
+        let randomDude = Math.floor(Math.random() * dudeArray.length);
 
-        player.anims.play('turn');
-    }
+        const dude = dudeArray[randomDude];
 
-    if ((cursors.up.isDown  || this.mobileCursorKeys === 'up') && player.body.touching.down)
-    {
-        player.setVelocityY(-330);
-    }
-}
+        player = this.physics.add.sprite(100, 450, dude);
 
-function joyStickState() {
-    const cursorKeys = this.joyStick.createCursorKeys();
-    for (const name in cursorKeys) {
-        if (cursorKeys[name].isDown) {
-            this.mobileCursorKeys = `${name}`
-        }
-    }
-}
+        //  Player physics properties. Give the little guy a slight bounce.
+        player.setBounce(0.2);
+        player.setCollideWorldBounds(true);
 
-function collectStar (player, star)
-{
-    star.disableBody(true, true);
+        //  Our player animations, turning, walking left and walking right.
+        this.anims.create({
+            key: 'left',
+            frames: this.anims.generateFrameNumbers(dude, {start: 0, end: 3}),
+            frameRate: 10,
+            repeat: -1
+        });
 
-    //  Add and update the score
-    score += 10;
-    scoreText.setText('Score: ' + score);
+        this.anims.create({
+            key: 'turn',
+            frames: [{key: dude, frame: 4}],
+            frameRate: 20
+        });
 
-    // Change background on score
-    if ((score % 360) === 0) {
+        this.anims.create({
+            key: 'right',
+            frames: this.anims.generateFrameNumbers(dude, {start: 5, end: 8}),
+            frameRate: 10,
+            repeat: -1
+        });
 
-        skyIndex++
+        this.anims.create({
+            key: 'explode',
+            frames: [{key: dude, frame: 9}],
+            frameRate: 20
+        });
 
-        // Reset background
-        if (skyIndex === 7) {
-            skyIndex = 1
-        }
+        //  Input Events
+        cursors = this.input.keyboard.addKeys(
+            {
+                up: Phaser.Input.Keyboard.KeyCodes.W,
+                down: Phaser.Input.Keyboard.KeyCodes.S,
+                left: Phaser.Input.Keyboard.KeyCodes.A,
+                right: Phaser.Input.Keyboard.KeyCodes.D
+            });
 
-        changeBackground('sky' + skyIndex)
-    }
+        //  Some stars to collect, 12 in total, evenly spaced 70 pixels apart along the x axis
+        stars = this.physics.add.group({
+            key: 'star',
+            repeat: 11,
+            setXY: {x: 12, y: 0, stepX: 70}
+        });
 
-    if (stars.countActive(true) === 0)
-    {
-        //  Update stage
-        stageText.setText('Score: ' + ++stage);
-
-        //  A new batch of stars to collect
         stars.children.iterate(function (child) {
 
-            child.enableBody(true, child.x, 0, true, true);
+            //  Give each star a slightly different bounce
+            child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
 
         });
 
+        bombs = this.physics.add.group();
+
+        //  The score
+        scoreText = this.add.text(16, 16, 'Score: 0', {fontSize: '32px', fill: '#FFF'});
+
+        //  The stage
+        stageText = this.add.text(16, 46, 'Stage: 1', {fontSize: '32px', fill: '#FFF'});
+
+        //  Collide the player and the stars with the platforms
+        this.physics.add.collider(player, platforms);
+        this.physics.add.collider(stars, platforms);
+        this.physics.add.collider(bombs, platforms);
+
+        //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
+        this.physics.add.overlap(player, stars, collectStar, null, this);
+
+        this.physics.add.collider(player, bombs, hitBomb, null, this);
+
+        // Add joystick
+        // TODO: Doesn't work as expected. It holds the pressed cursor but should do for now.
+        this.joyStick = this.plugins.get('rexvirtualjoystickplugin').add(this, {
+            x: 400,
+            y: 675,
+            radius: 100,
+            base: this.add.circle(0, 0, 40, 0x888888),
+            thumb: this.add.circle(0, 0, 30, 0xcccccc),
+            // dir: '8dir',   // 'up&down'|0|'left&right'|1|'4dir'|2|'8dir'|3
+            // forceMin: 16,
+            // enable: true
+        })
+            .on('update', joyStickState, this);
+
+        // Setup instructions
+        // Not sure why isMobile() is not working here, doing this for now.
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+        if (isMobile) {
+            this.instructionsText = configMobile.instructions
+        } else {
+            this.instructionsText = configDesktop.instructions
+        }
+
+        // Instructions
+        instructions = this.add.text(16, 560, this.instructionsText, {fontSize: '32px', fill: '#fff'});
+
+        // Start game with bomb
         var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
 
         var bomb = bombs.create(x, 16, 'bomb');
@@ -437,41 +378,176 @@ function collectStar (player, star)
         bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
         bomb.allowGravity = false;
 
+        // Audio
+        sfx = this.cache.json.get('sfx');
+
+        music = this.sound.add('start');
+        music.play()
     }
-}
 
-function hitBomb (player, bomb)
-{
-    this.physics.pause();
+    function update() {
+        // Sounds
+        if (isMute) {
+            game.sound.mute = true;
+        } else {
+            game.sound.mute = false;
+        }
 
-    player.setTint(0xff0000);
+        if (gameOver) {
 
-    player.anims.play('turn');
+            player.anims.play('explode');
 
-    gameOver = true;
-}
+            game.destroy()
 
-function isMobile()
-{
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            console.log("game over")
+            console.log(playerName)
 
-    if (isMobile) {
-        // User is accessing the page on a mobile device
-        // console.log("Mobile device detected");
+            $('#main').removeClass('hidden')
+            $('#main').addClass('z-10')
+            $('#main').addClass('opacity-90')
+            $('#game').addClass('game-over')
 
-        return true
-    } else {
-        // User is accessing the page on a desktop device
-        // console.log("Desktop device detected");
+            this.sound.playAudioSprite('sfx', 'alien death');
 
-        return false
+            window.location = "/ranked/scores/index.html?name=" + playerName + "&score=" + scoreText.text.replace('Score: ', '')
+
+            return false
+        }
+
+        // Keyboard and mobile joystick
+        if (cursors.left.isDown || this.mobileCursorKeys === 'left') {
+            player.setVelocityX(-160);
+
+            player.anims.play('left', true);
+        } else if (cursors.right.isDown || this.mobileCursorKeys === 'right') {
+            player.setVelocityX(160);
+
+            player.anims.play('right', true);
+        } else {
+            player.setVelocityX(0);
+
+            player.anims.play('turn');
+        }
+
+        if ((cursors.up.isDown || this.mobileCursorKeys === 'up') && player.body.touching.down) {
+            player.setVelocityY(-330);
+            this.sound.playAudioSprite('sfx', 'squit');
+        }
     }
-}
 
-function changeBackground(key) {
+    function toggleSound() {
 
-    sky.setTexture(key, 0);
-}
+        if (isMute) {
+            muteButton.setTexture('sound', 0);
+            isMute = false
+
+            return
+        }
+
+        isMute = true
+        muteButton.setTexture('mute', 0);
+    }
+
+    function enterButtonHoverState() {
+        // enterButtonHoverState
+    }
+
+    function enterButtonRestState() {
+        // enterButtonRestState
+    }
+
+    function joyStickState() {
+        const cursorKeys = this.joyStick.createCursorKeys();
+        for (const name in cursorKeys) {
+            if (cursorKeys[name].isDown) {
+                this.mobileCursorKeys = `${name}`
+            }
+        }
+    }
+
+    function collectStar(player, star) {
+        this.sound.playAudioSprite('sfx', 'ping');
+
+        star.disableBody(true, true);
+
+        //  Add and update the score
+        score += 10;
+        scoreText.setText('Score: ' + score);
+
+        // Switch music when reaching stage 5
+        if (score === 600) {
+            music.stop()
+
+            music = this.sound.add('hard');
+            music.play()
+        }
+
+        // Change background on score
+        if ((score % 360) === 0) {
+            this.sound.playAudioSprite('sfx', 'numkey');
+
+            skyIndex++
+
+            // Reset background
+            if (skyIndex === 7) {
+                skyIndex = 1
+            }
+
+            changeBackground('sky' + skyIndex)
+        }
+
+        if (stars.countActive(true) === 0) {
+            //  Update stage
+            stageText.setText('Score: ' + ++stage);
+
+            //  A new batch of stars to collect
+            stars.children.iterate(function (child) {
+
+                child.enableBody(true, child.x, 0, true, true);
+
+            });
+
+            var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+
+            var bomb = bombs.create(x, 16, 'bomb');
+            bomb.setBounce(1);
+            bomb.setCollideWorldBounds(true);
+            bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
+            bomb.allowGravity = false;
+
+            this.sound.playAudioSprite('sfx', 'shot');
+
+        }
+    }
+
+    function hitBomb(player, bomb) {
+        this.physics.pause();
+
+        bomb.destroy();
+
+        gameOver = true;
+    }
+
+    function isMobile() {
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+        if (isMobile) {
+            // User is accessing the page on a mobile device
+            // console.log("Mobile device detected");
+
+            return true
+        } else {
+            // User is accessing the page on a desktop device
+            // console.log("Desktop device detected");
+
+            return false
+        }
+    }
+
+    function changeBackground(key) {
+
+        sky.setTexture(key, 0);
+    }
 
 </script>
 

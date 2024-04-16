@@ -263,13 +263,11 @@
         platforms[platformIndex].create(750, 220, 'ground');
 
         // Add buttons
-
         muteButton = this.add.image(770, 30, 'mute')
             .setInteractive()
             .on('pointerdown', () => toggleSound())
 
         // The player and its settings
-
         // Randomize player sprite
         let dudeArray = [
             'dude1',
@@ -390,6 +388,7 @@
         bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
         bomb.allowGravity = false;
 
+        // Audio
         sfx = this.cache.json.get('sfx');
 
         music = this.sound.add('start');
