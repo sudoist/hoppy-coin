@@ -177,8 +177,10 @@
     let platformIndex = 1;
     let cursors;
     let score = 0;
-    let gameOver = false;
     let scoreText;
+    let gameOver = false;
+    let stage = 1;
+    let stageText;
     let instructions;
     let instructionsText;
     let sfx;
@@ -338,6 +340,9 @@
 
         //  The score
         scoreText = this.add.text(16, 16, 'Score: 0', {fontSize: '32px', fill: '#FFF'});
+
+        //  The stage
+        stageText = this.add.text(16, 46, 'Stage: 1', {fontSize: '32px', fill: '#FFF'});
 
         //  Collide the player and the stars with the platforms
         this.physics.add.collider(player, platforms[platformIndex]);
@@ -520,19 +525,13 @@
             changeBackground('sky' + skyIndex)
 
             // Re add instructions
-            // Setup instructions
-            // Not sure why isMobile() is not working here, doing this for now.
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-            if (isMobile) {
-                this.instructionsText = configMobile.instructions
-            } else {
-                this.instructionsText = configDesktop.instructions
-            }
             this.add.text(16, 560, this.instructionsText, {fontSize: '32px', fill: '#fff'});
         }
 
         if (stars.countActive(true) === 0) {
+            //  Update stage
+            stageText.setText('Score: ' + ++stage);
+
             //  A new batch of stars to collect
             stars.children.iterate(function (child) {
 

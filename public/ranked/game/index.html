@@ -156,8 +156,10 @@ let skyIndex = 1;
 let platforms;
 let cursors;
 let score = 0;
-let gameOver = false;
 let scoreText;
+let gameOver = false;
+let stage = 1;
+let stageText;
 let instructions;
 let instructionsText;
 
@@ -289,6 +291,9 @@ function create ()
     //  The score
     scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#FFF' });
 
+    //  The stage
+    stageText = this.add.text(16, 46, 'Stage: 1', {fontSize: '32px', fill: '#FFF'});
+
     //  Collide the player and the stars with the platforms
     this.physics.add.collider(player, platforms);
     this.physics.add.collider(stars, platforms);
@@ -414,6 +419,9 @@ function collectStar (player, star)
 
     if (stars.countActive(true) === 0)
     {
+        //  Update stage
+        stageText.setText('Score: ' + ++stage);
+
         //  A new batch of stars to collect
         stars.children.iterate(function (child) {
 
