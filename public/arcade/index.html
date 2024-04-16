@@ -133,6 +133,9 @@
         device: 'desktop',
         instructions: 'Move with W, A, S, D',
         parent: 'game',
+        audio: {
+            disableWebAudio: true
+        }
     };
 
     let configMobile = {
@@ -159,6 +162,10 @@
         device: 'mobile',
         instructions: 'Move by using the joystick',
         parent: 'game',
+        pixelArt: true,
+        audio: {
+            disableWebAudio: true
+        },
     };
 
     let player;
@@ -174,6 +181,10 @@
     let scoreText;
     let instructions;
     let instructionsText;
+    let sfx;
+    let music;
+    let muteButton;
+    let isMute = true;
 
     let game
 
@@ -200,15 +211,33 @@
         this.load.image('ground-m', '../../assets/platform-50.png');
         this.load.image('ground-s', '../../assets/platform-25.png');
         this.load.image('star', '../../assets/star.png');
-        this.load.image('bomb', '../../assets/bomb.png');
+        this.load.image('bomb', '../../assets/bomb-r.png');
 
         // Player sprites
         this.load.spritesheet('dude1', '../../assets/dude.png', {frameWidth: 32, frameHeight: 48});
         this.load.spritesheet('dude2', '../../assets/piccolo.png', {frameWidth: 32, frameHeight: 48});
 
-        let url;
+        // Buttons
+        this.load.image('mute', '../../assets/objects/mute-32.png');
+        this.load.image('sound', '../../assets/objects/sound-32.png');
 
-        url = '../../assets/rexvirtualjoystickplugin.min.js';
+        // Audio
+
+        // https://github.com/phaserjs/examples/blob/master/public/src/audio/HTML5%20Audio/audiosprite.js
+        // SFX
+        this.load.audioSprite('sfx', '../../assets/audio/sfx/fx_mixdown.json', [
+            '../../assets/audio/sfx/fx_mixdown.ogg',
+            '../../assets/audio/sfx/fx_mixdown.mp3'
+        ]);
+
+        // Music
+        this.load.audio('start', ['../../assets/audio/music/Hawaii.mp3']);
+        this.load.audio('hard', ['../../assets/audio/music/Tyechestra.mp3']);
+
+        // Plugins
+
+        // Joystick
+        let url = '../../assets/rexvirtualjoystickplugin.min.js';
         this.load.plugin('rexvirtualjoystickplugin', url, true);
     }
 
@@ -230,6 +259,12 @@
         platforms[platformIndex].create(600, 400, 'ground');
         platforms[platformIndex].create(50, 250, 'ground');
         platforms[platformIndex].create(750, 220, 'ground');
+
+        // Add buttons
+
+        muteButton = this.add.image(770, 30, 'mute')
+            .setInteractive()
+            .on('pointerdown', () => toggleSound())
 
         // The player and its settings
 
@@ -268,6 +303,12 @@
             frames: this.anims.generateFrameNumbers(dude, {start: 5, end: 8}),
             frameRate: 10,
             repeat: -1
+        });
+
+        this.anims.create({
+            key: 'explode',
+            frames: [{key: dude, frame: 9}],
+            frameRate: 20
         });
 
         //  Input Events
@@ -343,17 +384,32 @@
         bomb.setCollideWorldBounds(true);
         bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
         bomb.allowGravity = false;
+
+        sfx = this.cache.json.get('sfx');
+
+        music = this.sound.add('start');
+        music.play()
     }
 
     function update() {
+        // Sounds
+        if (isMute) {
+            game.sound.mute = true;
+        } else {
+            game.sound.mute = false;
+        }
+
         if (gameOver) {
+
+            player.anims.play('explode');
 
             console.log("game over")
 
             $('#main').removeClass('hidden')
             $('#main').addClass('z-10')
-
             $('#game').addClass('game-over')
+
+            this.sound.playAudioSprite('sfx', 'alien death');
 
             game.destroy()
 
@@ -377,7 +433,29 @@
 
         if ((cursors.up.isDown || this.mobileCursorKeys === 'up') && player.body.touching.down) {
             player.setVelocityY(-330);
+            this.sound.playAudioSprite('sfx', 'squit');
         }
+    }
+
+    function toggleSound() {
+
+        if (isMute) {
+            muteButton.setTexture('sound', 0);
+            isMute = false
+
+            return
+        }
+
+        isMute = true
+        muteButton.setTexture('mute', 0);
+    }
+
+    function enterButtonHoverState() {
+        // enterButtonHoverState
+    }
+
+    function enterButtonRestState() {
+        // enterButtonRestState
     }
 
     function joyStickState() {
@@ -390,14 +468,25 @@
     }
 
     function collectStar(player, star) {
+        this.sound.playAudioSprite('sfx', 'ping');
+
         star.disableBody(true, true);
 
         //  Add and update the score
         score += 10;
         scoreText.setText('Score: ' + score);
 
+        // Switch music when reaching stage 5
+        if (score === 600) {
+            music.stop()
+
+            music = this.sound.add('hard');
+            music.play()
+        }
+
         // Change background on score
         if ((score % 360) === 0) {
+            this.sound.playAudioSprite('sfx', 'numkey');
 
             // Platforms
             platforms[platformIndex].clear(true, true);
@@ -447,6 +536,7 @@
             bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
             bomb.allowGravity = false;
 
+            this.sound.playAudioSprite('sfx', 'shot');
         }
     }
 
