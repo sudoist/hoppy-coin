@@ -57,15 +57,39 @@
         // Get configs
         import { configModule } from '../../config.js';
 
-        // Get device type
-        import { deviceModule } from '../../functions/device.js';
-
         // Setup config data
         let configs = configModule()
-        let config // Assign later
-        let device = deviceModule()
+
+        // Get device type
+        import { devicesModule } from '../../functions/devices.js';
+
+        // Setup config data
+        let device = devicesModule()
+
+        // Get objects
+        import { objectsModule } from '../../functions/objects.js';
+
+        // Setup objects data
+        let objects = objectsModule()
+
+        // Get preload data
+        import { preloadBgModule } from '../../functions/preload/bg.js';
+        import { preloadPlayerModule } from '../../functions/preload/player.js';
+        import { preloadButtonModule } from '../../functions/preload/button.js';
+        import { preloadSfxModule } from '../../functions/preload/sfx.js';
+        import { preloadMusicModule } from '../../functions/preload/music.js';
+        import { preloadPluginModule } from '../../functions/preload/plugin.js';
+
+        // Setup preload data
+        let backgrounds = preloadBgModule()
+        let playerSprites = preloadPlayerModule()
+        let buttons = preloadButtonModule()
+        let sfxSprites = preloadSfxModule()
+        let musics = preloadMusicModule()
+        let plugins = preloadPluginModule()
 
         // Setup local data
+        let config
         let game
 
         console.log(configs)
@@ -109,67 +133,62 @@
 
             function preload() {
                 // Backgrounds
-                this.load.image('sky1', assetsPath + 'bg/sky.png');
-                this.load.image('sky2', assetsPath + 'bg/john-cosio-xCZ8ynsCfrw-unsplash.jpg');
-                this.load.image('sky3', assetsPath + 'bg/john-cosio-RxjSW-seIp0-unsplash.jpg');
-                this.load.image('sky4', assetsPath + 'bg/aleksandra-khaprenko-0PPw9irzLIw-unsplash.jpg');
-                this.load.image('sky5', assetsPath + 'bg/nathan-dumlao-kME9jbKd--s-unsplash.jpg');
-                this.load.image('sky6', assetsPath + 'bg/dan-asaki-K0mJQlbu9Yo-unsplash.jpg');
-                this.load.image('ground', assetsPath + 'platform.png');
-                this.load.image('ground-m', assetsPath + 'platform-50.png');
-                this.load.image('ground-s', assetsPath + 'platform-25.png');
-                this.load.image('star', assetsPath + 'coin.png');
-                this.load.image('bomb', assetsPath + 'bomb-r.png');
+                for (const background of backgrounds) {
+                    this.load.image(background.key, assetsPath + background.path);
+                }
 
-                // Player sprites
-                this.load.spritesheet('dude1', assetsPath + 'dude.png', { frameWidth: 32, frameHeight: 48 });
-                this.load.spritesheet('dude2', assetsPath + 'piccolo.png', { frameWidth: 32, frameHeight: 48 });
+                // Player
+                for (const playerSprite of playerSprites) {
+                    this.load.spritesheet(playerSprite.key, assetsPath + playerSprite.path, { frameWidth: 32, frameHeight: 48 });
+                }
 
                 // Buttons
-                this.load.image('mute', assetsPath + 'objects/mute-32.png');
-                this.load.image('sound', assetsPath + 'objects/sound-32.png');
+                for (const button of buttons) {
+                    this.load.image(button.key, assetsPath + button.path);
+                }
 
                 // Audio
 
                 // https://github.com/phaserjs/examples/blob/master/public/src/audio/HTML5%20Audio/audiosprite.js
                 // SFX
-                this.load.audioSprite('sfx', assetsPath + 'audio/sfx/fx_mixdown.json', [
-                    assetsPath + 'audio/sfx/fx_mixdown.ogg',
-                    assetsPath + 'audio/sfx/fx_mixdown.mp3'
-                ]);
+                let audioFiles = []
+                for (const sfxSprite of sfxSprites.files) {
+                    audioFiles.push(assetsPath + sfxSprite.path)
+                }
+                this.load.audioSprite(sfxSprites.key, assetsPath + sfxSprites.spritePath, audioFiles);
 
                 // Music
-                this.load.audio('start', [assetsPath + 'audio/music/Hawaii.mp3']);
-                this.load.audio('hard', [assetsPath + 'audio/music/Tyechestra.mp3']);
+                for (const music of musics) {
+                    this.load.audio(music.key, [assetsPath + music.path]);
+                }
 
                 // Plugins
-
-                // Joystick
-                let url = assetsPath + 'rexvirtualjoystickplugin.min.js';
-                this.load.plugin('rexvirtualjoystickplugin', url, true);
+                for (const plugin of plugins) {
+                    this.load.plugin(plugin.key, assetsPath + plugin.path, true);
+                }
             }
 
             function create() {
                 //  A simple background for our game
-                configs.sky = this.add.image(400, 300, 'sky' + configs.skyIndex);
+                objects.sky = this.add.image(400, 300, 'sky' + objects.skyIndex);
 
                 //  The platforms group contains the ground and the 2 ledges we can jump on
                 //  Add at least 3 platforms for now)
-                configs.platforms[1] = this.physics.add.staticGroup();
-                configs.platforms[2] = this.physics.add.staticGroup();
-                configs.platforms[3] = this.physics.add.staticGroup();
+                objects.platforms[1] = this.physics.add.staticGroup();
+                objects.platforms[2] = this.physics.add.staticGroup();
+                objects.platforms[3] = this.physics.add.staticGroup();
 
                 //  Here we create the ground.
                 //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-                configs.platforms[configs.platformIndex].create(400, 568, 'ground').setScale(2).refreshBody();
+                objects.platforms[objects.platformIndex].create(400, 568, 'ground').setScale(2).refreshBody();
 
                 //  Now let's create some ledges
-                configs.platforms[configs.platformIndex].create(600, 400, 'ground');
-                configs.platforms[configs.platformIndex].create(50, 250, 'ground');
-                configs.platforms[configs.platformIndex].create(750, 220, 'ground');
+                objects.platforms[objects.platformIndex].create(600, 400, 'ground');
+                objects.platforms[objects.platformIndex].create(50, 250, 'ground');
+                objects.platforms[objects.platformIndex].create(750, 220, 'ground');
 
                 // Add buttons
-                configs.muteButton = this.add.image(770, 30, 'mute')
+                objects.mute = this.add.image(770, 30, 'mute')
                     .setInteractive()
                     .on('pointerdown', () => toggleSound())
 
@@ -184,11 +203,11 @@
 
                 const dude = dudeArray[randomDude];
 
-                configs.player = this.physics.add.sprite(100, 450, dude);
+                objects.player = this.physics.add.sprite(100, 450, dude);
 
                 //  Player physics properties. Give the little guy a slight bounce.
-                configs.player.setBounce(0.2);
-                configs.player.setCollideWorldBounds(true);
+                objects.player.setBounce(0.2);
+                objects.player.setCollideWorldBounds(true);
 
                 //  Our player animations, turning, walking left and walking right.
                 this.anims.create({
@@ -218,7 +237,7 @@
                 });
 
                 //  Input Events
-                configs.cursors = this.input.keyboard.addKeys(
+                objects.cursors = this.input.keyboard.addKeys(
                     {
                         up: Phaser.Input.Keyboard.KeyCodes.W,
                         down: Phaser.Input.Keyboard.KeyCodes.S,
@@ -227,36 +246,36 @@
                     });
 
                 //  Some stars to collect, 12 in total, evenly spaced 70 pixels apart along the x axis
-                configs.stars = this.physics.add.group({
+                objects.stars = this.physics.add.group({
                     key: 'star',
                     repeat: 11,
                     setXY: { x: 12, y: 0, stepX: 70 }
                 });
 
-                configs.stars.children.iterate(function (child) {
+                objects.stars.children.iterate(function (child) {
 
                     //  Give each star a slightly different bounce
                     child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
 
                 });
 
-                configs.bombs = this.physics.add.group();
+                objects.bombs = this.physics.add.group();
 
                 //  The score
-                configs.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#FFF' });
+                objects.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#FFF' });
 
                 //  The stage
-                configs.stageText = this.add.text(16, 46, 'Stage: 1', { fontSize: '32px', fill: '#FFF' });
+                objects.stageText = this.add.text(16, 46, 'Stage: 1', { fontSize: '32px', fill: '#FFF' });
 
                 //  Collide the player and the stars with the platforms
-                this.physics.add.collider(configs.player, configs.platforms[configs.platformIndex]);
-                this.physics.add.collider(configs.stars, configs.platforms[configs.platformIndex]);
-                this.physics.add.collider(configs.bombs, configs.platforms[configs.platformIndex]);
+                this.physics.add.collider(objects.player, objects.platforms[objects.platformIndex]);
+                this.physics.add.collider(objects.stars, objects.platforms[objects.platformIndex]);
+                this.physics.add.collider(objects.bombs, objects.platforms[objects.platformIndex]);
 
                 //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
-                this.physics.add.overlap(configs.player, configs.stars, collectStar, null, this);
+                this.physics.add.overlap(objects.player, objects.stars, collectStar, null, this);
 
-                this.physics.add.collider(configs.player, configs.bombs, hitBomb, null, this);
+                this.physics.add.collider(objects.player, objects.bombs, hitBomb, null, this);
 
                 // Add joystick
                 // TODO: Doesn't work as expected. It holds the pressed cursor but should do for now.
@@ -276,35 +295,35 @@
                 this.instructionsText = config.instructions
 
                 // Instructions
-                configs.instructions = this.add.text(16, 560, this.instructionsText, { fontSize: '32px', fill: '#fff' });
+                objects.instructions = this.add.text(16, 560, this.instructionsText, { fontSize: '32px', fill: '#fff' });
 
                 // Start game with bomb
-                var x = (configs.player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+                var x = (objects.player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
 
-                var bomb = configs.bombs.create(x, 16, 'bomb');
+                var bomb = objects.bombs.create(x, 16, 'bomb');
                 bomb.setBounce(1);
                 bomb.setCollideWorldBounds(true);
                 bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
                 bomb.allowGravity = false;
 
                 // Audio
-                configs.sfx = this.cache.json.get('sfx');
+                objects.sfx = this.cache.json.get('sfx');
 
-                configs.music = this.sound.add('start');
-                configs.music.play()
+                objects.music = this.sound.add('start');
+                objects.music.play()
             }
 
             function update() {
                 // Sounds
-                if (configs.isMute) {
+                if (objects.isMute) {
                     game.sound.mute = true;
                 } else {
                     game.sound.mute = false;
                 }
 
-                if (configs.gameOver) {
+                if (objects.gameOver) {
 
-                    configs.player.anims.play('explode');
+                    objects.player.anims.play('explode');
 
                     console.log("game over")
 
@@ -320,37 +339,37 @@
                 }
 
                 // Keyboard and mobile joystick
-                if (configs.cursors.left.isDown || this.mobileCursorKeys === 'left') {
-                    configs.player.setVelocityX(-160);
+                if (objects.cursors.left.isDown || this.mobileCursorKeys === 'left') {
+                    objects.player.setVelocityX(-160);
 
-                    configs.player.anims.play('left', true);
-                } else if (configs.cursors.right.isDown || this.mobileCursorKeys === 'right') {
-                    configs.player.setVelocityX(160);
+                    objects.player.anims.play('left', true);
+                } else if (objects.cursors.right.isDown || this.mobileCursorKeys === 'right') {
+                    objects.player.setVelocityX(160);
 
-                    configs.player.anims.play('right', true);
+                    objects.player.anims.play('right', true);
                 } else {
-                    configs.player.setVelocityX(0);
+                    objects.player.setVelocityX(0);
 
-                    configs.player.anims.play('turn');
+                    objects.player.anims.play('turn');
                 }
 
-                if ((configs.cursors.up.isDown || this.mobileCursorKeys === 'up') && configs.player.body.touching.down) {
-                    configs.player.setVelocityY(-330);
+                if ((objects.cursors.up.isDown || this.mobileCursorKeys === 'up') && objects.player.body.touching.down) {
+                    objects.player.setVelocityY(-330);
                     this.sound.playAudioSprite('sfx', 'squit');
                 }
             }
 
             function toggleSound() {
 
-                if (configs.isMute) {
-                    configs.muteButton.setTexture('sound', 0);
-                    configs.isMute = false
+                if (objects.isMute) {
+                    objects.mute.setTexture('sound', 0);
+                    objects.isMute = false
 
                     return
                 }
 
-                configs.isMute = true
-                configs.muteButton.setTexture('mute', 0);
+                objects.isMute = true
+                objects.mute.setTexture('mute', 0);
             }
 
             function enterButtonHoverState() {
@@ -376,62 +395,62 @@
                 star.disableBody(true, true);
 
                 //  Add and update the score
-                configs.score += 10;
-                configs.scoreText.setText('Score: ' + configs.score);
+                objects.score += 10;
+                objects.scoreText.setText('Score: ' + objects.score);
 
                 // Switch music when reaching stage 5
-                if (configs.score === 600) {
-                    configs.music.stop()
+                if (objects.score === 600) {
+                    objects.music.stop()
 
-                    configs.music = this.sound.add('hard');
-                    configs.music.play()
+                    objects.music = this.sound.add('hard');
+                    objects.music.play()
                 }
 
                 // Change background on score
-                if ((configs.score % 120) === 0) {
+                if ((objects.score % 360) === 0) {
                     this.sound.playAudioSprite('sfx', 'numkey');
 
                     // Platforms
-                    configs.platforms[configs.platformIndex].clear(true, true);
+                    objects.platforms[objects.platformIndex].clear(true, true);
 
-                    configs.platformIndex++
+                    objects.platformIndex++
 
-                    console.log("configs.platformIndex")
-                    console.log(configs.platformIndex)
+                    console.log("objects.platformIndex")
+                    console.log(objects.platformIndex)
 
                     // Reset background
-                    if (configs.platformIndex === 4) {
-                        configs.platformIndex = 1
+                    if (objects.platformIndex === 4) {
+                        objects.platformIndex = 1
                     }
 
-                    changePlatform(configs.platformIndex)
+                    changePlatform(objects.platformIndex)
 
                     //  Reset colliders
                     //  Collide the player and the stars with the platforms
-                    this.physics.add.collider(player, configs.platforms[configs.platformIndex]);
-                    this.physics.add.collider(configs.stars, configs.platforms[configs.platformIndex]);
-                    this.physics.add.collider(configs.bombs, configs.platforms[configs.platformIndex]);
+                    this.physics.add.collider(player, objects.platforms[objects.platformIndex]);
+                    this.physics.add.collider(objects.stars, objects.platforms[objects.platformIndex]);
+                    this.physics.add.collider(objects.bombs, objects.platforms[objects.platformIndex]);
 
                     // Backgrounds
-                    configs.skyIndex++
+                    objects.skyIndex++
 
                     // Reset background
-                    if (configs.skyIndex === 7) {
-                        configs.skyIndex = 1
+                    if (objects.skyIndex === 7) {
+                        objects.skyIndex = 1
                     }
 
-                    changeBackground('sky' + configs.skyIndex)
+                    changeBackground('sky' + objects.skyIndex)
 
                     // Re add instructions
                     this.add.text(16, 560, this.instructionsText, { fontSize: '32px', fill: '#fff' });
                 }
 
-                if (configs.stars.countActive(true) === 0) {
+                if (objects.stars.countActive(true) === 0) {
                     //  Update stage
-                    configs.stageText.setText('Stage: ' + ++configs.stage);
+                    objects.stageText.setText('Stage: ' + ++objects.stage);
 
                     //  A new batch of stars to collect
-                    configs.stars.children.iterate(function (child) {
+                    objects.stars.children.iterate(function (child) {
 
                         child.enableBody(true, child.x, 0, true, true);
 
@@ -439,7 +458,7 @@
 
                     var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
 
-                    var bomb = configs.bombs.create(x, 16, 'bomb');
+                    var bomb = objects.bombs.create(x, 16, 'bomb');
                     bomb.setBounce(1);
                     bomb.setCollideWorldBounds(true);
                     bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
@@ -454,7 +473,7 @@
 
                 bomb.destroy();
 
-                configs.gameOver = true;
+                objects.gameOver = true;
             }
 
             function isMobile() {
@@ -475,98 +494,98 @@
 
             function changeBackground(key) {
 
-                configs.sky.setTexture(key, 0);
+                objects.sky.setTexture(key, 0);
             }
 
             function changePlatform(platformIndex) {
 
                 // Default
-                if (configs.platformIndex === 1) {
+                if (objects.platformIndex === 1) {
 
                     // Ground
-                    configs.platforms[configs.platformIndex].create(400, 568, 'ground').setScale(2).refreshBody();
+                    objects.platforms[objects.platformIndex].create(400, 568, 'ground').setScale(2).refreshBody();
 
                     // Ledges
-                    configs.platforms[configs.platformIndex].create(600, 400, 'ground');
-                    configs.platforms[configs.platformIndex].create(50, 250, 'ground');
-                    configs.platforms[configs.platformIndex].create(750, 220, 'ground');
-                } else if (configs.platformIndex === 2) {
+                    objects.platforms[objects.platformIndex].create(600, 400, 'ground');
+                    objects.platforms[objects.platformIndex].create(50, 250, 'ground');
+                    objects.platforms[objects.platformIndex].create(750, 220, 'ground');
+                } else if (objects.platformIndex === 2) {
 
                     // Ground
-                    configs.platforms[configs.platformIndex].create(400, 568, 'ground').setScale(2).refreshBody();
+                    objects.platforms[objects.platformIndex].create(400, 568, 'ground').setScale(2).refreshBody();
 
                     // Ledges
-                    configs.platforms[configs.platformIndex].create(18, 170, 'ground-s');
-                    configs.platforms[configs.platformIndex].create(325, 220, 'ground-s');
-                    configs.platforms[configs.platformIndex].create(609, 190, 'ground-s');
-                    configs.platforms[configs.platformIndex].create(800, 390, 'ground-s');
-                    configs.platforms[configs.platformIndex].create(260, 370, 'ground');
-                } else if (configs.platformIndex === 3) {
+                    objects.platforms[objects.platformIndex].create(18, 170, 'ground-s');
+                    objects.platforms[objects.platformIndex].create(325, 220, 'ground-s');
+                    objects.platforms[objects.platformIndex].create(609, 190, 'ground-s');
+                    objects.platforms[objects.platformIndex].create(800, 390, 'ground-s');
+                    objects.platforms[objects.platformIndex].create(260, 370, 'ground');
+                } else if (objects.platformIndex === 3) {
 
                     // Ground
-                    configs.platforms[configs.platformIndex].create(150, 568, 'ground-s').setScale(2).refreshBody();
-                    configs.platforms[configs.platformIndex].create(450, 568, 'ground-s').setScale(2).refreshBody();
-                    configs.platforms[configs.platformIndex].create(550, 568, 'ground-s').setScale(2).refreshBody();
+                    objects.platforms[objects.platformIndex].create(150, 568, 'ground-s').setScale(2).refreshBody();
+                    objects.platforms[objects.platformIndex].create(450, 568, 'ground-s').setScale(2).refreshBody();
+                    objects.platforms[objects.platformIndex].create(550, 568, 'ground-s').setScale(2).refreshBody();
 
                     // Ledges
-                    configs.platforms[configs.platformIndex].create(18, 170, 'ground-s');
-                    configs.platforms[configs.platformIndex].create(325, 220, 'ground-s');
-                    configs.platforms[configs.platformIndex].create(609, 190, 'ground-s');
-                    configs.platforms[configs.platformIndex].create(710, 410, 'ground-s');
-                    configs.platforms[configs.platformIndex].create(750, 410, 'ground-s');
-                    configs.platforms[configs.platformIndex].create(260, 370, 'ground');
+                    objects.platforms[objects.platformIndex].create(18, 170, 'ground-s');
+                    objects.platforms[objects.platformIndex].create(325, 220, 'ground-s');
+                    objects.platforms[objects.platformIndex].create(609, 190, 'ground-s');
+                    objects.platforms[objects.platformIndex].create(710, 410, 'ground-s');
+                    objects.platforms[objects.platformIndex].create(750, 410, 'ground-s');
+                    objects.platforms[objects.platformIndex].create(260, 370, 'ground');
 
                     // Add bombs
 
                     // Left
-                    configs.bombs.create(3, 595, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(10, 595, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(20, 594, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(30, 598, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(37, 597, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(50, 596, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(3, 595, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(10, 595, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(20, 594, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(30, 598, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(37, 597, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(50, 596, 'bomb').setImmovable(false).body.allowGravity = false;
 
                     // Mid
-                    configs.bombs.create(249, 597, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(260, 595, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(267, 599, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(289, 598, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(280, 595, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(309, 599, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(330, 599, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(330, 594, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(353, 595, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(300, 596, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(320, 594, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(340, 598, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(249, 597, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(260, 595, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(267, 599, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(289, 598, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(280, 595, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(309, 599, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(330, 599, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(330, 594, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(353, 595, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(300, 596, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(320, 594, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(340, 598, 'bomb').setImmovable(false).body.allowGravity = false;
 
                     // Right
-                    configs.bombs.create(550, 595, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(560, 596, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(571, 599, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(580, 598, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(589, 598, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(600, 595, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(609, 594, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(620, 597, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(627, 594, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(640, 598, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(651, 594, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(660, 597, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(671, 599, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(680, 597, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(690, 593, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(700, 595, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(710, 599, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(720, 596, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(730, 593, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(740, 600, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(748, 598, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(760, 594, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(772, 596, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(780, 599, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(788, 597, 'bomb').setImmovable(false).body.allowGravity = false;
-                    configs.bombs.create(792, 597, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(550, 595, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(560, 596, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(571, 599, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(580, 598, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(589, 598, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(600, 595, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(609, 594, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(620, 597, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(627, 594, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(640, 598, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(651, 594, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(660, 597, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(671, 599, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(680, 597, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(690, 593, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(700, 595, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(710, 599, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(720, 596, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(730, 593, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(740, 600, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(748, 598, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(760, 594, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(772, 596, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(780, 599, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(788, 597, 'bomb').setImmovable(false).body.allowGravity = false;
+                    objects.bombs.create(792, 597, 'bomb').setImmovable(false).body.allowGravity = false;
                 }
 
             }

@@ -1,6 +1,6 @@
 const data = isMobile()
 
-export function deviceModule() {
+export function devicesModule() {
     return data
 }
 
