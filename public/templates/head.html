@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <title>Arcade - Making your first Phaser 3 Game</title>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+    <script data-lib="tailwind"></script>
+
+    <script data-lib="phaser"></script>
+
+    <script data-style="global"></script>
+</head>
+
+<script type="text/javascript">  $(document).ready(function () {
+        // Include files - https://stackoverflow.com/a/31837264
+        // Libraries
+        $(function () {
+            var includes = $('[data-lib]')
+            $.each(includes, function () {
+                var file = 'templates/libs/' + $(this).data('lib') + '.html'
+                $(this).load(file)
+            })
+        })
+
+        // Styles
+        $(function () {
+            var includes = $('[data-style]')
+            $.each(includes, function () {
+                var file = 'templates/styles/' + $(this).data('style') + '.html'
+                $(this).load(file)
+            })
+        })
+    })
+
+</script>
