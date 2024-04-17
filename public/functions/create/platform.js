@@ -342,6 +342,6 @@ let data = [
     }
 ]
 
-export function preloadPlatformModule() {
+export function createPlatformModule() {
     return data
 }

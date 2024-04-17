@@ -89,10 +89,12 @@
         let plugins = preloadPluginModule()
 
         // Get create data
-        import { preloadPlatformModule } from '../../functions/create/platform.js';
+        import { createPlatformModule } from '../../functions/create/platform.js';
+        import { createAnimationModule } from '../../functions/create/animation.js';
 
         // Setup create data
-        let platforms = preloadPlatformModule()
+        let platforms = createPlatformModule()
+        let animations = createAnimationModule()
 
         // Setup local data
         let config
@@ -225,31 +227,24 @@
                 objects.player.setCollideWorldBounds(true);
 
                 //  Our player animations, turning, walking left and walking right.
-                this.anims.create({
-                    key: 'left',
-                    frames: this.anims.generateFrameNumbers(dude, { start: 0, end: 3 }),
-                    frameRate: 10,
-                    repeat: -1
-                });
+                for (const animation of animations) {
+                    console.log(animation)
 
-                this.anims.create({
-                    key: 'turn',
-                    frames: [{ key: dude, frame: 4 }],
-                    frameRate: 20
-                });
-
-                this.anims.create({
-                    key: 'right',
-                    frames: this.anims.generateFrameNumbers(dude, { start: 5, end: 8 }),
-                    frameRate: 10,
-                    repeat: -1
-                });
-
-                this.anims.create({
-                    key: 'explode',
-                    frames: [{ key: dude, frame: 9 }],
-                    frameRate: 20
-                });
+                    if (animation.frame) {
+                        this.anims.create({
+                            key: animation.key,
+                            frames: [{ key: dude, frame: animation.frame }],
+                            frameRate: 20
+                        })
+                    } else {
+                        this.anims.create({
+                            key: animation.key,
+                            frames: this.anims.generateFrameNumbers(dude, { start: animation.start, end: animation.end }),
+                            frameRate: animation.frameRate,
+                            repeat: animation.repeat
+                        })
+                    }
+                }
 
                 //  Input Events
                 objects.cursors = this.input.keyboard.addKeys(
@@ -429,9 +424,6 @@
                     objects.platforms[objects.platformIndex].clear(true, true);
 
                     objects.platformIndex++
-
-                    console.log("objects.platformIndex")
-                    console.log(objects.platformIndex)
 
                     // Reset background
                     if (objects.platformIndex === 4) {
