@@ -88,6 +88,12 @@
         let musics = preloadMusicModule()
         let plugins = preloadPluginModule()
 
+        // Get create data
+        import { preloadPlatformModule } from '../../functions/create/platform.js';
+
+        // Setup create data
+        let platforms = preloadPlatformModule()
+
         // Setup local data
         let config
         let game
@@ -172,20 +178,29 @@
                 //  A simple background for our game
                 objects.sky = this.add.image(400, 300, 'sky' + objects.skyIndex);
 
-                //  The platforms group contains the ground and the 2 ledges we can jump on
-                //  Add at least 3 platforms for now)
-                objects.platforms[1] = this.physics.add.staticGroup();
-                objects.platforms[2] = this.physics.add.staticGroup();
-                objects.platforms[3] = this.physics.add.staticGroup();
+                //  The platforms group contains the ground and the ledges we can jump on
+                for (let [index, platform] of platforms.entries()) {
+                    objects.platforms[++index] = this.physics.add.staticGroup();
+                }
 
-                //  Here we create the ground.
-                //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-                objects.platforms[objects.platformIndex].create(400, 568, 'ground').setScale(2).refreshBody();
+                for (let [index, platform] of platforms.entries()) {
+                    // Only get from first
+                    if (index === 0) {
 
-                //  Now let's create some ledges
-                objects.platforms[objects.platformIndex].create(600, 400, 'ground');
-                objects.platforms[objects.platformIndex].create(50, 250, 'ground');
-                objects.platforms[objects.platformIndex].create(750, 220, 'ground');
+                        //  Here we create the ground.
+                        //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
+                        for (const ground of platform.grounds) {
+                            objects.platforms[objects.platformIndex].create(ground.x, ground.y, ground.key).setScale(2).refreshBody()
+                        }
+
+                        //  Now let's create some ledges
+                        for (const ledge of platform.ledges) {
+                            objects.platforms[objects.platformIndex].create(ledge.x, ledge.y, ledge.key)
+                        }
+
+                        break
+                    }
+                }
 
                 // Add buttons
                 objects.mute = this.add.image(770, 30, 'mute')
@@ -502,90 +517,72 @@
                 // Default
                 if (objects.platformIndex === 1) {
 
-                    // Ground
-                    objects.platforms[objects.platformIndex].create(400, 568, 'ground').setScale(2).refreshBody();
+                    for (let [index, platform] of platforms.entries()) {
+                        // Only get from first
+                        if (index === 0) {
 
-                    // Ledges
-                    objects.platforms[objects.platformIndex].create(600, 400, 'ground');
-                    objects.platforms[objects.platformIndex].create(50, 250, 'ground');
-                    objects.platforms[objects.platformIndex].create(750, 220, 'ground');
+                            //  Here we create the ground.
+                            //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
+                            for (const ground of platform.grounds) {
+                                objects.platforms[objects.platformIndex].create(ground.x, ground.y, ground.key).setScale(2).refreshBody()
+                            }
+
+                            //  Now let's create some ledges
+                            for (const ledge of platform.ledges) {
+                                objects.platforms[objects.platformIndex].create(ledge.x, ledge.y, ledge.key);
+                            }
+
+                            break
+                        }
+                    }
                 } else if (objects.platformIndex === 2) {
 
-                    // Ground
-                    objects.platforms[objects.platformIndex].create(400, 568, 'ground').setScale(2).refreshBody();
+                    for (let [index, platform] of platforms.entries()) {
+                        console.log(index)
+                        // Only get from first
+                        if (index === 1) {
+                            console.log('platform')
+                            console.log(platform)
 
-                    // Ledges
-                    objects.platforms[objects.platformIndex].create(18, 170, 'ground-s');
-                    objects.platforms[objects.platformIndex].create(325, 220, 'ground-s');
-                    objects.platforms[objects.platformIndex].create(609, 190, 'ground-s');
-                    objects.platforms[objects.platformIndex].create(800, 390, 'ground-s');
-                    objects.platforms[objects.platformIndex].create(260, 370, 'ground');
+                            //  Here we create the ground.
+                            //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
+                            for (const ground of platform.grounds) {
+                                objects.platforms[objects.platformIndex].create(ground.x, ground.y, ground.key).setScale(2).refreshBody()
+                            }
+
+                            //  Now let's create some ledges
+                            for (const ledge of platform.ledges) {
+                                objects.platforms[objects.platformIndex].create(ledge.x, ledge.y, ledge.key);
+                            }
+
+                            break;
+                        }
+                    }
                 } else if (objects.platformIndex === 3) {
 
-                    // Ground
-                    objects.platforms[objects.platformIndex].create(150, 568, 'ground-s').setScale(2).refreshBody();
-                    objects.platforms[objects.platformIndex].create(450, 568, 'ground-s').setScale(2).refreshBody();
-                    objects.platforms[objects.platformIndex].create(550, 568, 'ground-s').setScale(2).refreshBody();
+                    for (let [index, platform] of platforms.entries()) {
+                        // Only get from first
+                        if (index === 2) {
 
-                    // Ledges
-                    objects.platforms[objects.platformIndex].create(18, 170, 'ground-s');
-                    objects.platforms[objects.platformIndex].create(325, 220, 'ground-s');
-                    objects.platforms[objects.platformIndex].create(609, 190, 'ground-s');
-                    objects.platforms[objects.platformIndex].create(710, 410, 'ground-s');
-                    objects.platforms[objects.platformIndex].create(750, 410, 'ground-s');
-                    objects.platforms[objects.platformIndex].create(260, 370, 'ground');
+                            //  Here we create the ground.
+                            //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
+                            for (const ground of platform.grounds) {
+                                objects.platforms[objects.platformIndex].create(ground.x, ground.y, ground.key).setScale(2).refreshBody()
+                            }
 
-                    // Add bombs
+                            //  Now let's create some ledges
+                            for (const ledge of platform.ledges) {
+                                objects.platforms[objects.platformIndex].create(ledge.x, ledge.y, ledge.key);
+                            }
 
-                    // Left
-                    objects.bombs.create(3, 595, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(10, 595, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(20, 594, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(30, 598, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(37, 597, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(50, 596, 'bomb').setImmovable(false).body.allowGravity = false;
+                            // Add bombs
+                            for (const bomb of platform.bombs) {
+                                objects.bombs.create(bomb.x, bomb.y, bomb.key).setImmovable(false).body.allowGravity = false;
+                            }
 
-                    // Mid
-                    objects.bombs.create(249, 597, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(260, 595, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(267, 599, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(289, 598, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(280, 595, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(309, 599, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(330, 599, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(330, 594, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(353, 595, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(300, 596, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(320, 594, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(340, 598, 'bomb').setImmovable(false).body.allowGravity = false;
-
-                    // Right
-                    objects.bombs.create(550, 595, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(560, 596, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(571, 599, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(580, 598, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(589, 598, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(600, 595, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(609, 594, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(620, 597, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(627, 594, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(640, 598, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(651, 594, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(660, 597, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(671, 599, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(680, 597, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(690, 593, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(700, 595, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(710, 599, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(720, 596, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(730, 593, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(740, 600, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(748, 598, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(760, 594, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(772, 596, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(780, 599, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(788, 597, 'bomb').setImmovable(false).body.allowGravity = false;
-                    objects.bombs.create(792, 597, 'bomb').setImmovable(false).body.allowGravity = false;
+                            break
+                        }
+                    }
                 }
 
             }
