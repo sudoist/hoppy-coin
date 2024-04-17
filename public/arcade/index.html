@@ -1,678 +1,580 @@
 <!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8"/>
-    <meta content="width=device-width, initial-scale=1" name="viewport"/>
-    <title>Making your first Phaser 3 Game - Part 10</title>
 
-    <!-- Tailwind -->
-    <script src="https://cdn.tailwindcss.com"></script>
+<head data-include="game">
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <title>Making your first Phaser 3 Game - Part 10</title>
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
     <!-- Phaser -->
     <script src="https://cdn.jsdelivr.net/npm/phaser@v3.80.1/dist/phaser.min.js"></script>
-
-    <style type="text/css">
-        @font-face {
-            font-family: "Press Start 2P";
-            src: url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap") format("truetype");
-
-            src: url(https://fonts.gstatic.com/s/pressstart2p/v15/e3t4euO8T-267oIAQAu6jDQyK3nYivN04w.woff2) format('woff2');
-            src: url(https://fonts.gstatic.com/s/pressstart2p/v15/e3t4euO8T-267oIAQAu6jDQyK3nRivN04w.woff2) format('woff2');
-            src: url(https://fonts.gstatic.com/s/pressstart2p/v15/e3t4euO8T-267oIAQAu6jDQyK3nWivN04w.woff2) format('woff2');
-            src: url(https://fonts.gstatic.com/s/pressstart2p/v15/e3t4euO8T-267oIAQAu6jDQyK3nbivN04w.woff2) format('woff2');
-            src: url(https://fonts.gstatic.com/s/pressstart2p/v15/e3t4euO8T-267oIAQAu6jDQyK3nVivM.woff2) format('woff2');
-        }
-
-        body {
-            background-image: url("../assets/bg/phaser-planet-small.png");
-            background-size: 20%;
-            background-repeat: repeat;
-        }
-
-        #main, #game {
-            margin: 0;
-            font-family: 'Press Start 2P', cursive;
-            text-transform: uppercase;
-        }
-
-        #content {
-            width: 50% !important;
-        }
-
-        /* Main */
-        #main {
-            position: sticky;
-        }
-
-        /* Game */
-        #game {
-        }
-
-        /* Game over */
-        .game-over {
-            position: fixed;
-            top: 50%;
-            left: 45%;
-            transform: translate(-51%, -50%);
-        }
-
-        @media only screen and (max-width: 600px) {
-            #content {
-                width: 90% !important;
-            }
-        }
-    </style>
 </head>
+
 <body>
 
-<div id="main" class="py-12 sm:px-6 lg:px-8 h-screen flex items-center justify-center hidden">
+    <div id="main" class="py-12 sm:px-6 lg:px-8 h-screen flex items-center justify-center hidden">
 
-    <div id="content">
+        <div id="content">
 
-        <ul id="list"
-            role="list"
-            class="divide-y divide-gray-100 overflow-hidden bg-white shadow-sm ring-8 ring-gray-900/4 sm:rounded-xl">
+            <ul id="list" role="list"
+                class="divide-y divide-gray-100 overflow-hidden bg-white shadow-sm ring-8 ring-gray-900/4 sm:rounded-xl">
 
-            <li class="px-4 py-5 sm:px-6">
-                <div class="text-center text-3xl font-bold">
-                    Would you like to play again?
-                </div>
-            </li>
+                <li class="px-4 py-5 sm:px-6">
+                    <div class="text-center text-3xl font-bold">
+                        Would you like to play again?
+                    </div>
+                </li>
 
-            <li class="px-4 py-5 sm:px-6">
-                <div class="text-center text-3xl font-bold">
-                    <a href="/">
-                        <button
+                <li class="px-4 py-5 sm:px-6">
+                    <div class="text-center text-3xl font-bold">
+                        <a href="/">
+                            <button
                                 class="rounded-md bg-white m-2 px-3.5 py-2.5 text-3xl font-bold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 uppercase">
-                            Main Menu
-                        </button>
-                    </a>
+                                Main Menu
+                            </button>
+                        </a>
 
-                    <a href="/arcade">
-                        <button
+                        <a href="/arcade">
+                            <button
                                 class="rounded-md bg-white m-2 px-3.5 py-2.5 text-3xl font-bold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 uppercase">
-                            Play Again
-                        </button>
-                    </a>
-                </div>
-            </li>
-        </ul>
+                                Play Again
+                            </button>
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
     </div>
 
-</div>
+    <div id="game" class="h-screen"></div>
 
-<div id="game" class="h-screen"></div>
+    <script type="module">
+        // Get configs
+        import { configModule } from '../../config.js';
 
-<script type="text/javascript">
+        // Get device type
+        import { deviceModule } from '../../functions/device.js';
 
-    let configDesktop = {
-        type: Phaser.AUTO,
-        physics: {
-            default: 'arcade',
-            arcade: {
-                gravity: {y: 300},
-                debug: false
-            }
-        },
-        scene: {
-            preload: preload,
-            create: create,
-            update: update
-        },
-        // Allows Phaser canvas to be responsive to browser sizing
-        scale: {
-            mode: Phaser.Scale.FIT,
-            autoCenter: Phaser.Scale.CENTER_BOTH,
-            width: 800,
-            height: 600,
-        },
-        device: 'desktop',
-        instructions: 'Move with W, A, S, D',
-        parent: 'game',
-        audio: {
-            disableWebAudio: true
-        }
-    };
+        // Setup config data
+        let configs = configModule()
+        let config // Assign later
+        let device = deviceModule()
 
-    let configMobile = {
-        type: Phaser.AUTO,
-        physics: {
-            default: 'arcade',
-            arcade: {
-                gravity: {y: 300},
-                debug: false
-            }
-        },
-        scene: {
-            preload: preload,
-            create: create,
-            update: update
-        },
-        // Allows Phaser canvas to be responsive to browser sizing
-        scale: {
-            mode: Phaser.Scale.FIT,
-            autoCenter: Phaser.Scale.CENTER_BOTH,
-            width: 800,
-            height: 750,
-        },
-        device: 'mobile',
-        instructions: 'Move by using the joystick',
-        parent: 'game',
-        pixelArt: true,
-        audio: {
-            disableWebAudio: true
-        },
-    };
+        // Setup local data
+        let game
 
-    let player;
-    let stars;
-    let bombs;
-    let sky;
-    let skyIndex = 1;
-    let platforms = [];
-    let platformIndex = 1;
-    let cursors;
-    let score = 0;
-    let scoreText;
-    let gameOver = false;
-    let stage = 1;
-    let stageText;
-    let instructions;
-    let instructionsText;
-    let sfx;
-    let music;
-    let muteButton;
-    let isMute = true;
+        console.log(configs)
+        console.log(device)
 
-    let game
-
-    window.onload = function () {
-        // Check if the user is accessing the page on a mobile device
-        const isMobile = this.isMobile()
-
-        if (isMobile) {
-            game = new Phaser.Game(configMobile);
-        } else {
-            game = new Phaser.Game(configDesktop);
-        }
-    }
-
-    function preload() {
-        // Backgrounds
-        this.load.image('sky1', '../../assets/bg/sky.png');
-        this.load.image('sky2', '../../assets/bg/john-cosio-xCZ8ynsCfrw-unsplash.jpg');
-        this.load.image('sky3', '../../assets/bg/john-cosio-RxjSW-seIp0-unsplash.jpg');
-        this.load.image('sky4', '../../assets/bg/aleksandra-khaprenko-0PPw9irzLIw-unsplash.jpg');
-        this.load.image('sky5', '../../assets/bg/nathan-dumlao-kME9jbKd--s-unsplash.jpg');
-        this.load.image('sky6', '../../assets/bg/dan-asaki-K0mJQlbu9Yo-unsplash.jpg');
-        this.load.image('ground', '../../assets/platform.png');
-        this.load.image('ground-m', '../../assets/platform-50.png');
-        this.load.image('ground-s', '../../assets/platform-25.png');
-        this.load.image('star', '../../assets/coin.png');
-        this.load.image('bomb', '../../assets/bomb-r.png');
-
-        // Player sprites
-        this.load.spritesheet('dude1', '../../assets/dude.png', {frameWidth: 32, frameHeight: 48});
-        this.load.spritesheet('dude2', '../../assets/piccolo.png', {frameWidth: 32, frameHeight: 48});
-
-        // Buttons
-        this.load.image('mute', '../../assets/objects/mute-32.png');
-        this.load.image('sound', '../../assets/objects/sound-32.png');
-
-        // Audio
-
-        // https://github.com/phaserjs/examples/blob/master/public/src/audio/HTML5%20Audio/audiosprite.js
-        // SFX
-        this.load.audioSprite('sfx', '../../assets/audio/sfx/fx_mixdown.json', [
-            '../../assets/audio/sfx/fx_mixdown.ogg',
-            '../../assets/audio/sfx/fx_mixdown.mp3'
-        ]);
-
-        // Music
-        this.load.audio('start', ['../../assets/audio/music/Hawaii.mp3']);
-        this.load.audio('hard', ['../../assets/audio/music/Tyechestra.mp3']);
-
-        // Plugins
-
-        // Joystick
-        let url = '../../assets/rexvirtualjoystickplugin.min.js';
-        this.load.plugin('rexvirtualjoystickplugin', url, true);
-    }
-
-    function create() {
-        //  A simple background for our game
-        sky = this.add.image(400, 300, 'sky' + skyIndex);
-
-        //  The platforms group contains the ground and the 2 ledges we can jump on
-        //  Add at least 3 platforms for now
-        platforms[1] = this.physics.add.staticGroup();
-        platforms[2] = this.physics.add.staticGroup();
-        platforms[3] = this.physics.add.staticGroup();
-
-        //  Here we create the ground.
-        //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-        platforms[platformIndex].create(400, 568, 'ground').setScale(2).refreshBody();
-
-        //  Now let's create some ledges
-        platforms[platformIndex].create(600, 400, 'ground');
-        platforms[platformIndex].create(50, 250, 'ground');
-        platforms[platformIndex].create(750, 220, 'ground');
-
-        // Add buttons
-        muteButton = this.add.image(770, 30, 'mute')
-            .setInteractive()
-            .on('pointerdown', () => toggleSound())
-
-        // The player and its settings
-        // Randomize player sprite
-        let dudeArray = [
-            'dude1',
-            'dude2'
-        ];
-
-        let randomDude = Math.floor(Math.random() * dudeArray.length);
-
-        const dude = dudeArray[randomDude];
-
-        player = this.physics.add.sprite(100, 450, dude);
-
-        //  Player physics properties. Give the little guy a slight bounce.
-        player.setBounce(0.2);
-        player.setCollideWorldBounds(true);
-
-        //  Our player animations, turning, walking left and walking right.
-        this.anims.create({
-            key: 'left',
-            frames: this.anims.generateFrameNumbers(dude, {start: 0, end: 3}),
-            frameRate: 10,
-            repeat: -1
-        });
-
-        this.anims.create({
-            key: 'turn',
-            frames: [{key: dude, frame: 4}],
-            frameRate: 20
-        });
-
-        this.anims.create({
-            key: 'right',
-            frames: this.anims.generateFrameNumbers(dude, {start: 5, end: 8}),
-            frameRate: 10,
-            repeat: -1
-        });
-
-        this.anims.create({
-            key: 'explode',
-            frames: [{key: dude, frame: 9}],
-            frameRate: 20
-        });
-
-        //  Input Events
-        cursors = this.input.keyboard.addKeys(
-            {
-                up: Phaser.Input.Keyboard.KeyCodes.W,
-                down: Phaser.Input.Keyboard.KeyCodes.S,
-                left: Phaser.Input.Keyboard.KeyCodes.A,
-                right: Phaser.Input.Keyboard.KeyCodes.D
-            });
-
-        //  Some stars to collect, 12 in total, evenly spaced 70 pixels apart along the x axis
-        stars = this.physics.add.group({
-            key: 'star',
-            repeat: 11,
-            setXY: {x: 12, y: 0, stepX: 70}
-        });
-
-        stars.children.iterate(function (child) {
-
-            //  Give each star a slightly different bounce
-            child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-
-        });
-
-        bombs = this.physics.add.group();
-
-        //  The score
-        scoreText = this.add.text(16, 16, 'Score: 0', {fontSize: '32px', fill: '#FFF'});
-
-        //  The stage
-        stageText = this.add.text(16, 46, 'Stage: 1', {fontSize: '32px', fill: '#FFF'});
-
-        //  Collide the player and the stars with the platforms
-        this.physics.add.collider(player, platforms[platformIndex]);
-        this.physics.add.collider(stars, platforms[platformIndex]);
-        this.physics.add.collider(bombs, platforms[platformIndex]);
-
-        //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
-        this.physics.add.overlap(player, stars, collectStar, null, this);
-
-        this.physics.add.collider(player, bombs, hitBomb, null, this);
-
-        // Add joystick
-        // TODO: Doesn't work as expected. It holds the pressed cursor but should do for now.
-        this.joyStick = this.plugins.get('rexvirtualjoystickplugin').add(this, {
-            x: 400,
-            y: 675,
-            radius: 100,
-            base: this.add.circle(0, 0, 40, 0x888888),
-            thumb: this.add.circle(0, 0, 30, 0xcccccc),
-            // dir: '8dir',   // 'up&down'|0|'left&right'|1|'4dir'|2|'8dir'|3
-            // forceMin: 16,
-            // enable: true
+        $(document).ready(function () {
+            // Include files - https://stackoverflow.com/a/31837264
+            $(function () {
+                var includes = $('[data-include]')
+                $.each(includes, function () {
+                    var file = '../templates/head/' + $(this).data('include') + '.html'
+                    $(this).load(file)
+                })
+            })
         })
-            .on('update', joyStickState, this);
 
-        // Setup instructions
-        // Not sure why isMobile() is not working here, doing this for now.
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        // Check assets path
+        let assetsPath = "../../assets/"
 
-        if (isMobile) {
-            this.instructionsText = configMobile.instructions
-        } else {
-            this.instructionsText = configDesktop.instructions
-        }
+        window.onload = function () {
+            if (device === 'mobile') {
+                configs.configMobile.scene = {
+                    preload: preload,
+                    create: create,
+                    update: update
+                }
+                config = configs.configMobile
+                console.log(config)
+                game = new Phaser.Game(config)
+            } else {
 
-        // Instructions
-        instructions = this.add.text(16, 560, this.instructionsText, {fontSize: '32px', fill: '#fff'});
-
-        // Start game with bomb
-        var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
-
-        var bomb = bombs.create(x, 16, 'bomb');
-        bomb.setBounce(1);
-        bomb.setCollideWorldBounds(true);
-        bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
-        bomb.allowGravity = false;
-
-        // Audio
-        sfx = this.cache.json.get('sfx');
-
-        music = this.sound.add('start');
-        music.play()
-    }
-
-    function update() {
-        // Sounds
-        if (isMute) {
-            game.sound.mute = true;
-        } else {
-            game.sound.mute = false;
-        }
-
-        if (gameOver) {
-
-            player.anims.play('explode');
-
-            console.log("game over")
-
-            $('#main').removeClass('hidden')
-            $('#main').addClass('z-10')
-            $('#game').addClass('game-over')
-
-            this.sound.playAudioSprite('sfx', 'alien death');
-
-            game.destroy()
-
-            return false
-        }
-
-        // Keyboard and mobile joystick
-        if (cursors.left.isDown || this.mobileCursorKeys === 'left') {
-            player.setVelocityX(-160);
-
-            player.anims.play('left', true);
-        } else if (cursors.right.isDown || this.mobileCursorKeys === 'right') {
-            player.setVelocityX(160);
-
-            player.anims.play('right', true);
-        } else {
-            player.setVelocityX(0);
-
-            player.anims.play('turn');
-        }
-
-        if ((cursors.up.isDown || this.mobileCursorKeys === 'up') && player.body.touching.down) {
-            player.setVelocityY(-330);
-            this.sound.playAudioSprite('sfx', 'squit');
-        }
-    }
-
-    function toggleSound() {
-
-        if (isMute) {
-            muteButton.setTexture('sound', 0);
-            isMute = false
-
-            return
-        }
-
-        isMute = true
-        muteButton.setTexture('mute', 0);
-    }
-
-    function enterButtonHoverState() {
-        // enterButtonHoverState
-    }
-
-    function enterButtonRestState() {
-        // enterButtonRestState
-    }
-
-    function joyStickState() {
-        const cursorKeys = this.joyStick.createCursorKeys();
-        for (const name in cursorKeys) {
-            if (cursorKeys[name].isDown) {
-                this.mobileCursorKeys = `${name}`
-            }
-        }
-    }
-
-    function collectStar(player, star) {
-        this.sound.playAudioSprite('sfx', 'ping');
-
-        star.disableBody(true, true);
-
-        //  Add and update the score
-        score += 10;
-        scoreText.setText('Score: ' + score);
-
-        // Switch music when reaching stage 5
-        if (score === 600) {
-            music.stop()
-
-            music = this.sound.add('hard');
-            music.play()
-        }
-
-        // Change background on score
-        if ((score % 360) === 0) {
-            this.sound.playAudioSprite('sfx', 'numkey');
-
-            // Platforms
-            platforms[platformIndex].clear(true, true);
-
-            platformIndex++
-
-            console.log("platformIndex")
-            console.log(platformIndex)
-
-            // Reset background
-            if (platformIndex === 4) {
-                platformIndex = 1
+                configs.configDesktop.scene = {
+                    preload: preload,
+                    create: create,
+                    update: update
+                }
+                config = configs.configDesktop
+                console.log(config)
+                game = new Phaser.Game(config)
             }
 
-            changePlatform(platformIndex)
+            function preload() {
+                // Backgrounds
+                this.load.image('sky1', assetsPath + 'bg/sky.png');
+                this.load.image('sky2', assetsPath + 'bg/john-cosio-xCZ8ynsCfrw-unsplash.jpg');
+                this.load.image('sky3', assetsPath + 'bg/john-cosio-RxjSW-seIp0-unsplash.jpg');
+                this.load.image('sky4', assetsPath + 'bg/aleksandra-khaprenko-0PPw9irzLIw-unsplash.jpg');
+                this.load.image('sky5', assetsPath + 'bg/nathan-dumlao-kME9jbKd--s-unsplash.jpg');
+                this.load.image('sky6', assetsPath + 'bg/dan-asaki-K0mJQlbu9Yo-unsplash.jpg');
+                this.load.image('ground', assetsPath + 'platform.png');
+                this.load.image('ground-m', assetsPath + 'platform-50.png');
+                this.load.image('ground-s', assetsPath + 'platform-25.png');
+                this.load.image('star', assetsPath + 'coin.png');
+                this.load.image('bomb', assetsPath + 'bomb-r.png');
 
-            //  Reset colliders
-            //  Collide the player and the stars with the platforms
-            this.physics.add.collider(player, platforms[platformIndex]);
-            this.physics.add.collider(stars, platforms[platformIndex]);
-            this.physics.add.collider(bombs, platforms[platformIndex]);
+                // Player sprites
+                this.load.spritesheet('dude1', assetsPath + 'dude.png', { frameWidth: 32, frameHeight: 48 });
+                this.load.spritesheet('dude2', assetsPath + 'piccolo.png', { frameWidth: 32, frameHeight: 48 });
 
-            // Backgrounds
-            skyIndex++
+                // Buttons
+                this.load.image('mute', assetsPath + 'objects/mute-32.png');
+                this.load.image('sound', assetsPath + 'objects/sound-32.png');
 
-            // Reset background
-            if (skyIndex === 7) {
-                skyIndex = 1
+                // Audio
+
+                // https://github.com/phaserjs/examples/blob/master/public/src/audio/HTML5%20Audio/audiosprite.js
+                // SFX
+                this.load.audioSprite('sfx', assetsPath + 'audio/sfx/fx_mixdown.json', [
+                    assetsPath + 'audio/sfx/fx_mixdown.ogg',
+                    assetsPath + 'audio/sfx/fx_mixdown.mp3'
+                ]);
+
+                // Music
+                this.load.audio('start', [assetsPath + 'audio/music/Hawaii.mp3']);
+                this.load.audio('hard', [assetsPath + 'audio/music/Tyechestra.mp3']);
+
+                // Plugins
+
+                // Joystick
+                let url = assetsPath + 'rexvirtualjoystickplugin.min.js';
+                this.load.plugin('rexvirtualjoystickplugin', url, true);
             }
 
-            changeBackground('sky' + skyIndex)
+            function create() {
+                //  A simple background for our game
+                configs.sky = this.add.image(400, 300, 'sky' + configs.skyIndex);
 
-            // Re add instructions
-            this.add.text(16, 560, this.instructionsText, {fontSize: '32px', fill: '#fff'});
+                //  The platforms group contains the ground and the 2 ledges we can jump on
+                //  Add at least 3 platforms for now)
+                configs.platforms[1] = this.physics.add.staticGroup();
+                configs.platforms[2] = this.physics.add.staticGroup();
+                configs.platforms[3] = this.physics.add.staticGroup();
+
+                //  Here we create the ground.
+                //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
+                configs.platforms[configs.platformIndex].create(400, 568, 'ground').setScale(2).refreshBody();
+
+                //  Now let's create some ledges
+                configs.platforms[configs.platformIndex].create(600, 400, 'ground');
+                configs.platforms[configs.platformIndex].create(50, 250, 'ground');
+                configs.platforms[configs.platformIndex].create(750, 220, 'ground');
+
+                // Add buttons
+                configs.muteButton = this.add.image(770, 30, 'mute')
+                    .setInteractive()
+                    .on('pointerdown', () => toggleSound())
+
+                // The player and its settings
+                // Randomize player sprite
+                let dudeArray = [
+                    'dude1',
+                    'dude2'
+                ];
+
+                let randomDude = Math.floor(Math.random() * dudeArray.length);
+
+                const dude = dudeArray[randomDude];
+
+                configs.player = this.physics.add.sprite(100, 450, dude);
+
+                //  Player physics properties. Give the little guy a slight bounce.
+                configs.player.setBounce(0.2);
+                configs.player.setCollideWorldBounds(true);
+
+                //  Our player animations, turning, walking left and walking right.
+                this.anims.create({
+                    key: 'left',
+                    frames: this.anims.generateFrameNumbers(dude, { start: 0, end: 3 }),
+                    frameRate: 10,
+                    repeat: -1
+                });
+
+                this.anims.create({
+                    key: 'turn',
+                    frames: [{ key: dude, frame: 4 }],
+                    frameRate: 20
+                });
+
+                this.anims.create({
+                    key: 'right',
+                    frames: this.anims.generateFrameNumbers(dude, { start: 5, end: 8 }),
+                    frameRate: 10,
+                    repeat: -1
+                });
+
+                this.anims.create({
+                    key: 'explode',
+                    frames: [{ key: dude, frame: 9 }],
+                    frameRate: 20
+                });
+
+                //  Input Events
+                configs.cursors = this.input.keyboard.addKeys(
+                    {
+                        up: Phaser.Input.Keyboard.KeyCodes.W,
+                        down: Phaser.Input.Keyboard.KeyCodes.S,
+                        left: Phaser.Input.Keyboard.KeyCodes.A,
+                        right: Phaser.Input.Keyboard.KeyCodes.D
+                    });
+
+                //  Some stars to collect, 12 in total, evenly spaced 70 pixels apart along the x axis
+                configs.stars = this.physics.add.group({
+                    key: 'star',
+                    repeat: 11,
+                    setXY: { x: 12, y: 0, stepX: 70 }
+                });
+
+                configs.stars.children.iterate(function (child) {
+
+                    //  Give each star a slightly different bounce
+                    child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+
+                });
+
+                configs.bombs = this.physics.add.group();
+
+                //  The score
+                configs.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#FFF' });
+
+                //  The stage
+                configs.stageText = this.add.text(16, 46, 'Stage: 1', { fontSize: '32px', fill: '#FFF' });
+
+                //  Collide the player and the stars with the platforms
+                this.physics.add.collider(configs.player, configs.platforms[configs.platformIndex]);
+                this.physics.add.collider(configs.stars, configs.platforms[configs.platformIndex]);
+                this.physics.add.collider(configs.bombs, configs.platforms[configs.platformIndex]);
+
+                //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
+                this.physics.add.overlap(configs.player, configs.stars, collectStar, null, this);
+
+                this.physics.add.collider(configs.player, configs.bombs, hitBomb, null, this);
+
+                // Add joystick
+                // TODO: Doesn't work as expected. It holds the pressed cursor but should do for now.
+                this.joyStick = this.plugins.get('rexvirtualjoystickplugin').add(this, {
+                    x: 400,
+                    y: 675,
+                    radius: 100,
+                    base: this.add.circle(0, 0, 40, 0x888888),
+                    thumb: this.add.circle(0, 0, 30, 0xcccccc),
+                    // dir: '8dir',   // 'up&down'|0|'left&right'|1|'4dir'|2|'8dir'|3
+                    // forceMin: 16,
+                    // enable: true
+                })
+                    .on('update', joyStickState, this);
+
+                // Setup instructions
+                this.instructionsText = config.instructions
+
+                // Instructions
+                configs.instructions = this.add.text(16, 560, this.instructionsText, { fontSize: '32px', fill: '#fff' });
+
+                // Start game with bomb
+                var x = (configs.player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+
+                var bomb = configs.bombs.create(x, 16, 'bomb');
+                bomb.setBounce(1);
+                bomb.setCollideWorldBounds(true);
+                bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
+                bomb.allowGravity = false;
+
+                // Audio
+                configs.sfx = this.cache.json.get('sfx');
+
+                configs.music = this.sound.add('start');
+                configs.music.play()
+            }
+
+            function update() {
+                // Sounds
+                if (configs.isMute) {
+                    game.sound.mute = true;
+                } else {
+                    game.sound.mute = false;
+                }
+
+                if (configs.gameOver) {
+
+                    configs.player.anims.play('explode');
+
+                    console.log("game over")
+
+                    $('#main').removeClass('hidden')
+                    $('#main').addClass('z-10')
+                    $('#game').addClass('game-over')
+
+                    this.sound.playAudioSprite('sfx', 'alien death');
+
+                    game.destroy()
+
+                    return false
+                }
+
+                // Keyboard and mobile joystick
+                if (configs.cursors.left.isDown || this.mobileCursorKeys === 'left') {
+                    configs.player.setVelocityX(-160);
+
+                    configs.player.anims.play('left', true);
+                } else if (configs.cursors.right.isDown || this.mobileCursorKeys === 'right') {
+                    configs.player.setVelocityX(160);
+
+                    configs.player.anims.play('right', true);
+                } else {
+                    configs.player.setVelocityX(0);
+
+                    configs.player.anims.play('turn');
+                }
+
+                if ((configs.cursors.up.isDown || this.mobileCursorKeys === 'up') && configs.player.body.touching.down) {
+                    configs.player.setVelocityY(-330);
+                    this.sound.playAudioSprite('sfx', 'squit');
+                }
+            }
+
+            function toggleSound() {
+
+                if (configs.isMute) {
+                    configs.muteButton.setTexture('sound', 0);
+                    configs.isMute = false
+
+                    return
+                }
+
+                configs.isMute = true
+                configs.muteButton.setTexture('mute', 0);
+            }
+
+            function enterButtonHoverState() {
+                // enterButtonHoverState
+            }
+
+            function enterButtonRestState() {
+                // enterButtonRestState
+            }
+
+            function joyStickState() {
+                const cursorKeys = this.joyStick.createCursorKeys();
+                for (const name in cursorKeys) {
+                    if (cursorKeys[name].isDown) {
+                        this.mobileCursorKeys = `${name}`
+                    }
+                }
+            }
+
+            function collectStar(player, star) {
+                this.sound.playAudioSprite('sfx', 'ping');
+
+                star.disableBody(true, true);
+
+                //  Add and update the score
+                configs.score += 10;
+                configs.scoreText.setText('Score: ' + configs.score);
+
+                // Switch music when reaching stage 5
+                if (configs.score === 600) {
+                    configs.music.stop()
+
+                    configs.music = this.sound.add('hard');
+                    configs.music.play()
+                }
+
+                // Change background on score
+                if ((configs.score % 120) === 0) {
+                    this.sound.playAudioSprite('sfx', 'numkey');
+
+                    // Platforms
+                    configs.platforms[configs.platformIndex].clear(true, true);
+
+                    configs.platformIndex++
+
+                    console.log("configs.platformIndex")
+                    console.log(configs.platformIndex)
+
+                    // Reset background
+                    if (configs.platformIndex === 4) {
+                        configs.platformIndex = 1
+                    }
+
+                    changePlatform(configs.platformIndex)
+
+                    //  Reset colliders
+                    //  Collide the player and the stars with the platforms
+                    this.physics.add.collider(player, configs.platforms[configs.platformIndex]);
+                    this.physics.add.collider(configs.stars, configs.platforms[configs.platformIndex]);
+                    this.physics.add.collider(configs.bombs, configs.platforms[configs.platformIndex]);
+
+                    // Backgrounds
+                    configs.skyIndex++
+
+                    // Reset background
+                    if (configs.skyIndex === 7) {
+                        configs.skyIndex = 1
+                    }
+
+                    changeBackground('sky' + configs.skyIndex)
+
+                    // Re add instructions
+                    this.add.text(16, 560, this.instructionsText, { fontSize: '32px', fill: '#fff' });
+                }
+
+                if (configs.stars.countActive(true) === 0) {
+                    //  Update stage
+                    configs.stageText.setText('Stage: ' + ++configs.stage);
+
+                    //  A new batch of stars to collect
+                    configs.stars.children.iterate(function (child) {
+
+                        child.enableBody(true, child.x, 0, true, true);
+
+                    });
+
+                    var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+
+                    var bomb = configs.bombs.create(x, 16, 'bomb');
+                    bomb.setBounce(1);
+                    bomb.setCollideWorldBounds(true);
+                    bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
+                    bomb.allowGravity = false;
+
+                    this.sound.playAudioSprite('sfx', 'shot');
+                }
+            }
+
+            function hitBomb(player, bomb) {
+                this.physics.pause();
+
+                bomb.destroy();
+
+                configs.gameOver = true;
+            }
+
+            function isMobile() {
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+                if (isMobile) {
+                    // User is accessing the page on a mobile device
+                    // console.log("Mobile device detected");
+
+                    return true
+                } else {
+                    // User is accessing the page on a desktop device
+                    // console.log("Desktop device detected");
+
+                    return false
+                }
+            }
+
+            function changeBackground(key) {
+
+                configs.sky.setTexture(key, 0);
+            }
+
+            function changePlatform(platformIndex) {
+
+                // Default
+                if (configs.platformIndex === 1) {
+
+                    // Ground
+                    configs.platforms[configs.platformIndex].create(400, 568, 'ground').setScale(2).refreshBody();
+
+                    // Ledges
+                    configs.platforms[configs.platformIndex].create(600, 400, 'ground');
+                    configs.platforms[configs.platformIndex].create(50, 250, 'ground');
+                    configs.platforms[configs.platformIndex].create(750, 220, 'ground');
+                } else if (configs.platformIndex === 2) {
+
+                    // Ground
+                    configs.platforms[configs.platformIndex].create(400, 568, 'ground').setScale(2).refreshBody();
+
+                    // Ledges
+                    configs.platforms[configs.platformIndex].create(18, 170, 'ground-s');
+                    configs.platforms[configs.platformIndex].create(325, 220, 'ground-s');
+                    configs.platforms[configs.platformIndex].create(609, 190, 'ground-s');
+                    configs.platforms[configs.platformIndex].create(800, 390, 'ground-s');
+                    configs.platforms[configs.platformIndex].create(260, 370, 'ground');
+                } else if (configs.platformIndex === 3) {
+
+                    // Ground
+                    configs.platforms[configs.platformIndex].create(150, 568, 'ground-s').setScale(2).refreshBody();
+                    configs.platforms[configs.platformIndex].create(450, 568, 'ground-s').setScale(2).refreshBody();
+                    configs.platforms[configs.platformIndex].create(550, 568, 'ground-s').setScale(2).refreshBody();
+
+                    // Ledges
+                    configs.platforms[configs.platformIndex].create(18, 170, 'ground-s');
+                    configs.platforms[configs.platformIndex].create(325, 220, 'ground-s');
+                    configs.platforms[configs.platformIndex].create(609, 190, 'ground-s');
+                    configs.platforms[configs.platformIndex].create(710, 410, 'ground-s');
+                    configs.platforms[configs.platformIndex].create(750, 410, 'ground-s');
+                    configs.platforms[configs.platformIndex].create(260, 370, 'ground');
+
+                    // Add bombs
+
+                    // Left
+                    configs.bombs.create(3, 595, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(10, 595, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(20, 594, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(30, 598, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(37, 597, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(50, 596, 'bomb').setImmovable(false).body.allowGravity = false;
+
+                    // Mid
+                    configs.bombs.create(249, 597, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(260, 595, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(267, 599, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(289, 598, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(280, 595, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(309, 599, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(330, 599, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(330, 594, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(353, 595, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(300, 596, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(320, 594, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(340, 598, 'bomb').setImmovable(false).body.allowGravity = false;
+
+                    // Right
+                    configs.bombs.create(550, 595, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(560, 596, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(571, 599, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(580, 598, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(589, 598, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(600, 595, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(609, 594, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(620, 597, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(627, 594, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(640, 598, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(651, 594, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(660, 597, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(671, 599, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(680, 597, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(690, 593, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(700, 595, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(710, 599, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(720, 596, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(730, 593, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(740, 600, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(748, 598, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(760, 594, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(772, 596, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(780, 599, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(788, 597, 'bomb').setImmovable(false).body.allowGravity = false;
+                    configs.bombs.create(792, 597, 'bomb').setImmovable(false).body.allowGravity = false;
+                }
+
+            }
         }
 
-        if (stars.countActive(true) === 0) {
-            //  Update stage
-            stageText.setText('Stage: ' + ++stage);
 
-            //  A new batch of stars to collect
-            stars.children.iterate(function (child) {
-
-                child.enableBody(true, child.x, 0, true, true);
-
-            });
-
-            var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
-
-            var bomb = bombs.create(x, 16, 'bomb');
-            bomb.setBounce(1);
-            bomb.setCollideWorldBounds(true);
-            bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
-            bomb.allowGravity = false;
-
-            this.sound.playAudioSprite('sfx', 'shot');
-        }
-    }
-
-    function hitBomb(player, bomb) {
-        this.physics.pause();
-
-        bomb.destroy();
-
-        gameOver = true;
-    }
-
-    function isMobile() {
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-        if (isMobile) {
-            // User is accessing the page on a mobile device
-            // console.log("Mobile device detected");
-
-            return true
-        } else {
-            // User is accessing the page on a desktop device
-            // console.log("Desktop device detected");
-
-            return false
-        }
-    }
-
-    function changeBackground(key) {
-
-        sky.setTexture(key, 0);
-    }
-
-    function changePlatform(platformIndex) {
-
-        // Default
-        if (platformIndex === 1) {
-
-            // Ground
-            platforms[platformIndex].create(400, 568, 'ground').setScale(2).refreshBody();
-
-            // Ledges
-            platforms[platformIndex].create(600, 400, 'ground');
-            platforms[platformIndex].create(50, 250, 'ground');
-            platforms[platformIndex].create(750, 220, 'ground');
-        } else if (platformIndex === 2) {
-
-            // Ground
-            platforms[platformIndex].create(400, 568, 'ground').setScale(2).refreshBody();
-
-            // Ledges
-            platforms[platformIndex].create(18, 170, 'ground-s');
-            platforms[platformIndex].create(325, 220, 'ground-s');
-            platforms[platformIndex].create(609, 190, 'ground-s');
-            platforms[platformIndex].create(800, 390, 'ground-s');
-            platforms[platformIndex].create(260, 370, 'ground');
-        } else if (platformIndex === 3) {
-
-            // Ground
-            platforms[platformIndex].create(150, 568, 'ground-s').setScale(2).refreshBody();
-            platforms[platformIndex].create(450, 568, 'ground-s').setScale(2).refreshBody();
-            platforms[platformIndex].create(550, 568, 'ground-s').setScale(2).refreshBody();
-
-            // Ledges
-            platforms[platformIndex].create(18, 170, 'ground-s');
-            platforms[platformIndex].create(325, 220, 'ground-s');
-            platforms[platformIndex].create(609, 190, 'ground-s');
-            platforms[platformIndex].create(710, 410, 'ground-s');
-            platforms[platformIndex].create(750, 410, 'ground-s');
-            platforms[platformIndex].create(260, 370, 'ground');
-
-            // Add bombs
-
-            // Left
-            bombs.create(3, 595, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(10, 595, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(20, 594, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(30, 598, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(37, 597, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(50, 596, 'bomb').setImmovable(false).body.allowGravity = false;
-
-            // Mid
-            bombs.create(249, 597, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(260, 595, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(267, 599, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(289, 598, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(280, 595, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(309, 599, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(330, 599, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(330, 594, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(353, 595, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(300, 596, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(320, 594, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(340, 598, 'bomb').setImmovable(false).body.allowGravity = false;
-
-            // Right
-            bombs.create(550, 595, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(560, 596, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(571, 599, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(580, 598, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(589, 598, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(600, 595, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(609, 594, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(620, 597, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(627, 594, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(640, 598, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(651, 594, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(660, 597, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(671, 599, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(680, 597, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(690, 593, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(700, 595, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(710, 599, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(720, 596, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(730, 593, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(740, 600, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(748, 598, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(760, 594, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(772, 596, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(780, 599, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(788, 597, 'bomb').setImmovable(false).body.allowGravity = false;
-            bombs.create(792, 597, 'bomb').setImmovable(false).body.allowGravity = false;
-        }
-
-    }
-
-</script>
+    </script>
 
 </body>
+
 </html>
