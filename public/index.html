@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 
-<head data-include="head">
+<head data-include="page">
     <meta charset="UTF-8" />
     <meta content="width=device-width, initial-scale=1" name="viewport" />
     <title>Arcade - Making your first Phaser 3 Game</title>
@@ -63,9 +63,9 @@
         $(document).ready(function () {
             // Include files - https://stackoverflow.com/a/31837264
             $(function () {
-                var includes = $('[data-include]')
+                let includes = $('[data-include]')
                 $.each(includes, function () {
-                    var file = 'templates/' + $(this).data('include') + '.html'
+                    let file = 'templates/head/' + $(this).data('include') + '.html'
                     $(this).load(file)
                 })
             })

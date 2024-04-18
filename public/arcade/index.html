@@ -16,40 +16,7 @@
 
 <body>
 
-    <div id="main" class="py-12 sm:px-6 lg:px-8 h-screen flex items-center justify-center hidden">
-
-        <div id="content">
-
-            <ul id="list" role="list"
-                class="divide-y divide-gray-100 overflow-hidden bg-white shadow-sm ring-8 ring-gray-900/4 sm:rounded-xl">
-
-                <li class="px-4 py-5 sm:px-6">
-                    <div class="text-center text-3xl font-bold">
-                        Would you like to play again?
-                    </div>
-                </li>
-
-                <li class="px-4 py-5 sm:px-6">
-                    <div class="text-center text-3xl font-bold">
-                        <a href="/">
-                            <button
-                                class="rounded-md bg-white m-2 px-3.5 py-2.5 text-3xl font-bold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 uppercase">
-                                Main Menu
-                            </button>
-                        </a>
-
-                        <a href="/arcade">
-                            <button
-                                class="rounded-md bg-white m-2 px-3.5 py-2.5 text-3xl font-bold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 uppercase">
-                                Play Again
-                            </button>
-                        </a>
-                    </div>
-                </li>
-            </ul>
-        </div>
-
-    </div>
+    <div id="main" data-template="arcade" class="py-12 sm:px-6 lg:px-8 h-screen flex items-center justify-center hidden"></div>
 
     <div id="game" class="h-screen"></div>
 
@@ -118,9 +85,15 @@
         $(document).ready(function () {
             // Include files - https://stackoverflow.com/a/31837264
             $(function () {
-                var includes = $('[data-include]')
+                let includes = $('[data-include]')
                 $.each(includes, function () {
-                    var file = '../templates/head/' + $(this).data('include') + '.html'
+                    let file = '../templates/head/' + $(this).data('include') + '.html'
+                    $(this).load(file)
+                })
+
+                let templates = $('[data-template]')
+                $.each(templates, function () {
+                    let file = '../templates/end/' + $(this).data('template') + '.html'
                     $(this).load(file)
                 })
             })
@@ -129,7 +102,7 @@
         // Check assets path
         let assetsPath = "../../assets/"
 
-        window.onload = function () {
+        $( document ).ready(function() {
             if (device === 'mobile') {
                 configs.configMobile.scene = {
                     preload: preload,
@@ -314,36 +287,15 @@
                 // Game over
                 if (objects.gameOver) {
                     objects.player.anims.play('explode')
-                    const dataGo = updateGameOverModule()
-                    console.log(dataGo)
+                    const dataGameOver = updateGameOverModule()
 
-                    // this.sound.playAudioSprite('sfx', 'alien death')
-                    // Play sfx
-                    if (dataGo.sfx.length !== 0) {
-                        for (const sfx of dataGo.sfx) {
-                            this.sound.playAudioSprite(sfx.key, sfx.sound)
-                        }
-                    }
+                    // Play sfx                    
+                    playSfx(dataGameOver, game)
 
                     game.pause()
                     objects.music.stop()
 
-                    setTimeout(() => {console.log('after 5 seconds', game.destroy())}, 4000);
-
-                    // this.sound.playAudioSprite('sfx', 'death')
-                    // objects.player.anims.play('explode')
-                    // // console.log(objects.player.anims.play('explode'))
-
-                    // console.log("game over")
-
-                    // $('#main').removeClass('hidden')
-                    // $('#main').addClass('z-10')
-                    // $('#game').addClass('game-over')
-
-                    // game.pause()
-                    // objects.music.stop()
-
-                    // const myTimeout = setTimeout(() => {console.log('after 5 seconds', game.destroy())}, 4000);
+                    setTimeout(() => {game.destroy() }, 4000);
 
                     return false
                 }
@@ -356,11 +308,7 @@
                 const data = moveAnimations(isMobileLeft, isMobileRight, isMobileUp)
 
                 // Play sfx
-                if (data.sfx.length !== 0) {
-                    for (const sfx of data.sfx) {
-                        this.sound.playAudioSprite(sfx.key, sfx.sound)
-                    }
-                }
+                playSfx(data, game)
             }
 
             // Functions that break when moving to external js (this)
@@ -378,8 +326,7 @@
                 // Change platform/background every 3 stage completed
                 if (updateChangePlatformModule(objects, platforms)) {
                     // Reset colliders
-                    // Collide the player and the stars with the platforms
-                    this.physics.add.collider(player, objects.platforms[objects.platformIndex])
+                    this.physics.add.collider(objects.player, objects.platforms[objects.platformIndex])
                     this.physics.add.collider(objects.stars, objects.platforms[objects.platformIndex])
                     this.physics.add.collider(objects.bombs, objects.platforms[objects.platformIndex])
 
@@ -399,10 +346,7 @@
                 }
 
                 // Play sfx
-                for (const sfx of data.sfx) {
-                    this.sound.playAudioSprite(sfx.key, sfx.sound)
-                }
-
+                playSfx(data, game)
             }
 
             function joyStickState() {
@@ -427,7 +371,15 @@
 
                 updateHitBombModule(objects, bomb)
             }
-        }
+
+            function playSfx(data, game) {
+                if (data.sfx.length !== 0) {
+                    for (const sfx of data.sfx) {
+                        game.sound.playAudioSprite(sfx.key, sfx.sound)
+                    }
+                }
+            }
+        });
 
     </script>
 

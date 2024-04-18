@@ -17,22 +17,23 @@
     <script data-style="global"></script>
 </head>
 
-<script type="text/javascript">  $(document).ready(function () {
+<script type="text/javascript">
+    $(document).ready(function () {
         // Include files - https://stackoverflow.com/a/31837264
         // Libraries
         $(function () {
-            var includes = $('[data-lib]')
+            let includes = $('[data-lib]')
             $.each(includes, function () {
-                var file = 'templates/libs/' + $(this).data('lib') + '.html'
+                let file = 'templates/head/libs/' + $(this).data('lib') + '.html'
                 $(this).load(file)
             })
         })
 
         // Styles
         $(function () {
-            var includes = $('[data-style]')
+            let includes = $('[data-style]')
             $.each(includes, function () {
-                var file = 'templates/styles/' + $(this).data('style') + '.html'
+                let file = 'templates/head/styles/' + $(this).data('style') + '.html'
                 $(this).load(file)
             })
         })
