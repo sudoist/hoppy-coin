@@ -1,9 +1,5 @@
 const data = isMobile()
 
-export function devicesModule() {
-    return data
-}
-
 function isMobile() {
     const isMobile = /Android|Tablet|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
@@ -18,4 +14,8 @@ function isMobile() {
 
         return "desktop"
     }
+}
+
+export function devicesModule() {
+    return data
 }

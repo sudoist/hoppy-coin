@@ -2,6 +2,7 @@ let data = {
 
     // Player
     player: null,
+    playerSpritesArray: [],
 
     // Stars
     stars: null,
@@ -11,7 +12,7 @@ let data = {
 
     // Images
     sky: null,
-    skyIndex: 1,
+    skyIndex: 0,
     platforms: [],
     platformIndex: 1,
 
