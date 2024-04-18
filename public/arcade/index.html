@@ -109,6 +109,7 @@
         import { updateChangePlatformModule } from '../../functions/update/platform.js'
         import { updateCollectStarModule, updateRefreshStarModule, updateHitBombModule, updateChangeBackgroundModule } from '../../functions/update/object.js'
         import { updateMoveAnimationModule } from '../../functions/update/input.js'
+        import { updateGameOverModule } from '../../functions/update/game.js'
 
         // Setup local data
         let config
@@ -310,27 +311,48 @@
                     game.sound.mute = false
                 }
 
+                // Game over
                 if (objects.gameOver) {
-
                     objects.player.anims.play('explode')
+                    const dataGo = updateGameOverModule()
+                    console.log(dataGo)
 
-                    console.log("game over")
+                    // this.sound.playAudioSprite('sfx', 'alien death')
+                    // Play sfx
+                    if (dataGo.sfx.length !== 0) {
+                        for (const sfx of dataGo.sfx) {
+                            this.sound.playAudioSprite(sfx.key, sfx.sound)
+                        }
+                    }
 
-                    $('#main').removeClass('hidden')
-                    $('#main').addClass('z-10')
-                    $('#game').addClass('game-over')
+                    game.pause()
+                    objects.music.stop()
 
-                    this.sound.playAudioSprite('sfx', 'alien death')
+                    setTimeout(() => {console.log('after 5 seconds', game.destroy())}, 4000);
 
-                    game.destroy()
+                    // this.sound.playAudioSprite('sfx', 'death')
+                    // objects.player.anims.play('explode')
+                    // // console.log(objects.player.anims.play('explode'))
+
+                    // console.log("game over")
+
+                    // $('#main').removeClass('hidden')
+                    // $('#main').addClass('z-10')
+                    // $('#game').addClass('game-over')
+
+                    // game.pause()
+                    // objects.music.stop()
+
+                    // const myTimeout = setTimeout(() => {console.log('after 5 seconds', game.destroy())}, 4000);
 
                     return false
                 }
 
                 // Keyboard and mobile joystick                
-                const isMobileLeft = this.mobileCursorKeys === 'left'
-                const isMobileRight = this.mobileCursorKeys === 'right'
-                const isMobileUp = this.mobileCursorKeys === 'up'
+                const isMobileLeft = joystickSpecs.pressed === 'left'
+                const isMobileRight = joystickSpecs.pressed === 'right'
+                const isMobileUp = joystickSpecs.pressed === 'up'
+
                 const data = moveAnimations(isMobileLeft, isMobileRight, isMobileUp)
 
                 // Play sfx
@@ -385,27 +407,19 @@
 
             function joyStickState() {
                 const cursorKeys = this.joyStick.createCursorKeys()
+                let pressed = ''
                 for (const name in cursorKeys) {
                     if (cursorKeys[name].isDown) {
-                        console.log(`${name}`)
+                        pressed = `${name}`
                     } else {
-                        console.log("this.mobileCursorKeys =")
-                        // console.log(`${name}`)
-                        // this.mobileCursorKeys = `${name}`
+                        this.mobileCursorKeys = undefined
                     }
                 }
+                joystickSpecs.pressed = pressed
             }
 
             function moveAnimations(isMobileLeft, isMobileRight, isMobileUp) {
-                let data
-
-                if (device === 'mobile') {
-                    data = updateMoveAnimationModule(objects, true, isMobileLeft, isMobileRight, isMobileUp)
-                } else {
-                    data = updateMoveAnimationModule(objects, false, false, false, false)
-                }
-
-                return data
+                return updateMoveAnimationModule(objects, isMobileLeft, isMobileRight, isMobileUp)
             }
 
             function hitBomb(player, bomb) {

@@ -30,6 +30,9 @@ let joystickControls = {
     // dir: '8dir',   // 'up&down'|0|'left&right'|1|'4dir'|2|'8dir'|3
     // forceMin: 16,
     // enable: true
+
+    // Mobile directional pressed key
+    pressed: null
 }
 
 export function createSetJoystickModule() {
