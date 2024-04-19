@@ -1,4 +1,4 @@
-function moveAnimations(objects, isMobileLeft, isMobileRight, isMobileUp) {
+export function updateMoveAnimationModule(objects, isMobileLeft, isMobileRight, isMobileUp) {
     let sfx = []
 
     if (objects.cursors.left.isDown || isMobileLeft) {
@@ -28,8 +28,4 @@ function moveAnimations(objects, isMobileLeft, isMobileRight, isMobileUp) {
     }
 
     return data
-}
-
-export function updateMoveAnimationModule(objects, isMobileLeft, isMobileRight, isMobileUp) {
-    return moveAnimations(objects, isMobileLeft, isMobileRight, isMobileUp)
 }

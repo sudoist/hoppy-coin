@@ -1,14 +1,18 @@
-let data = [
+const assetsPath = '../../assets/audio/music/'
+
+let music = [
     {
         key: 'start',
-        path: 'audio/music/Hawaii.mp3',
+        path: 'Hawaii.mp3',
     },
     {
         key: 'hard',
-        path: 'audio/music/Tyechestra.mp3',
+        path: 'Tyechestra.mp3',
     },
 ]
 
-export function preloadMusicModule() {
-    return data
+export function preloadMusicModule(scene) {
+    for (const item of music) {
+        scene.load.audio(item.key, [assetsPath + item.path])
+    }
 }

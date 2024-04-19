@@ -2,7 +2,7 @@
 <html lang="en"> 
 <head> 
     <meta charset="UTF-8" />
-    <title>Making your first Phaser 3 Game - Part 9</title>
+    <title>Making your first Phaser 3 Game - Part 7</title>
     <script src="//cdn.jsdelivr.net/npm/phaser@3.1.1/dist/phaser.js"></script>
     <style type="text/css">
         body {
@@ -22,7 +22,7 @@
             default: 'arcade',
             arcade: {
                 gravity: { y: 300 },
-                debug: false
+                debug: true
             }
         },
         scene: {
@@ -33,21 +33,18 @@
     };
 
     var player;
-    var stars;
     var platforms;
     var cursors;
-    var score = 0;
-    var scoreText;
 
     var game = new Phaser.Game(config);
 
     function preload ()
     {
-        this.load.image('sky', 'assets/sky.png');
-        this.load.image('ground', 'assets/platform.png');
-        this.load.image('star', 'assets/star.png');
-        this.load.image('bomb', 'assets/bomb.png');
-        this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
+        this.load.image('sky', '../assets/bg/sky.png');
+        this.load.image('ground', '../assets/objects/platforms/platform.png');
+        this.load.image('star', '../assets/objects/star.png');
+        this.load.image('bomb', '../assets/objects/bomb.png');
+        this.load.spritesheet('dude', '../assets/players/dude.png', { frameWidth: 32, frameHeight: 48 });
     }
 
     function create ()
@@ -89,24 +86,7 @@
 
         cursors = this.input.keyboard.createCursorKeys();
 
-        stars = this.physics.add.group({
-            key: 'star',
-            repeat: 11,
-            setXY: { x: 12, y: 0, stepX: 70 }
-        });
-
-        stars.children.iterate(function (child) {
-
-            child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-
-        });
-
-        scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
-
         this.physics.add.collider(player, platforms);
-        this.physics.add.collider(stars, platforms);
-
-        this.physics.add.overlap(player, stars, collectStar, null, this);
     }
 
     function update ()
@@ -134,14 +114,6 @@
         {
             player.setVelocityY(-330);
         }
-    }
-
-    function collectStar (player, star)
-    {
-        star.disableBody(true, true);
-
-        score += 10;
-        scoreText.setText('Score: ' + score);
     }
 
 </script>

@@ -1,34 +1,17 @@
-let data = [
-    {
-        bounce: 0.2,
-        setCollideWorldBounds: true,
-    },
-]
-
-export function createPlayerModule() {
-    return data
+let specs = {
+    bounce: 0.2,
+    setCollideWorldBounds: true,
 }
 
-function selectPlayerSprite(playerSprites) {
-
+export function createSelectPlayerSpriteModule(scene, objects) {
     // Randomize player sprite
-    const randomSprite = Math.floor(Math.random() * playerSprites.length);
+    const randomSprite = Math.floor(Math.random() * objects.playerSpritesArray.length)
 
-    return playerSprites[randomSprite];
-}
-
-export function createSelectPlayerSpriteModule(playerSpritesArray) {
-    return selectPlayerSprite(playerSpritesArray)
-}
-
-function setPlayer(objects) {
-    //  Player physics properties. Give the little guy a slight bounce.
-    objects.player.setBounce(0.2);
-    objects.player.setCollideWorldBounds(true);
-
-    return
+    return objects.playerSpritesArray[randomSprite]
 }
 
 export function createSetPlayerModule(objects) {
-    return setPlayer(objects)
+    //  Player physics properties. Give the little guy a slight bounce.
+    objects.player.setBounce(specs.bounce)
+    objects.player.setCollideWorldBounds(specs.setCollideWorldBounds)
 }

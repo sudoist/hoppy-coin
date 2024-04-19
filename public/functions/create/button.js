@@ -1,4 +1,4 @@
-let data = [
+let buttons = [
     {
         x: 770,
         y: 30,
@@ -11,11 +11,15 @@ let data = [
     },
 ]
 
-export function createButtonModule() {
-    return data
+export function createButtonModule(scene, objects) {
+    // Check keys in public\functions\create\button.js for specific buttons
+
+    // Init mute button
+    objects.mute = scene.add.image(buttons[0].x, buttons[0].y, buttons[0].key).setInteractive()
+    objects.mute.on('pointerdown', () => toggleSound(objects))
 }
 
-function toggleSound(objects) {   
+function toggleSound(objects) {
 
     if (objects.isMute) {
         objects.mute.setTexture('sound', 0)
@@ -28,10 +32,6 @@ function toggleSound(objects) {
     objects.mute.setTexture('mute', 0)
 
     return
-}
-
-export function createButtonSoundToggleModule(objects) {
-    return toggleSound(objects)
 }
 
 // For other states that can be used later

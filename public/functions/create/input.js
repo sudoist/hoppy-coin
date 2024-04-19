@@ -30,12 +30,37 @@ let joystickControls = {
     // dir: '8dir',   // 'up&down'|0|'left&right'|1|'4dir'|2|'8dir'|3
     // forceMin: 16,
     // enable: true
+}
 
+let joystickPressed = {
     // Mobile directional pressed key
     pressed: null
 }
 
-export function createSetJoystickModule() {
-    return joystickControls
+export function createJoystickPressedModule() {
+    return joystickPressed
 }
 
+function joyStickState() {
+    const cursorKeys = this.joyStick.createCursorKeys()
+    let pressed = ''
+    for (const name in cursorKeys) {
+        if (cursorKeys[name].isDown) {
+            pressed = `${name}`
+        } else {
+            this.mobileCursorKeys = undefined
+        }
+    }
+    joystickPressed.pressed = pressed
+}
+
+export function createSetJoystickModule(scene) {
+    scene.joyStick = scene.plugins.get('rexvirtualjoystickplugin').add(scene, {
+        x: joystickControls.x,
+        y: joystickControls.y,
+        radius: joystickControls.radius,
+        base: scene.add.circle(joystickControls.base.x, joystickControls.base.y, joystickControls.base.size, joystickControls.base.color),
+        thumb: scene.add.circle(joystickControls.thumb.x, joystickControls.thumb.y, joystickControls.thumb.size, joystickControls.thumb.color),
+    })
+        .on('update', joyStickState, scene)
+}

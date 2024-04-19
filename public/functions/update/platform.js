@@ -1,4 +1,5 @@
-function changePlatform(objects, platforms) {
+export function updateChangePlatformModule(scene, objects, platforms) {
+
     let resetColliders = false
 
     // Default
@@ -76,8 +77,4 @@ function changePlatform(objects, platforms) {
     }
 
     return resetColliders
-}
-
-export function updateChangePlatformModule(objects, platforms) {
-    return changePlatform(objects, platforms)
 }
