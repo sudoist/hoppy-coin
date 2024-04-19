@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+
+<head data-include="game">
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <title>Making your first Phaser 3 Game - Part 10</title>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+    <!-- Phaser -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@v3.80.1/dist/phaser.min.js"></script>
+</head>
+
+<body>
+
+    <div id="main" data-template="arcade"
+        class="py-12 sm:px-6 lg:px-8 h-screen flex items-center justify-center hidden"></div>
+
+    <div id="game" class="h-screen"></div>
+
+    <script type="module">
+        // Get configs
+        import { configModule } from '../../config.js'
+
+        // Setup config data
+        let configs = configModule()
+
+        // Get device type
+        import { devicesModule } from '../../functions/devices.js'
+
+        // Setup config data
+        let device = devicesModule()
+
+        // Get objects
+        import { objectsModule } from '../../functions/objects.js'
+
+        // Setup objects data
+        let objects = objectsModule()
+
+        // Get preload data
+        import { preloadBgModule } from '../../functions/preload/bg.js'
+        import { preloadPlayerModule } from '../../functions/preload/player.js'
+        import { preloadButtonModule } from '../../functions/preload/button.js'
+        import { preloadSfxModule } from '../../functions/preload/sfx.js'
+        import { preloadMusicModule } from '../../functions/preload/music.js'
+        import { preloadPluginModule } from '../../functions/preload/plugin.js'
+
+        // Setup preload data
+        let backgrounds = preloadBgModule()
+        let playerSprites = preloadPlayerModule()
+        let buttonPreloads = preloadButtonModule()
+        let sfxSprites = preloadSfxModule()
+        let musics = preloadMusicModule()
+        let plugins = preloadPluginModule()
+
+        // Get create data
+        import { createPlatformModule } from '../../functions/create/platform.js'
+        import { createAnimationModule } from '../../functions/create/animation.js'
+        import { createButtonModule, createButtonSoundToggleModule } from '../../functions/create/button.js'
+        import { createSelectPlayerSpriteModule, createSetPlayerModule } from '../../functions/create/player.js'
+        import { createSetKeyboardKeyModule, createSetJoystickModule } from '../../functions/create/input.js'
+        import { createTextModule, createStarModule, createStarChildrenModule, createStartBombModule } from '../../functions/create/object.js'
+
+        // Setup create data
+        let platforms = createPlatformModule()
+        let animations = createAnimationModule()
+        let buttons = createButtonModule()
+        let keyboardKeys = createSetKeyboardKeyModule()
+        let joystickSpecs = createSetJoystickModule()
+        let texts = createTextModule()
+        let starSpecs = createStarModule()
+
+        // Get update data
+        import { updateChangePlatformModule } from '../../functions/update/platform.js'
+        import { updateCollectStarModule, updateRefreshStarModule, updateHitBombModule, updateChangeBackgroundModule } from '../../functions/update/object.js'
+        import { updateMoveAnimationModule } from '../../functions/update/input.js'
+        import { updateGameOverModule } from '../../functions/update/game.js'
+
+        // Setup local data
+        let config
+        let game
+
+        // Check assets path
+        let assetsPath = "../../assets/"
+
+        // Include files - https://stackoverflow.com/a/31837264
+        $(document).ready(function () {
+            // Load head
+            $(function () {
+                let includes = $('[data-include]')
+                $.each(includes, function () {
+                    let file = '../templates/head/' + $(this).data('include') + '.html'
+                    $(this).load(file)
+                })
+
+                // Setup config
+                if (device === 'mobile') {
+                    config = configs.configMobile
+                } else {
+                    config = configs.configDesktop
+                }
+                config.scene = {
+                    preload: preload,
+                    create: create,
+                    update: update
+                }
+                texts.instruction.text = config.instructions
+                game = new Phaser.Game(config)
+
+                // Load game end html
+                let templates = $('[data-template]')
+                $.each(templates, function () {
+                    let file = '../templates/end/' + $(this).data('template') + '.html'
+                    $(this).load(file)
+                })
+            })
+        })
+
+        function preload() {
+            // Backgrounds
+            for (const background of backgrounds) {
+                this.load.image(background.key, assetsPath + background.path)
+            }
+
+            // Player
+            for (const playerSprite of playerSprites) {
+                this.load.spritesheet(playerSprite.key, assetsPath + playerSprite.path, { frameWidth: 32, frameHeight: 48 })
+                objects.playerSpritesArray.push(playerSprite.key) // For displaying sprite in create
+            }
+
+            // Buttons
+            for (const button of buttonPreloads) {
+                this.load.image(button.key, assetsPath + button.path)
+            }
+
+            // Audio
+
+            // https://github.com/phaserjs/examples/blob/master/public/src/audio/HTML5%20Audio/audiosprite.js
+            // SFX
+            let audioFiles = []
+            for (const sfxSprite of sfxSprites.files) {
+                audioFiles.push(assetsPath + sfxSprite.path)
+            }
+            this.load.audioSprite(sfxSprites.key, assetsPath + sfxSprites.spritePath, audioFiles)
+
+            // Music
+            for (const music of musics) {
+                this.load.audio(music.key, [assetsPath + music.path])
+            }
+
+            // Plugins
+            for (const plugin of plugins) {
+                this.load.plugin(plugin.key, assetsPath + plugin.path, true)
+            }
+        }
+
+        function create() {
+            // A simple background for our game
+            objects.sky = this.add.image(400, 300, backgrounds[objects.skyIndex].key)
+
+            // The platforms group contains the ground and the ledges we can jump on
+            for (let [index, platform] of platforms.entries()) {
+                objects.platforms[++index] = this.physics.add.staticGroup()
+            }
+
+            for (let [index, platform] of platforms.entries()) {
+                // Only get from first
+                if (index === 0) {
+
+                    // Here we create the ground.
+                    // Scale it to fit the width of the game (the original sprite is 400x32 in size)
+                    for (const ground of platform.grounds) {
+                        objects.platforms[objects.platformIndex].create(ground.x, ground.y, ground.key).setScale(2).refreshBody()
+                    }
+
+                    // Now let's create some ledges
+                    for (const ledge of platform.ledges) {
+                        objects.platforms[objects.platformIndex].create(ledge.x, ledge.y, ledge.key)
+                    }
+
+                    break
+                }
+            }
+
+            // Add buttons
+            // Check keys in public\functions\create\button.js for specific buttons
+
+            // Init mute button
+            objects.mute = this.add.image(buttons[0].x, buttons[0].y, buttons[0].key).setInteractive()
+            objects.mute.on('pointerdown', () => createButtonSoundToggleModule(objects))
+
+            // The player and its settings
+            const dude = createSelectPlayerSpriteModule(objects.playerSpritesArray) // Selected sprite
+
+            objects.player = this.physics.add.sprite(100, 450, dude)
+            createSetPlayerModule(objects)
+
+            // Our player animations, turning, walking left and walking right.
+            for (const animation of animations) {
+                if (animation.frame) {
+                    this.anims.create({
+                        key: animation.key,
+                        frames: [{ key: dude, frame: animation.frame }],
+                        frameRate: 20
+                    })
+                } else {
+                    this.anims.create({
+                        key: animation.key,
+                        frames: this.anims.generateFrameNumbers(dude, { start: animation.start, end: animation.end }),
+                        frameRate: animation.frameRate,
+                        repeat: animation.repeat
+                    })
+                }
+            }
+
+            // Input Events
+            objects.cursors = this.input.keyboard.addKeys(keyboardKeys)
+
+            // Some stars to collect, 12 in total, evenly spaced 70 pixels apart along the x axis
+            objects.stars = this.physics.add.group(starSpecs)
+
+            createStarChildrenModule(objects)
+
+            // Bombs
+            objects.bombs = this.physics.add.group()
+
+            // The score
+            objects.scoreText = this.add.text(texts.score.x, texts.score.y, texts.score.text, texts.score.font)
+
+            // The stage
+            objects.stageText = this.add.text(texts.stage.x, texts.stage.y, texts.stage.text, texts.stage.font)
+
+            // Collide the player and the stars with the platforms
+            this.physics.add.collider(objects.player, objects.platforms[objects.platformIndex])
+            this.physics.add.collider(objects.stars, objects.platforms[objects.platformIndex])
+            this.physics.add.collider(objects.bombs, objects.platforms[objects.platformIndex])
+
+            // Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
+            // this.physics.add.overlap(objects.player, objects.stars, collectStar, null, this)
+            this.physics.add.overlap(objects.player, objects.stars, collectStar, null, this)
+
+            this.physics.add.collider(objects.player, objects.bombs, hitBomb, null, this)
+
+            // Add joystick
+            // TODO: Doesn't work as expected. It holds the pressed cursor but should do for now.
+            this.joyStick = this.plugins.get('rexvirtualjoystickplugin').add(this, {
+                x: joystickSpecs.x,
+                y: joystickSpecs.y,
+                radius: joystickSpecs.radius,
+                base: this.add.circle(joystickSpecs.base.x, joystickSpecs.base.y, joystickSpecs.base.size, joystickSpecs.base.color),
+                thumb: this.add.circle(joystickSpecs.thumb.x, joystickSpecs.thumb.y, joystickSpecs.thumb.size, joystickSpecs.thumb.color),
+            })
+                .on('update', joyStickState, this)
+
+            // Setup instructions
+            this.instructionsText = texts.instruction.text
+
+            // Instructions
+            objects.instructions = this.add.text(texts.instruction.x, texts.instruction.y, texts.instruction.text, texts.instruction.font)
+
+            // // Start game with bomb
+            createStartBombModule(objects)
+
+            // Audio
+            objects.sfx = this.cache.json.get('sfx')
+
+            objects.music = this.sound.add('start')
+            objects.music.play()
+        }
+
+        function update() {
+            // Sounds
+            if (objects.isMute) {
+                game.sound.mute = true
+            } else {
+                game.sound.mute = false
+            }
+
+            // Game over
+            if (objects.gameOver) {
+                objects.player.anims.play('explode')
+                const dataGameOver = updateGameOverModule()
+
+                // Play sfx                    
+                playSfx(dataGameOver, game)
+
+                game.pause()
+                objects.music.stop()
+
+                setTimeout(() => { game.destroy() }, 4000);
+
+                return false
+            }
+
+            // Keyboard and mobile joystick                
+            const isMobileLeft = joystickSpecs.pressed === 'left'
+            const isMobileRight = joystickSpecs.pressed === 'right'
+            const isMobileUp = joystickSpecs.pressed === 'up'
+
+            const data = moveAnimations(isMobileLeft, isMobileRight, isMobileUp)
+
+            // Play sfx
+            playSfx(data, game)
+        }
+
+        // Functions that break when moving to external js (this)
+        function collectStar(player, star) {
+
+            const data = updateCollectStarModule(objects, platforms)
+
+            // Switch music when reaching stage 5
+            if (objects.score === 600) {
+                objects.music.stop()
+                objects.music = this.sound.add('hard')
+                objects.music.play()
+            }
+
+            // Change platform/background every 3 stage completed
+            if (updateChangePlatformModule(objects, platforms)) {
+                // Reset colliders
+                this.physics.add.collider(objects.player, objects.platforms[objects.platformIndex])
+                this.physics.add.collider(objects.stars, objects.platforms[objects.platformIndex])
+                this.physics.add.collider(objects.bombs, objects.platforms[objects.platformIndex])
+
+                updateChangeBackgroundModule(objects, backgrounds[objects.skyIndex].key)
+
+                // Re add instructions
+                this.add.text(texts.instruction.x, texts.instruction.y, texts.instruction.text, texts.instruction.font)
+            }
+
+            // Remove star
+            star.disableBody(true, true)
+
+            if (objects.stars.countActive(true) === 0) {
+                let refreshStars = updateRefreshStarModule(objects, player)
+
+                data.sfx.push(refreshStars.sfx)
+            }
+
+            // Play sfx
+            playSfx(data, game)
+        }
+
+        function joyStickState() {
+            const cursorKeys = this.joyStick.createCursorKeys()
+            let pressed = ''
+            for (const name in cursorKeys) {
+                if (cursorKeys[name].isDown) {
+                    pressed = `${name}`
+                } else {
+                    this.mobileCursorKeys = undefined
+                }
+            }
+            joystickSpecs.pressed = pressed
+        }
+
+        function moveAnimations(isMobileLeft, isMobileRight, isMobileUp) {
+            return updateMoveAnimationModule(objects, isMobileLeft, isMobileRight, isMobileUp)
+        }
+
+        function hitBomb(player, bomb) {
+            this.physics.pause()
+
+            updateHitBombModule(objects, bomb)
+        }
+
+        function playSfx(data, game) {
+            if (data.sfx.length !== 0) {
+                for (const sfx of data.sfx) {
+                    game.sound.playAudioSprite(sfx.key, sfx.sound)
+                }
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>
