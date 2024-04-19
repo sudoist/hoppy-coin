@@ -1,14 +1,22 @@
-let data = [
+const assetsPath = '../../assets/objects/buttons/'
+
+let buttons = [
     {
         key: 'mute',
-        path: 'objects/buttons/mute-32.png',
+        path: 'mute-32.png',
     },
     {
         key: 'sound',
-        path: 'objects/buttons/sound-32.png',
+        path: 'sound-32.png',
     },
 ]
 
-export function preloadButtonModule() {
-    return data
+function preloadButtons(scene) {
+    for (const button of buttons) {
+        scene.load.image(button.key, assetsPath + button.path)
+    }
+}
+
+export function preloadButtonModule(scene) {
+    return preloadButtons(scene)
 }

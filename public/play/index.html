@@ -45,26 +45,19 @@
 
         // Get preload data
         import { preloadBgModule } from '../../functions/preload/bg.js'
+        import { preloadObjectModule } from '../../functions/preload/object.js'
         import { preloadPlayerModule } from '../../functions/preload/player.js'
         import { preloadButtonModule } from '../../functions/preload/button.js'
         import { preloadSfxModule } from '../../functions/preload/sfx.js'
         import { preloadMusicModule } from '../../functions/preload/music.js'
         import { preloadPluginModule } from '../../functions/preload/plugin.js'
 
-        // Setup preload data
-        let backgrounds = preloadBgModule()
-        let playerSprites = preloadPlayerModule()
-        let buttonPreloads = preloadButtonModule()
-        let sfxSprites = preloadSfxModule()
-        let musics = preloadMusicModule()
-        let plugins = preloadPluginModule()
-
         // Get create data
         import { createPlatformModule } from '../../functions/create/platform.js'
         import { createAnimationModule } from '../../functions/create/animation.js'
         import { createButtonModule, createButtonSoundToggleModule } from '../../functions/create/button.js'
         import { createSelectPlayerSpriteModule, createSetPlayerModule } from '../../functions/create/player.js'
-        import { createSetKeyboardKeyModule, createSetJoystickModule } from '../../functions/create/input.js'
+        import { createSetKeyboardKeyModule, createJoystickPressedModule, createSetJoystickModule } from '../../functions/create/input.js'
         import { createTextModule, createStarModule, createStarChildrenModule, createStartBombModule } from '../../functions/create/object.js'
 
         // Setup create data
@@ -72,7 +65,7 @@
         let animations = createAnimationModule()
         let buttons = createButtonModule()
         let keyboardKeys = createSetKeyboardKeyModule()
-        let joystickSpecs = createSetJoystickModule()
+        let joystickState = createJoystickPressedModule()
         let texts = createTextModule()
         let starSpecs = createStarModule()
 
@@ -83,6 +76,7 @@
         import { updateGameOverModule } from '../../functions/update/game.js'
 
         // Setup local data
+        let backgrounds
         let config
         let features
         let game
@@ -123,7 +117,7 @@
                 // Set game mode
                 mode = params.mode
 
-                // Set feature flags                
+                // Set feature flags
                 features = processFeatureFlagsModule(config.mode, features)
 
                 // Load game end html
@@ -137,40 +131,25 @@
 
         function preload() {
             // Backgrounds
-            for (const background of backgrounds) {
-                this.load.image(background.key, assetsPath + background.path)
-            }
+            backgrounds = preloadBgModule(this)
+
+            // Objects
+            preloadObjectModule(this)
 
             // Player
-            for (const playerSprite of playerSprites) {
-                this.load.spritesheet(playerSprite.key, assetsPath + playerSprite.path, { frameWidth: 32, frameHeight: 48 })
-                objects.playerSpritesArray.push(playerSprite.key) // For displaying sprite in create
-            }
+            preloadPlayerModule(this, objects)
 
             // Buttons
-            for (const button of buttonPreloads) {
-                this.load.image(button.key, assetsPath + button.path)
-            }
+            preloadButtonModule(this)
 
             // Audio
-
-            // https://github.com/phaserjs/examples/blob/master/public/src/audio/HTML5%20Audio/audiosprite.js
-            // SFX
-            let audioFiles = []
-            for (const sfxSprite of sfxSprites.files) {
-                audioFiles.push(assetsPath + sfxSprite.path)
-            }
-            this.load.audioSprite(sfxSprites.key, assetsPath + sfxSprites.spritePath, audioFiles)
+            preloadSfxModule(this)
 
             // Music
-            for (const music of musics) {
-                this.load.audio(music.key, [assetsPath + music.path])
-            }
+            preloadMusicModule(this)
 
             // Plugins
-            for (const plugin of plugins) {
-                this.load.plugin(plugin.key, assetsPath + plugin.path, true)
-            }
+            preloadPluginModule(this)
         }
 
         function create() {
@@ -261,15 +240,7 @@
             this.physics.add.collider(objects.player, objects.bombs, hitBomb, null, this)
 
             // Add joystick
-            // TODO: Doesn't work as expected. It holds the pressed cursor but should do for now.
-            this.joyStick = this.plugins.get('rexvirtualjoystickplugin').add(this, {
-                x: joystickSpecs.x,
-                y: joystickSpecs.y,
-                radius: joystickSpecs.radius,
-                base: this.add.circle(joystickSpecs.base.x, joystickSpecs.base.y, joystickSpecs.base.size, joystickSpecs.base.color),
-                thumb: this.add.circle(joystickSpecs.thumb.x, joystickSpecs.thumb.y, joystickSpecs.thumb.size, joystickSpecs.thumb.color),
-            })
-                .on('update', joyStickState, this)
+            createSetJoystickModule(this)
 
             // Setup instructions
             this.instructionsText = texts.instruction.text
@@ -300,17 +271,17 @@
                 objects.player.anims.play('explode')
                 const dataGameOver = updateGameOverModule(mode, game, objects)
 
-                // Play sfx                    
+                // Play sfx
                 playSfx(dataGameOver, game)
 
                 objects.music.stop()
                 return false
             }
 
-            // Keyboard and mobile joystick                
-            const isMobileLeft = joystickSpecs.pressed === 'left'
-            const isMobileRight = joystickSpecs.pressed === 'right'
-            const isMobileUp = joystickSpecs.pressed === 'up'
+            // Keyboard and mobile joystick
+            const isMobileLeft = joystickState.pressed === 'left'
+            const isMobileRight = joystickState.pressed === 'right'
+            const isMobileUp = joystickState.pressed === 'up'
 
             const data = moveAnimations(isMobileLeft, isMobileRight, isMobileUp)
 
@@ -318,7 +289,7 @@
             playSfx(data, game)
         }
 
-        // Functions that break when moving to external js (this)
+        // Functions that break when moving to external js (this) this is scene
         function collectStar(player, star) {
 
             const data = updateCollectStarModule(objects, features)
@@ -358,19 +329,6 @@
 
             // Play sfx
             playSfx(data, game)
-        }
-
-        function joyStickState() {
-            const cursorKeys = this.joyStick.createCursorKeys()
-            let pressed = ''
-            for (const name in cursorKeys) {
-                if (cursorKeys[name].isDown) {
-                    pressed = `${name}`
-                } else {
-                    this.mobileCursorKeys = undefined
-                }
-            }
-            joystickSpecs.pressed = pressed
         }
 
         function moveAnimations(isMobileLeft, isMobileRight, isMobileUp) {

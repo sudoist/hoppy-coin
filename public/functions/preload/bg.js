@@ -1,50 +1,40 @@
-let data = [
+const assetsPath = '../../assets/bg/'
+
+let backgrounds = [
     {
         key: 'sky1',
-        path: 'bg/sky.png',
+        path: assetsPath + 'sky.png',
     },
     {
         key: 'sky2',
-        path: 'bg/john-cosio-xCZ8ynsCfrw-unsplash.jpg',
+        path: assetsPath + 'john-cosio-xCZ8ynsCfrw-unsplash.jpg',
     },
     {
         key: 'sky3',
-        path: 'bg/john-cosio-RxjSW-seIp0-unsplash.jpg',
+        path: assetsPath + 'john-cosio-RxjSW-seIp0-unsplash.jpg',
     },
     {
         key: 'sky4',
-        path: 'bg/aleksandra-khaprenko-0PPw9irzLIw-unsplash.jpg',
+        path: assetsPath + 'aleksandra-khaprenko-0PPw9irzLIw-unsplash.jpg',
     },
     {
         key: 'sky5',
-        path: 'bg/nathan-dumlao-kME9jbKd--s-unsplash.jpg',
+        path: assetsPath + 'nathan-dumlao-kME9jbKd--s-unsplash.jpg',
     },
     {
         key: 'sky6',
-        path: 'bg/dan-asaki-K0mJQlbu9Yo-unsplash.jpg',
-    },
-    {
-        key: 'ground',
-        path: 'objects/platforms/platform.png',
-    },
-    {
-        key: 'ground-m',
-        path: 'objects/platforms/platform-50.png',
-    },
-    {
-        key: 'ground-s',
-        path: 'objects/platforms/platform-25.png',
-    },
-    {
-        key: 'star',
-        path: 'objects/coin.png',
-    },
-    {
-        key: 'bomb',
-        path: 'objects/bomb-r.png',
+        path: assetsPath + 'dan-asaki-K0mJQlbu9Yo-unsplash.jpg',
     },
 ]
 
-export function preloadBgModule() {
-    return data
+function loadBackgrounds(scene) {
+    for (const background of backgrounds) {
+        scene.load.image(background.key, assetsPath + background.path)
+    }
+
+    return backgrounds
+}
+
+export function preloadBgModule(scene) {
+    return loadBackgrounds(scene)
 }
