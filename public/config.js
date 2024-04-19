@@ -55,12 +55,14 @@ let data = {
         arcade: {
             changePlatform: true,
             changeBackground: true,
-            changeMusicScore: 30,
+            changeBackgroundScore: 360,
+            changeMusicScore: 600,
         },
         ranked: {
             changePlatform: false,
             changeBackground: true,
-            changeMusicScore: 20,
+            changeBackgroundScore: 360,
+            changeMusicScore: 600,
         }
     }
 }

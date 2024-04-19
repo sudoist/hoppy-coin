@@ -83,6 +83,7 @@
         let config
         let features
         let game
+        let mode
 
         // Check assets path
         let assetsPath = "../../assets/"
@@ -115,6 +116,9 @@
 
                 // Check for url params
                 processUrlParamsModule(config, objects)
+
+                // Set game mode
+                mode = configs.mode
 
                 // Set feature flags                
                 features = processFeatureFlagsModule(config.mode, features)
@@ -291,16 +295,12 @@
             // Game over
             if (objects.gameOver) {
                 objects.player.anims.play('explode')
-                const dataGameOver = updateGameOverModule()
+                const dataGameOver = updateGameOverModule(mode, game, objects)
 
                 // Play sfx                    
                 playSfx(dataGameOver, game)
 
-                game.pause()
                 objects.music.stop()
-
-                setTimeout(() => { game.destroy() }, 4000);
-
                 return false
             }
 
@@ -318,7 +318,7 @@
         // Functions that break when moving to external js (this)
         function collectStar(player, star) {
 
-            const data = updateCollectStarModule(objects, platforms)
+            const data = updateCollectStarModule(objects, features)
 
             // Switch music when reaching stage 5
             if (objects.score === features.changeMusicScore) {
@@ -332,8 +332,8 @@
             }
 
             if (features.changePlatform) {
-                // Change platform/background every 3 stage completed - Arcade only
-                if (updateChangePlatformModule(config, objects, platforms)) {
+                // Change platform every set number of stage completed
+                if (updateChangePlatformModule(objects, platforms)) {
                     // Reset colliders
                     this.physics.add.collider(objects.player, objects.platforms[objects.platformIndex])
                     this.physics.add.collider(objects.stars, objects.platforms[objects.platformIndex])

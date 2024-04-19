@@ -1,4 +1,4 @@
-function collectStar(objects) {
+function collectStar(objects, features) {
     let sfx = []
 
     // Play when getting a star
@@ -14,7 +14,7 @@ function collectStar(objects) {
     objects.scoreText.setText('Score: ' + objects.score)
 
     // Change background on score
-    if ((objects.score % 360) === 0) {
+    if ((objects.score % features.changeBackgroundScore) === 0) {
 
         sfx.push(
             {
@@ -24,7 +24,9 @@ function collectStar(objects) {
         )
 
         // Platforms
-        objects.platforms[objects.platformIndex].clear(true, true)
+        if (features.changePlatform) {
+            objects.platforms[objects.platformIndex].clear(true, true)
+        }        
 
         objects.platformIndex++
 
@@ -49,8 +51,8 @@ function collectStar(objects) {
     return data
 }
 
-export function updateCollectStarModule(objects) {
-    return collectStar(objects)
+export function updateCollectStarModule(objects, features) {
+    return collectStar(objects, features)
 }
 
 function refreshStars(objects) {
