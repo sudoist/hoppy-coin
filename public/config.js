@@ -73,10 +73,11 @@ export function configModule() {
 
 function processUrlParams(config, objects) {
     const searchParams = new URLSearchParams(window.location.search)
+    let mode = 'arcade'
 
     // Update game mode
     if (searchParams.has('mode')) {
-        config.mode = searchParams.get('mode')
+        mode = config.mode = searchParams.get('mode')
     }
 
     // Update player name for ranked
@@ -85,7 +86,7 @@ function processUrlParams(config, objects) {
     }
 
     return {
-        mode: searchParams.get('mode'),
+        mode: mode,
         name: searchParams.get('name')
     }
 }

@@ -16,7 +16,10 @@
 
 <body>
 
-    <div id="main" data-template="arcade"
+    <div id="main-arcade" data-template="arcade"
+        class="py-12 sm:px-6 lg:px-8 h-screen flex items-center justify-center hidden"></div>
+
+    <div id="main-ranked" data-template="ranked"
         class="py-12 sm:px-6 lg:px-8 h-screen flex items-center justify-center hidden"></div>
 
     <div id="game" class="h-screen"></div>
@@ -90,8 +93,8 @@
 
         // Include files - https://stackoverflow.com/a/31837264
         $(document).ready(function () {
-            // Load head
             $(function () {
+                // Load head
                 let includes = $('[data-include]')
                 $.each(includes, function () {
                     let file = '../templates/head/' + $(this).data('include') + '.html'

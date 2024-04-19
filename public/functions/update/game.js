@@ -12,14 +12,18 @@ function gameOver(mode, game, objects) {
     }
 
     if (mode === 'arcade') {
-        $('#main').removeClass('hidden')
-        $('#main').addClass('z-10')
+        $('#main-arcade').removeClass('hidden')
+        $('#main-arcade').addClass('z-10')
         $('#game').addClass('game-over')
 
         setTimeout(() => { game.destroy() }, 4000);
     }
 
     if (mode === 'ranked') {
+        $('#main-ranked').removeClass('hidden')
+        $('#main-ranked').addClass('z-10')
+        $('#main-ranked').addClass('opacity-90')
+        $('#game').addClass('game-over')
 
         setTimeout(() => {
             window.location = "/ranking/index.html?name=" + objects.playerName + "&score=" + objects.score
