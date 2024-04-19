@@ -83,6 +83,11 @@ function processUrlParams(config, objects) {
     if (searchParams.has('name')) {
         objects.playerName = searchParams.get('name')
     }
+
+    return {
+        mode: searchParams.get('mode'),
+        name: searchParams.get('name')
+    }
 }
 
 export function processUrlParamsModule(config, objects) {
@@ -90,19 +95,9 @@ export function processUrlParamsModule(config, objects) {
 }
 
 function processFeatureFlags(mode, features) {
-    console.log(features)
-    console.log(mode)
-    console.log(features.arcade)
-
     if (mode === 'ranked') {
         return features.ranked
     }
-
-    // Default arcade mode
-    // features = features.arcade
-
-    // console.log(mode)
-    // console.log(features)
 
     return features.arcade
 }

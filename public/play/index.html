@@ -115,10 +115,10 @@
                 game = new Phaser.Game(config)
 
                 // Check for url params
-                processUrlParamsModule(config, objects)
+                let params = processUrlParamsModule(config, objects)
 
                 // Set game mode
-                mode = configs.mode
+                mode = params.mode
 
                 // Set feature flags                
                 features = processFeatureFlagsModule(config.mode, features)
