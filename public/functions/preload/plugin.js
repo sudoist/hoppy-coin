@@ -1,4 +1,4 @@
-const assetsPath = '../../assets/plugins/'
+const assetsPath = '/assets/plugins/'
 
 let plugins = [
     // Joystick

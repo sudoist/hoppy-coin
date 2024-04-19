@@ -1,4 +1,4 @@
-const assetsPath = '../../assets/objects/buttons/'
+const assetsPath = '/assets/objects/buttons/'
 
 let buttons = [
     {

@@ -1,4 +1,4 @@
-const assetsPath = '../../assets/audio/music/'
+const assetsPath = '/assets/audio/music/'
 
 let music = [
     {

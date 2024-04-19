@@ -1,4 +1,4 @@
-const assetsPath = '../../assets/players/'
+const assetsPath = '/assets/players/'
 
 let players = [
     {

@@ -27,7 +27,7 @@
         $(function () {
             let includes = $('[data-lib]')
             $.each(includes, function () {
-                let file = '../templates/head/libs/' + $(this).data('lib') + '.html'
+                let file = '/templates/head/libs/' + $(this).data('lib') + '.html'
                 $(this).load(file)
             })
         })
@@ -36,7 +36,7 @@
         $(function () {
             let includes = $('[data-style]')
             $.each(includes, function () {
-                let file = '../templates/head/styles/' + $(this).data('style') + '.html'
+                let file = '/templates/head/styles/' + $(this).data('style') + '.html'
                 $(this).load(file)
             })
         })
@@ -45,7 +45,7 @@
         $(function () {
             let includes = $('[data-style-games]')
             $.each(includes, function () {
-                let file = '../templates/head/styles/games/' + $(this).data('style-games') + '.html'
+                let file = '/templates/head/styles/games/' + $(this).data('style-games') + '.html'
                 $(this).load(file)
             })
         })

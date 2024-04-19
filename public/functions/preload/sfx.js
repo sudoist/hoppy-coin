@@ -1,4 +1,4 @@
-const assetsPath = '../../assets/audio/sfx/'
+const assetsPath = '/assets/audio/sfx/'
 
 let sfxSprites = {
     key: 'sfx',
