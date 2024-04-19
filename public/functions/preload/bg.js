@@ -25,23 +25,23 @@ let data = [
     },
     {
         key: 'ground',
-        path: 'platform.png',
+        path: 'objects/platforms/platform.png',
     },
     {
         key: 'ground-m',
-        path: 'platform-50.png',
+        path: 'objects/platforms/platform-50.png',
     },
     {
         key: 'ground-s',
-        path: 'platform-25.png',
+        path: 'objects/platforms/platform-25.png',
     },
     {
         key: 'star',
-        path: 'coin.png',
+        path: 'objects/coin.png',
     },
     {
         key: 'bomb',
-        path: 'bomb-r.png',
+        path: 'objects/bomb-r.png',
     },
 ]
 

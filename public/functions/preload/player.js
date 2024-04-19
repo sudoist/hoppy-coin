@@ -1,11 +1,11 @@
 let data = [
     {
         key: 'dude1',
-        path: 'player/dude.png',
+        path: 'players/dude.png',
     },
     {
         key: 'dude2',
-        path: 'player/piccolo.png',
+        path: 'players/piccolo.png',
     },
 ]
 
