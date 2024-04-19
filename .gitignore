@@ -3,4 +3,4 @@
 /.idea
 
 # Env
-/public/config.js
+/public/env.js

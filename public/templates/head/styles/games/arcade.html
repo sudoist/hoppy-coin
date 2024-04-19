@@ -1,0 +1,51 @@
+<style type="text/css">
+    @font-face {
+        font-family: "Press Start 2P";
+        src: url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap") format("truetype");
+
+        src: url(https://fonts.gstatic.com/s/pressstart2p/v15/e3t4euO8T-267oIAQAu6jDQyK3nYivN04w.woff2) format('woff2');
+        src: url(https://fonts.gstatic.com/s/pressstart2p/v15/e3t4euO8T-267oIAQAu6jDQyK3nRivN04w.woff2) format('woff2');
+        src: url(https://fonts.gstatic.com/s/pressstart2p/v15/e3t4euO8T-267oIAQAu6jDQyK3nWivN04w.woff2) format('woff2');
+        src: url(https://fonts.gstatic.com/s/pressstart2p/v15/e3t4euO8T-267oIAQAu6jDQyK3nbivN04w.woff2) format('woff2');
+        src: url(https://fonts.gstatic.com/s/pressstart2p/v15/e3t4euO8T-267oIAQAu6jDQyK3nVivM.woff2) format('woff2');
+    }
+
+    body {
+        background-image: url("../assets/bg/phaser-planet-small.png");
+        background-size: 20%;
+        background-repeat: repeat;
+    }
+
+    #main, #game {
+        margin: 0;
+        font-family: 'Press Start 2P', cursive;
+        text-transform: uppercase;
+    }
+
+    #content {
+        width: 50% !important;
+    }
+
+    /* Main */
+    #main {
+        position: sticky;
+    }
+
+    /* Game */
+    #game {
+    }
+
+    /* Game over */
+    .game-over {
+        position: fixed;
+        top: 50%;
+        left: 45%;
+        transform: translate(-51%, -50%);
+    }
+
+    @media only screen and (max-width: 600px) {
+        #content {
+            width: 90% !important;
+        }
+    }
+</style>
