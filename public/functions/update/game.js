@@ -1,4 +1,4 @@
-function gameOver(mode, game, objects) {
+export function updateGameOverModule(mode, game, objects) {
     // Array to have multiple sounds later
     let sfx = [
         {
@@ -34,8 +34,4 @@ function gameOver(mode, game, objects) {
     game.pause()
 
     return data
-}
-
-export function updateGameOverModule(mode, game, objects) {
-    return gameOver(mode, game, objects)
 }

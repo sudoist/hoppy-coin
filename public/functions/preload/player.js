@@ -11,13 +11,9 @@ let players = [
     },
 ]
 
-function loadPlayer(scene, objects) {
+export function preloadPlayerModule(scene, objects) {
     for (const player of players) {
         scene.load.spritesheet(player.key, assetsPath + player.path, {frameWidth: 32, frameHeight: 48})
         objects.playerSpritesArray.push(player.key) // For displaying sprite in create
     }
-}
-
-export function preloadPlayerModule(scene, objects) {
-    return loadPlayer(scene, objects)
 }

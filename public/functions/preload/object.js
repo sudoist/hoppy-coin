@@ -23,14 +23,10 @@ let objects = [
     },
 ]
 
-function loadObjects(scene) {
+export function preloadObjectModule(scene) {
     for (const object of objects) {
         scene.load.image(object.key, assetsPath + object.path)
     }
 
     return objects
-}
-
-export function preloadObjectModule(scene) {
-    return loadObjects(scene)
 }

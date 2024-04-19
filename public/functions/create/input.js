@@ -54,7 +54,7 @@ function joyStickState() {
     joystickPressed.pressed = pressed
 }
 
-function createJoystickControls(scene) {
+export function createSetJoystickModule(scene) {
     scene.joyStick = scene.plugins.get('rexvirtualjoystickplugin').add(scene, {
         x: joystickControls.x,
         y: joystickControls.y,
@@ -63,8 +63,4 @@ function createJoystickControls(scene) {
         thumb: scene.add.circle(joystickControls.thumb.x, joystickControls.thumb.y, joystickControls.thumb.size, joystickControls.thumb.color),
     })
         .on('update', joyStickState, scene)
-}
-
-export function createSetJoystickModule(scene) {
-    return createJoystickControls(scene)
 }

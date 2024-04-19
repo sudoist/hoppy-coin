@@ -8,12 +8,8 @@ let plugins = [
     },
 ]
 
-function preloadPlugins(scene) {
+export function preloadPluginModule(scene) {
     for (const plugin of plugins) {
         scene.load.plugin(plugin.key, assetsPath + plugin.path, true)
     }
-}
-
-export function preloadPluginModule(scene) {
-    return preloadPlugins(scene)
 }

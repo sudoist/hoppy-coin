@@ -11,12 +11,8 @@ let music = [
     },
 ]
 
-function preloadMusic(scene) {
+export function preloadMusicModule(scene) {
     for (const item of music) {
         scene.load.audio(item.key, [assetsPath + item.path])
     }
-}
-
-export function preloadMusicModule(scene) {
-    return preloadMusic(scene)
 }

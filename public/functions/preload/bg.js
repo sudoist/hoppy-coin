@@ -27,14 +27,10 @@ let backgrounds = [
     },
 ]
 
-function loadBackgrounds(scene) {
+export function preloadBgModule(scene) {
     for (const background of backgrounds) {
         scene.load.image(background.key, assetsPath + background.path)
     }
 
     return backgrounds
-}
-
-export function preloadBgModule(scene) {
-    return loadBackgrounds(scene)
 }

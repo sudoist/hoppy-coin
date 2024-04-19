@@ -1,4 +1,4 @@
-let data = [
+let platforms = [
     //  Add at least 3 platforms for now)
     {
         grounds: [
@@ -342,6 +342,30 @@ let data = [
     }
 ]
 
-export function createPlatformModule() {
-    return data
+export function createPlatformModule(scene, objects) {
+
+    for (let [index, platform] of platforms.entries()) {
+        objects.platforms[++index] = scene.physics.add.staticGroup()
+    }
+
+    for (let [index, platform] of platforms.entries()) {
+        // Only get from first
+        if (index === 0) {
+
+            // Here we create the ground.
+            // Scale it to fit the width of the game (the original sprite is 400x32 in size)
+            for (const ground of platform.grounds) {
+                objects.platforms[objects.platformIndex].create(ground.x, ground.y, ground.key).setScale(2).refreshBody()
+            }
+
+            // Now let's create some ledges
+            for (const ledge of platform.ledges) {
+                objects.platforms[objects.platformIndex].create(ledge.x, ledge.y, ledge.key)
+            }
+
+            break
+        }
+    }
+
+    return platforms
 }

@@ -13,7 +13,7 @@ let sfxSprites = {
     ]
 }
 
-function preloadSfx(scene) {
+export function preloadSfxModule(scene) {
     // https://github.com/phaserjs/examples/blob/master/public/src/audio/HTML5%20Audio/audiosprite.js
     // SFX
     let audioFiles = []
@@ -21,8 +21,4 @@ function preloadSfx(scene) {
         audioFiles.push(assetsPath + sfxSprite.path)
     }
     scene.load.audioSprite(sfxSprites.key, assetsPath + sfxSprites.spritePath, audioFiles)
-}
-
-export function preloadSfxModule(scene) {
-    return preloadSfx(scene)
 }

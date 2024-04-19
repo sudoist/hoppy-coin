@@ -11,12 +11,8 @@ let buttons = [
     },
 ]
 
-function preloadButtons(scene) {
+export function preloadButtonModule(scene) {
     for (const button of buttons) {
         scene.load.image(button.key, assetsPath + button.path)
     }
-}
-
-export function preloadButtonModule(scene) {
-    return preloadButtons(scene)
 }

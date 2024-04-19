@@ -1,4 +1,5 @@
-function collectStar(objects, features) {
+export function updateCollectStarModule(objects, features) {
+
     let sfx = []
 
     // Play when getting a star
@@ -26,7 +27,7 @@ function collectStar(objects, features) {
         // Platforms
         if (features.changePlatform) {
             objects.platforms[objects.platformIndex].clear(true, true)
-        }        
+        }
 
         objects.platformIndex++
 
@@ -51,11 +52,8 @@ function collectStar(objects, features) {
     return data
 }
 
-export function updateCollectStarModule(objects, features) {
-    return collectStar(objects, features)
-}
+export function updateRefreshStarModule(objects) {
 
-function refreshStars(objects) {
 
     let sfx = {
         key: 'sfx',
@@ -87,24 +85,12 @@ function refreshStars(objects) {
     return data
 }
 
-export function updateRefreshStarModule(objects) {
-    return refreshStars(objects)
-}
-
-function hitBomb(objects, bomb) {
+export function updateHitBombModule(objects, bomb) {
     bomb.destroy()
 
     objects.gameOver = true
 }
 
-export function updateHitBombModule(objects, bomb) {
-    return hitBomb(objects, bomb)
-}
-
-function changeBackground(objects, key) {
-    objects.sky.setTexture(key, 0)
-}
-
 export function updateChangeBackgroundModule(objects, key) {
-    return changeBackground(objects, key)
+    objects.sky.setTexture(key, 0)
 }
