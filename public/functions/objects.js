@@ -2,6 +2,7 @@ let data = {
 
     // Player
     player: null,
+    playerName: null,
     playerSpritesArray: [],
 
     // Stars

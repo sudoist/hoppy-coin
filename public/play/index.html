@@ -23,7 +23,7 @@
 
     <script type="module">
         // Get configs
-        import { configModule } from '../../config.js'
+        import { configModule, processUrlParamsModule, processFeatureFlagsModule } from '../../config.js'
 
         // Setup config data
         let configs = configModule()
@@ -81,6 +81,7 @@
 
         // Setup local data
         let config
+        let features
         let game
 
         // Check assets path
@@ -99,8 +100,10 @@
                 // Setup config
                 if (device === 'mobile') {
                     config = configs.configMobile
+                    features = configs.features
                 } else {
                     config = configs.configDesktop
+                    features = configs.features
                 }
                 config.scene = {
                     preload: preload,
@@ -109,6 +112,12 @@
                 }
                 texts.instruction.text = config.instructions
                 game = new Phaser.Game(config)
+
+                // Check for url params
+                processUrlParamsModule(config, objects)
+
+                // Set feature flags                
+                features = processFeatureFlagsModule(config.mode, features)
 
                 // Load game end html
                 let templates = $('[data-template]')
@@ -204,7 +213,7 @@
                     this.anims.create({
                         key: animation.key,
                         frames: [{ key: dude, frame: animation.frame }],
-                        frameRate: 20
+                        frameRate: animation.frameRate,
                     })
                 } else {
                     this.anims.create({
@@ -312,23 +321,27 @@
             const data = updateCollectStarModule(objects, platforms)
 
             // Switch music when reaching stage 5
-            if (objects.score === 600) {
+            if (objects.score === features.changeMusicScore) {
                 objects.music.stop()
                 objects.music = this.sound.add('hard')
                 objects.music.play()
             }
 
-            // Change platform/background every 3 stage completed
-            if (updateChangePlatformModule(objects, platforms)) {
-                // Reset colliders
-                this.physics.add.collider(objects.player, objects.platforms[objects.platformIndex])
-                this.physics.add.collider(objects.stars, objects.platforms[objects.platformIndex])
-                this.physics.add.collider(objects.bombs, objects.platforms[objects.platformIndex])
-
+            if (features.changeBackground) {
                 updateChangeBackgroundModule(objects, backgrounds[objects.skyIndex].key)
+            }
 
-                // Re add instructions
-                this.add.text(texts.instruction.x, texts.instruction.y, texts.instruction.text, texts.instruction.font)
+            if (features.changePlatform) {
+                // Change platform/background every 3 stage completed - Arcade only
+                if (updateChangePlatformModule(config, objects, platforms)) {
+                    // Reset colliders
+                    this.physics.add.collider(objects.player, objects.platforms[objects.platformIndex])
+                    this.physics.add.collider(objects.stars, objects.platforms[objects.platformIndex])
+                    this.physics.add.collider(objects.bombs, objects.platforms[objects.platformIndex])
+
+                    // Re add instructions
+                    this.add.text(texts.instruction.x, texts.instruction.y, texts.instruction.text, texts.instruction.font)
+                }
             }
 
             // Remove star
