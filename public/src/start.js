@@ -1,5 +1,3 @@
-// let boot = new Boot()
-
 let gameConfig = {
     type: Phaser.AUTO,
     scale: {
@@ -11,11 +9,11 @@ let gameConfig = {
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: { y: 300 },
-            // debug: true
+            gravity: {y: 300},
+            debug: false
         }
     },
-    scene: [Boot, Preloader, MainMenu]
+    scene: [Boot, Preloader, MainMenu, Game]
 }
 game = new Phaser.Game(gameConfig);
 window.focus();

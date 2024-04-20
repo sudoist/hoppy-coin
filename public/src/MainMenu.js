@@ -65,11 +65,7 @@ class MainMenu extends Phaser.Scene {
 
         this.physics.add.collider(this.player, platforms);
 
-
         // Add menu collider to press buttons
-
-        // this.physics.add.collider(this.player, this.buttons);
-
         this.physics.add.overlap(this.player, this.buttons, this.selectMenu, null, this);
 
         //  Our player animations, turning, walking left and walking right.
@@ -113,8 +109,12 @@ class MainMenu extends Phaser.Scene {
 
         this.add.text(200, 550, 'Move with W, A, S, D', {fontSize: '32px', fill: '#FFF'});
 
+
+
+        this.add.text(50, 150, 'Coming soon..', {fontSize: '24px', fill: '#FFF'});
+
         this.titleMusic = this.sound.add('intro', {volume: 0.1, loop: true});
-        this.titleMusic.play();
+        this.titleMusic.play()
     }
 
     update() {
@@ -139,6 +139,8 @@ class MainMenu extends Phaser.Scene {
 
     selectMenu(player, menu) {
 
+
+
         // this.physics.pause()
         // console.log(menu)
         console.log(menu.name)
@@ -158,12 +160,20 @@ class MainMenu extends Phaser.Scene {
 
         if (menu.name === 'ranked') {
             this.physics.pause()
-            window.location = '/play/index.html?name=SDO&mode=ranked'
+            // window.location = '/play/index.html?name=SDO&mode=ranked'
+            // this.scene.start('Game')
+            this.titleMusic.stop()
+            init.fadeInScene('Game', this)
         }
 
         if (menu.name === 'arcade') {
             this.physics.pause()
-            window.location = '/play'
+            // window.location = '/play'
+
+            this.titleMusic.stop()
+
+            // this.scene.start('Game')
+            init.fadeInScene('Game', this)
         }
     }
 }
