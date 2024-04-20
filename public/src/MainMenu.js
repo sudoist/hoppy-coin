@@ -113,7 +113,7 @@ class MainMenu extends Phaser.Scene {
 
         this.add.text(50, 150, 'Coming soon..', {fontSize: '24px', fill: '#FFF'});
 
-        this.titleMusic = this.sound.add('intro', {volume: 0.1, loop: true});
+        this.titleMusic = this.sound.add('intro', {volume: 1, loop: true});
         this.titleMusic.play()
     }
 
