@@ -175,7 +175,7 @@ class Game extends Phaser.Scene {
         // Start game with bomb
         let x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
 
-        let bomb = bombs.create(x, 16, 'bomb');
+        let bomb = bombs.create(x, 16, 'bomb-r');
         bomb.setBounce(1);
         bomb.setCollideWorldBounds(true);
         bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
@@ -488,7 +488,7 @@ class Game extends Phaser.Scene {
 
             var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
 
-            var bomb = bombs.create(x, 16, 'bomb');
+            var bomb = bombs.create(x, 16, 'bomb-r');
             bomb.setBounce(1);
             bomb.setCollideWorldBounds(true);
             bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);

@@ -12,6 +12,7 @@ class Boot extends Phaser.Scene {
         this.load.image('star', '/assets/objects/star.png')
         this.load.image('coin', '/assets/objects/coin.png')
         this.load.image('bomb', '/assets/objects/bomb.png')
+        this.load.image('bomb-r', '/assets/objects/bomb-r.png')
         this.load.image('ground', '/assets/objects/platforms/platform.png')
         this.load.image('ground-m', '/assets/objects/platforms/platform-50.png')
         this.load.image('ground-s', '/assets/objects/platforms/platform-25.png')
