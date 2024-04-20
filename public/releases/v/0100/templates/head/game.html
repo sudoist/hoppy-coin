@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <title>Arcade - Making your first Phaser 3 Game</title>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+    <script data-lib="tailwind"></script>
+
+    <!-- TODO: Doesn't work while included, check how to fix later -->
+    <!-- <script data-lib="phaser"></script> -->
+
+    <script data-style="global"></script>
+
+    <script data-style-games="arcade"></script>
+</head>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Include files - https://stackoverflow.com/a/31837264
+        // Libraries
+        $(function () {
+            let includes = $('[data-lib]')
+            $.each(includes, function () {
+                let file = '/releases/v/0100/templates/head/libs/' + $(this).data('lib') + '.html'
+                $(this).load(file)
+            })
+        })
+
+        // Global styles
+        $(function () {
+            let includes = $('[data-style]')
+            $.each(includes, function () {
+                let file = '/releases/v/0100/templates/head/styles/' + $(this).data('style') + '.html'
+                $(this).load(file)
+            })
+        })
+
+        // Game styles
+        $(function () {
+            let includes = $('[data-style-games]')
+            $.each(includes, function () {
+                let file = '/releases/v/0100/templates/head/styles/games/' + $(this).data('style-games') + '.html'
+                $(this).load(file)
+            })
+        })
+    })
+
+</script>
