@@ -160,10 +160,10 @@ class MainMenu extends Phaser.Scene {
 
         if (menu.name === 'ranked') {
             this.physics.pause()
-            // window.location = '/play/index.html?name=SDO&mode=ranked'
+            window.location = '/ranked'
             // this.scene.start('Game')
             this.titleMusic.stop()
-            init.fadeInScene('Game', this)
+            // init.fadeInScene('Game', this)
         }
 
         if (menu.name === 'arcade') {
