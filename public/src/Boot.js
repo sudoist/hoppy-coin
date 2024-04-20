@@ -16,6 +16,15 @@ class Boot extends Phaser.Scene {
         this.load.image('phaser', '/assets/logos/phaser.png')
         this.load.image('sudoist', '/assets/logos/sudoist.png')
         this.load.image('logo', '/assets/logos/logo.png')
+        this.load.image('github', '/assets/logos/github-mark.png')
+        this.load.image('github-white', '/assets/logos/github-mark-white.png')
+
+        // Buttons
+        this.load.image('arcade', '/assets/buttons/arcade.png')
+        this.load.image('ranked', '/assets/buttons/ranked.png')
+
+        // Music
+        this.load.audio('intro', '/assets/music/Intro Theme.mp3')
     }
 
     create() {
@@ -26,7 +35,6 @@ class Boot extends Phaser.Scene {
             centerY: this.cameras.main.centerY
         };
 
-        // this.scene.start('Preloader')
-        this.scene.start('MainMenu')
+        this.scene.start('Preloader')
     }
 }
