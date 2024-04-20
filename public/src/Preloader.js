@@ -42,7 +42,7 @@ class Preloader extends Phaser.Scene {
         // player.setBounce(0.2);
         // player.setCollideWorldBounds(true);
 
-        // init.fadeOutScene('MainMenu', this)
+        init.fadeOutScene('MainMenu', this)
         // init.fadeInScene('MainMenu', this)
     }
 }

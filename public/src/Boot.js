@@ -61,7 +61,7 @@ class Boot extends Phaser.Scene {
             centerY: this.cameras.main.centerY
         }
 
-        // this.scene.start('Preloader')
-        this.scene.start('Game')
+        this.scene.start('Preloader')
+        // this.scene.start('Game')
     }
 }
