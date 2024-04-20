@@ -348,7 +348,7 @@ class Game extends Phaser.Scene {
 
 
     selectMenu(player, menu) {
-
+        score = 0;
         // music.stop()
         if (menu.name === 'menu') {
             console.log('menu')
