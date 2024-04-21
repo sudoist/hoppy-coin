@@ -7,7 +7,7 @@ class MainMenu extends Phaser.Scene {
     }
 
     create() {
-        init.addBorders(this)
+        init.setupScene(this, 'dude')
 
         let logo = this.add.image(400, 100, 'logo')
         logo.setScale(.5)
@@ -55,56 +55,29 @@ class MainMenu extends Phaser.Scene {
         platforms.create(50, 250, 'ground')
         platforms.create(750, 220, 'ground')
 
-        // The player and its settings
-        this.player = this.physics.add.sprite(100, 450, 'dude')
+        // The player and its settings (Moved to setupScene)
 
-        // Player physics properties. Give the little guy a slight bounce.
-        this.player.setBounce(0.2)
-        this.player.setCollideWorldBounds(true)
-
+        // Add colliders
         this.physics.add.collider(this.player, platforms)
 
         // Add menu collider to press buttons
         this.physics.add.overlap(this.player, this.buttons, this.selectMenu, null, this)
 
-        // Our player animations, turning, walking left and walking right.
-        init.setAnimations(this, 'dude')
+        // Our player animations, turning, walking left and walking right. (Moved to setupScene)
 
-        // Input Events
-        this.cursors = this.input.keyboard.createCursorKeys()
+        // Input Events (Moved to setupScene)
 
-        this.cursors = this.input.keyboard.addKeys({
-            up: Phaser.Input.Keyboard.KeyCodes.W,
-            down: Phaser.Input.Keyboard.KeyCodes.S,
-            left: Phaser.Input.Keyboard.KeyCodes.A,
-            right: Phaser.Input.Keyboard.KeyCodes.D
-        })
-
-        // Instructions
+        // Instructions (Moved to setupScene)
         this.add.text(200, 550, 'Move with W, A, S, D', {fontSize: '32px', fill: '#FFF'})
 
+        // Music
         this.titleMusic = this.sound.add('intro', {volume: 1, loop: true})
         this.titleMusic.play()
     }
 
     update() {
-        if (this.cursors.left.isDown) {
-            this.player.setVelocityX(-160)
-
-            this.player.anims.play('left', true)
-        } else if (this.cursors.right.isDown) {
-            this.player.setVelocityX(160)
-
-            this.player.anims.play('right', true)
-        } else {
-            this.player.setVelocityX(0)
-
-            this.player.anims.play('turn')
-        }
-
-        if (this.cursors.up.isDown && this.player.body.touching.down) {
-            this.player.setVelocityY(-330)
-        }
+        // Movements
+        init.setPlayerMovements(this)
     }
 
     selectMenu(player, menu) {
@@ -128,7 +101,7 @@ class MainMenu extends Phaser.Scene {
         if (menu.name === 'arcade') {
             this.physics.pause()
             this.titleMusic.stop()
-            init.fadeInScene('Game', this)
+            init.fadeInScene('Arcade', this)
         }
     }
 }

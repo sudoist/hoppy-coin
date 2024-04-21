@@ -21,6 +21,7 @@ class Boot extends Phaser.Scene {
         // Player
         this.load.spritesheet('dude', '/assets/players/dude.png', {frameWidth: 32, frameHeight: 48})
         this.load.spritesheet('piccolo', '/assets/players/piccolo.png', {frameWidth: 32, frameHeight: 48})
+        this.load.spritesheet('explode', '/assets/players/explode.png', {frameWidth: 32, frameHeight: 48})
 
         // Logos
         this.load.image('phaser', '/assets/logos/phaser.png')
@@ -64,7 +65,8 @@ class Boot extends Phaser.Scene {
         }
 
         // this.scene.start('Preloader')
-        this.scene.start('MainMenu')
+        // this.scene.start('MainMenu')
+        this.scene.start('Arcade')
         // this.scene.start('Game')
     }
 }
