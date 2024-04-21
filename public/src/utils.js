@@ -8,7 +8,7 @@ let playerSprite
 let stars
 let bombs
 let sky
-let skyIndex = 1
+let skyIndex = 0
 let platforms
 let cursors
 let score = 0
@@ -225,11 +225,11 @@ init.collectStar = function (scene, player, star) {
         skyIndex++
 
         // Reset background
-        if (skyIndex === 7) {
-            skyIndex = 1
+        if (skyIndex === 6) {
+            skyIndex = 0
         }
 
-        scene.changeBackground('sky' + skyIndex)
+        init.changeBackgroundOnScore()
     }
 
     if (stars.countActive(true) === 0) {
@@ -267,6 +267,19 @@ init.changeBackground = function (filename, size, repeat) {
     document.getElementById('container').style.backgroundImage = 'url(/assets/bg/' + filename + ')'
     document.getElementById('container').style.backgroundSize = size
     document.getElementById('container').style.backgroundRepeat = repeat
+}
+
+init.changeBackgroundOnScore = function () {
+    let backgrounds = [
+        'sky.png',
+        'john-cosio-xCZ8ynsCfrw-unsplash.jpg',
+        'aleksandra-khaprenko-0PPw9irzLIw-unsplash.jpg',
+        'nathan-dumlao-kME9jbKd--s-unsplash.jpg',
+        'dan-asaki-K0mJQlbu9Yo-unsplash.jpg',
+        'john-cosio-RxjSW-seIp0-unsplash.jpg',
+    ]
+
+    init.changeBackground(backgrounds[skyIndex], 'cover', 'no-repeat')
 }
 
 init.setSceneBackground = function (sceneName) {
@@ -326,42 +339,4 @@ init.gameOverReset = function (scene, newScene, newPositionX, newPositionY) {
     previousSceneKey = scene.scene.key
 
     init.fadeInScene(newScene, scene)
-}
-// document.getElementById('container').style.backgroundImage="url(/assets/bg/john-cosio-RxjSW-seIp0-unsplash.jpg)"
-// document.getElementById('container').style.backgroundSize="cover"
-// document.getElementById('container').style.backgroundRepeat="no-repeat"
-
-
-init.repeatingBackground = function (scene, key) {
-    // Define the size of the canvas
-    const canvasWidth = scene.sys.game.config.width // Width of the canvas
-    const canvasHeight = scene.sys.game.config.height // Height of the canvas
-
-    // Define the size of the image
-    const imageWidth = 100 // Width of each image
-    const imageHeight = 100 // Height of each image
-
-    // Calculate the number of rows and columns needed
-    const numColumns = Math.floor(canvasWidth / imageWidth)
-    const numRows = Math.floor(canvasHeight / imageHeight)
-
-    // Calculate the spacing between each image to cover the whole canvas
-    const spacingX = canvasWidth / numColumns
-    const spacingY = canvasHeight / numRows
-
-    // Loop to create the images
-    for (let i = 0; i < numRows; i++) {
-        for (let j = 0; j < numColumns; j++) {
-            // Calculate the position of each image based on the row, column, and spacing
-            const posX = (j + 0.5) * spacingX // Add 0.5 to center the images within each cell
-            const posY = (i + 0.5) * spacingY // Add 0.5 to center the images within each cell
-
-            // Create the image
-            const image = scene.add.image(posX, posY, key)
-
-            // Optionally, set properties for each image
-            image.setScale(0.6) // Example: Set scale
-            // image.setOrigin(0.5) // Example: Set origin
-        }
-    }
 }
