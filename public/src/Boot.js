@@ -7,6 +7,7 @@ class Boot extends Phaser.Scene {
         // Backgrounds
         this.load.image('sky', '/assets/bg/sky.png')
         this.load.image('planet', '/assets/bg/phaser-planet-small.png')
+        this.load.image('default', '/assets/bg/pattern.webp')
 
         // Objects
         this.load.image('star', '/assets/objects/star.png')
@@ -62,7 +63,8 @@ class Boot extends Phaser.Scene {
             centerY: this.cameras.main.centerY
         }
 
-        this.scene.start('Preloader')
+        // this.scene.start('Preloader')
+        this.scene.start('MainMenu')
         // this.scene.start('Game')
     }
 }
