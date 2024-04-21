@@ -7,6 +7,9 @@ class MainMenu extends Phaser.Scene {
     }
 
     create() {
+        // Init
+        playerSprite = init.randomizePlayerSprite() // Random or select
+
         init.setupScene(this, 'dude')
 
         let logo = this.add.image(400, 100, 'logo')
@@ -81,7 +84,6 @@ class MainMenu extends Phaser.Scene {
     }
 
     selectMenu(player, menu) {
-
         if (menu.name === 'github') {
             let URL = 'https://github.com/sudoist/hoppy-coin'
             window.open(URL, '_blank')
@@ -95,12 +97,14 @@ class MainMenu extends Phaser.Scene {
         if (menu.name === 'ranked') {
             this.physics.pause()
             this.titleMusic.stop()
+            // previousSceneKey = scene.scene.key
             window.location = '/ranked'
         }
 
         if (menu.name === 'arcade') {
             this.physics.pause()
             this.titleMusic.stop()
+            previousSceneKey = this.scene.key
             init.fadeInScene('Arcade', this)
         }
     }
