@@ -26,13 +26,13 @@ class RankedMenu extends Phaser.Scene {
         // Add buttons
         this.buttons = this.physics.add.group()
 
+        this.add.text(50, 40, '<- Leaderboard', {fontSize: '18px', fill: '#FFF'})
+        this.buttons.create(30, 45, 'leaderboard').setScale(1).setName('phaserInitialRanking').setImmovable(false).setVisible(true)
+            .setCollideWorldBounds(true).body.allowGravity = false
+
         this.add.text(20, 140, '<- Phaser Initial', {fontSize: '18px', fill: '#FFF'})
         this.buttons.create(10, 200, 'bomb').setScale(.5).setName('phaserInitial').setImmovable(false).setVisible(false)
             .setCollideWorldBounds(true).body.allowGravity = false
-
-        // this.add.text(710, 140, 'Fork ->', {fontSize: '18px', fill: '#FFF'}).setName('github')
-        // this.buttons.create(750, 180, 'github').setScale(.2).setName('github').setImmovable(false)
-        //     .setCollideWorldBounds(true).body.allowGravity = false
 
         this.add.text(610, 170, 'Back to title ->', {fontSize: '18px', fill: '#FFF'})
         this.buttons.create(790, 210, 'bomb').setScale(.5).setName('title').setImmovable(false).setVisible(false)
@@ -104,6 +104,20 @@ class RankedMenu extends Phaser.Scene {
             level = 'phaserInitial'
 
             init.fadeInScene('Ranked', this)
+        }
+
+        if (menu.name === 'phaserInitialRanking') {
+            this.physics.pause()
+            this.titleMusic.stop()
+            previousSceneKey = this.scene.key
+
+            // Change starting position
+            playerPositionX = 710
+            playerPositionY = 140
+
+            level = 'phaserInitialRanking'
+
+            init.fadeInScene('LeaderBoard', this)
         }
     }
 }

@@ -30,6 +30,19 @@ let isMute = false
 let previousSceneKey
 // Ranked
 let level
+let levelLabel
+let env
+
+// Get env
+init.apiFetch = async function fetchJSONData(path) {
+    let data
+
+    const res = await fetch(path)
+
+    data = await res.json()
+
+    return data
+}
 
 init.fadeOutScene = function (sceneName, context) {
     context.cameras.main.fadeOut(1700)
@@ -249,12 +262,12 @@ init.collectStar = function (scene, player, star) {
 
 }
 
-init.createBomb = function (scene, bombs, player, delay) {
+init.createBomb = function (scene, bombs, player, delay, sprite) {
     // Spawn bomb after 3 seconds
     setTimeout(() => {
         let x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400)
 
-        let bomb = bombs.create(x, 16, 'bomb-r')
+        let bomb = bombs.create(x, 16, sprite)
         bomb.setBounce(1)
         bomb.setCollideWorldBounds(true)
         bomb.setVelocity(Phaser.Math.Between(-200, 200), 20)
@@ -344,4 +357,46 @@ init.gameOverReset = function (scene, newScene, newPositionX, newPositionY) {
     previousSceneKey = scene.scene.key
 
     init.fadeInScene(newScene, scene)
+}
+
+// Ranked
+init.getScores = async function () {
+    return await fetch(env.API_URL + "/scores", {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body),
+    })
+}
+
+// Ranked
+init.printScores = function (scene, scores) {
+
+    let rank = 0
+
+    let startingY = 100
+
+    for (const [key, value] of Object.entries(scores.data)) {
+        ++rank
+
+        // Only get 9
+        if (rank < 10) {
+
+            // Format date
+            const date = new Date(`${value.date}`).toISOString().slice(0, 10)
+
+            // Score
+            let score = scene.add.text(400, startingY, rank + '    ' + `${value.name}` + '    ' + `${value.score}` + '    ' + date, {
+                fontSize: '24px',
+                fill: '#fff'
+            })
+
+            // Set the origin of the text to its center
+            score.setOrigin(0.5)
+
+            startingY+= 30
+        }
+    }
 }

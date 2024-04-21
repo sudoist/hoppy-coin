@@ -9,11 +9,13 @@ class Boot extends Phaser.Scene {
         this.load.image('planet', '/assets/bg/phaser-planet-small.png')
         this.load.image('default', '/assets/bg/pattern.webp')
 
-        // Objects
+        // Sprites
         this.load.image('star', '/assets/objects/star.png')
         this.load.image('coin', '/assets/objects/coin.png')
         this.load.image('bomb', '/assets/objects/bomb.png')
         this.load.image('bomb-r', '/assets/objects/bomb-r.png')
+        this.load.image('bomb-ball', '/assets/sprites/bomb-ball.png')
+        this.load.image('leaderboard', '/assets/sprites/leaderboard-32.png')
         this.load.image('ground', '/assets/objects/platforms/platform.png')
         this.load.image('ground-m', '/assets/objects/platforms/platform-50.png')
         this.load.image('ground-s', '/assets/objects/platforms/platform-25.png')
@@ -55,6 +57,12 @@ class Boot extends Phaser.Scene {
 
         // Joystick
         this.load.plugin('rexvirtualjoystickplugin', '/assets/plugins/rexvirtualjoystickplugin.min.js', true)
+
+        // Setup api env
+        init.apiFetch('/env.json').then((data) => {
+            // console.log(data)
+            env = data
+        })
     }
 
     create() {
@@ -68,7 +76,7 @@ class Boot extends Phaser.Scene {
         // this.scene.start('Preloader')
         // this.scene.start('MainMenu')
         // this.scene.start('Arcade')
-        // this.scene.start('RankedMenu')
-        this.scene.start('Ranked')
+        this.scene.start('RankedMenu')
+        // this.scene.start('Ranked')
     }
 }

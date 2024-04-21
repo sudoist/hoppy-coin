@@ -1,6 +1,6 @@
-class Ranked extends Phaser.Scene {
+class LeaderBoard extends Phaser.Scene {
     constructor() {
-        super('Ranked')
+        super('LeaderBoard')
     }
 
     preload() {
@@ -10,20 +10,18 @@ class Ranked extends Phaser.Scene {
         // Init
         playerSprite = init.randomizePlayerSprite() // Random or select
 
-        // Check if playing again from same scene
-        // console.log('Previous scene key:', previousSceneKey)
-        // if (previousSceneKey === 'MainMenu') {
-        //     playerPositionX = 30
-        //     playerPositionY = 360
-        // }
-
         init.setupScene(this, init.randomizePlayerSprite())
+
+        // Get scores
+        init.apiFetch(env.API_URL + '/scores').then((data) => {
+            init.printScores(this, data)
+        })
 
         //  The platforms group contains the ground and the 2 ledges we can jump on
         platforms = this.physics.add.staticGroup()
 
         // Set platforms depending on leve
-        if (level === 'phaserInitial') {
+        if (level === 'phaserInitialRanking') {
             // Here we create the ground.
             platforms.create(400, 568, 'ground').setScale(2).refreshBody()
 
@@ -34,34 +32,22 @@ class Ranked extends Phaser.Scene {
 
             // Change background
             init.changeBackground('sky.png', 'cover', 'no-repeat')
+
+            // Text at bottom
+            levelLabel = 'Phaser Initial'
         }
-
-        //  Some stars to collect, 12 in total, evenly spaced 70 pixels apart along the x axis
-        init.createStars(this)
-
-        bombs = this.physics.add.group()
-
-        //  The score
-        scoreText = this.add.text(16, 16, 'Score: 0', {fontSize: '32px', fill: '#FFF'})
-
-        //  The stage
-        stageText = this.add.text(16, 46, 'Stage: 1', {fontSize: '32px', fill: '#FFF'})
 
         //  Collide the player and the stars with the platforms
         this.physics.add.collider(player, platforms)
-        this.physics.add.collider(stars, platforms)
-        this.physics.add.collider(bombs, platforms)
 
-        //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
-        this.physics.add.overlap(player, stars, this.collectStar, null, this)
+        // Label
+        let label = this.add.text(200, 565, levelLabel + ' Leaderboard', {fontSize: '24px', fill: '#fff'})
 
-        this.physics.add.collider(player, bombs, this.hitBomb, null, this)
+        // Set the origin of the text to its center
+        label.setOrigin(0.5);
 
-        // Instructions
-        instructions = this.add.text(200, 550, 'Move with W, A, S, D', {fontSize: '32px', fill: '#fff'})
-
-        // Start game with bomb after 3 seconds
-        init.createBomb(this, bombs, player, 3000, 'bomb-r')
+        // Set the x-coordinate to half the width of the game canvas
+        label.x = this.cameras.main.width / 2;
 
         // Audio
         sfx = this.cache.json.get('sfx')
@@ -79,6 +65,16 @@ class Ranked extends Phaser.Scene {
             .body.allowGravity = false
 
         this.buttons.setVisible(false)
+
+        // Create tennis balls as bombs
+        bombs = this.physics.add.group()
+
+        for (let i = 0; i < 7; i++) {
+            console.log('create')
+            init.createBomb(this, bombs, player, 0, 'bomb-ball')
+        }
+
+        this.physics.add.collider(bombs, platforms)
     }
 
     update() {
