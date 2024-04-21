@@ -47,6 +47,7 @@ class Boot extends Phaser.Scene {
 
         // Music
         this.load.audio('intro', '/assets/music/Intro Theme.mp3')
+        this.load.audio('rankedMenu', '/assets/music/Worldmap Theme.mp3')
         this.load.audio('start', ['/assets/audio/music/Hawaii.mp3'])
         this.load.audio('hard', ['/assets/audio/music/Tyechestra.mp3'])
 
@@ -66,7 +67,8 @@ class Boot extends Phaser.Scene {
 
         // this.scene.start('Preloader')
         // this.scene.start('MainMenu')
-        this.scene.start('Arcade')
-        // this.scene.start('Game')
+        // this.scene.start('Arcade')
+        // this.scene.start('RankedMenu')
+        this.scene.start('Ranked')
     }
 }

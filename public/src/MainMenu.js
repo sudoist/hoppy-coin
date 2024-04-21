@@ -97,8 +97,11 @@ class MainMenu extends Phaser.Scene {
         if (menu.name === 'ranked') {
             this.physics.pause()
             this.titleMusic.stop()
-            // previousSceneKey = scene.scene.key
-            window.location = '/ranked'
+            previousSceneKey = this.scene.key
+            playerPositionX = 750
+            playerPositionY = 200
+            // window.location = '/ranked'
+            init.fadeInScene('RankedMenu', this)
         }
 
         if (menu.name === 'arcade') {

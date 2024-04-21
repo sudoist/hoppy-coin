@@ -1,6 +1,6 @@
-class Arcade extends Phaser.Scene {
+class Ranked extends Phaser.Scene {
     constructor() {
-        super('Arcade')
+        super('Ranked')
     }
 
     preload() {
@@ -12,34 +12,29 @@ class Arcade extends Phaser.Scene {
 
         // Check if playing again from same scene
         // console.log('Previous scene key:', previousSceneKey)
-        if (previousSceneKey === 'MainMenu') {
-            playerPositionX = 30
-            playerPositionY = 360
-        }
+        // if (previousSceneKey === 'MainMenu') {
+        //     playerPositionX = 30
+        //     playerPositionY = 360
+        // }
 
         init.setupScene(this, init.randomizePlayerSprite())
 
         //  The platforms group contains the ground and the 2 ledges we can jump on
         platforms = this.physics.add.staticGroup()
 
-        //  Here we create the ground.
-        //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-        platforms.create(400, 568, 'ground').setScale(2).refreshBody()
+        // Set platforms depending on leve
+        if (level === 'phaserInitial') {
+            // Here we create the ground.
+            platforms.create(400, 568, 'ground').setScale(2).refreshBody()
 
-        //  Now let's create some ledges
-        platforms.create(200, 400, 'ground')
-        platforms.create(745, 250, 'ground')
-        platforms.create(60, 220, 'ground')
+            // Now let's create some ledges
+            platforms.create(600, 400, 'ground')
+            platforms.create(50, 250, 'ground')
+            platforms.create(750, 220, 'ground')
 
-        // Add buttons (Moved to setupScene)
-
-        // The player and its settings (Moved to setupScene)
-
-        //  Our player animations, turning, walking left and walking right. (Moved to setupScene)
-
-        //  Our player animations, GAME OVER (Moved to setupScene)
-
-        //  Input Events (Moved to setupScene)
+            // Change background
+            init.changeBackground('sky.png', 'cover', 'no-repeat')
+        }
 
         //  Some stars to collect, 12 in total, evenly spaced 70 pixels apart along the x axis
         init.createStars(this)
@@ -77,10 +72,10 @@ class Arcade extends Phaser.Scene {
         // Add buttons after game over
         this.buttons = this.physics.add.group()
 
-        this.buttons.create(-20, 350, 'menu').setScale(.5).setName('menu').setImmovable(false)
+        this.buttons.create(830, 180, 'menu').setScale(.5).setName('menu').setImmovable(false)
             .body.allowGravity = false
 
-        this.buttons.create(830, 500, 'arcade').setScale(.5).setName('arcade').setImmovable(false)
+        this.buttons.create(830, 500, 'ranked').setScale(.5).setName('ranked').setImmovable(false)
             .body.allowGravity = false
 
         this.buttons.setVisible(false)
@@ -91,6 +86,7 @@ class Arcade extends Phaser.Scene {
 
             // Run one time on game over
             if (gameOverSound) {
+                console.log('game over ranked')
                 instructions.destroy()
                 this.add.text(200, 550, 'Would you like to play again?', {fontSize: '24px', fill: '#FFF'})
 
@@ -107,7 +103,7 @@ class Arcade extends Phaser.Scene {
                 gameOverSound = false
 
                 // Game over texts
-                this.add.text(20, 320, '<- Back to title', {fontSize: '18px', fill: '#FFF'})
+                this.add.text(600, 140, 'Back to ranked ->', {fontSize: '18px', fill: '#FFF'})
 
                 this.add.text(647, 470, 'Play again ->', {fontSize: '18px', fill: '#FFF'})
             }
@@ -124,11 +120,11 @@ class Arcade extends Phaser.Scene {
         score = 0
 
         if (menu.name === 'menu') {
-            init.gameOverReset(this, 'MainMenu', 670, 360)
+            init.gameOverReset(this, 'RankedMenu', 60, 170)
         }
 
-        if (menu.name === 'arcade') {
-            init.gameOverReset(this, 'Arcade', 40, 500)
+        if (menu.name === 'ranked') {
+            init.gameOverReset(this, 'Ranked', 40, 480)
         }
     }
 

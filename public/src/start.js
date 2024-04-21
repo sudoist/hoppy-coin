@@ -14,7 +14,7 @@ let gameConfig = {
         }
     },
     transparent: true, // Set transparent to true
-    scene: [Boot, Preloader, MainMenu, Arcade]
+    scene: [Boot, Preloader, MainMenu, Arcade, RankedMenu, Ranked]
 }
 game = new Phaser.Game(gameConfig);
 window.focus();

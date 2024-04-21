@@ -2,8 +2,8 @@ let init = {}
 
 let player
 let playerName
-let playerPositionX = 100
-let playerPositionY = 450
+let playerPositionX = 750
+let playerPositionY = 200
 let playerSprite
 let stars
 let bombs
@@ -28,6 +28,8 @@ let arcadeButton
 let rankedButton
 let isMute = false
 let previousSceneKey
+// Ranked
+let level
 
 init.fadeOutScene = function (sceneName, context) {
     context.cameras.main.fadeOut(1700)
@@ -289,6 +291,9 @@ init.setSceneBackground = function (sceneName) {
             break
         case 'Arcade':
             init.changeBackground('sky.png', 'cover', 'no-repeat')
+            break
+        case 'RankedMenu':
+            init.changeBackground('john-cosio-xCZ8ynsCfrw-unsplash.jpg', 'cover', 'no-repeat')
             break
         default:
             init.changeBackground('pattern.webp', 'initial', 'repeat')
