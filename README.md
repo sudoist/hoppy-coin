@@ -173,6 +173,7 @@ Install docker using [Docker Desktop](https://www.docker.com/products/docker-des
 - [] Create new API instances for testing
 - [] Create new repo for the Laravel API
 - [] Add a little story to practice making scenes
+- [] Events (Seasonal and weekly)
 
 See the [open issues](https://github.com/sudoist/hoppy-coin/issues) for a full list of proposed features (and known issues).
 
@@ -226,6 +227,7 @@ Thanks and credits for the resources used in this project.
 #### References
 
 - [Phaser examples](https://labs.phaser.io/)
+- [Enclave-Phaser-Template](https://github.com/EnclaveGames/Enclave-Phaser-Template)
 - [Best-README-Template](https://github.com/othneildrew/Best-README-Template/tree/master)
 
 #### Music
