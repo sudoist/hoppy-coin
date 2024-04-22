@@ -40,6 +40,9 @@ class LeaderBoard extends Phaser.Scene {
         //  Collide the player and the stars with the platforms
         this.physics.add.collider(player, platforms)
 
+        // Remove instruction overlap
+        instructions.destroy()
+
         // Label
         let label = this.add.text(200, 565, levelLabel + ' Leaderboard', {fontSize: '24px', fill: '#fff'})
 

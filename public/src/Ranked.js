@@ -127,7 +127,6 @@ class Ranked extends Phaser.Scene {
 
                         // Get last score of top 10
                         if (rank < 11) {
-                            console.log('in')
                             lastPlaceScore = value.score
                         }
                     }

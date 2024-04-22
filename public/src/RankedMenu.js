@@ -42,7 +42,8 @@ class RankedMenu extends Phaser.Scene {
         this.add.text(20, 470, '<- Land Mine Beach (Coming Soon...)', {fontSize: '18px', fill: '#FFF'})
         // this.add.text(515, 470, 'Ruins (Coming Soon...) ->', {fontSize: '18px', fill: '#FFF'})
 
-        scene.add.text(410, 40, playerName, {fontSize: '24px', fill: '#FFF'})
+        this.add.text(300, 40, 'Hop on!', {fontSize: '24px', fill: '#FFF'})
+        this.add.text(410, 40, playerName, {fontSize: '24px', fill: '#FFF'})
 
         // The platforms group contains the ground and the 2 ledges we can jump on
         let platforms = this.physics.add.staticGroup()
@@ -69,6 +70,8 @@ class RankedMenu extends Phaser.Scene {
         // Input Events (Moved to setupScene)
 
         // Instructions (Moved to setupScene)
+        // Remove instruction overlap
+        instructions.destroy()
         this.add.text(280, 550, 'Select stage', {fontSize: '32px', fill: '#FFF'})
 
         // Music

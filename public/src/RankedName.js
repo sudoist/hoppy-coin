@@ -72,6 +72,8 @@ class RankedName extends Phaser.Scene {
         // Add menu collider to press buttons
         this.physics.add.overlap(this.player, this.buttons, this.buttonPress, null, this)
 
+        // Remove instruction overlap
+        instructions.destroy()
         this.add.text(280, 550, 'Preparing...', {fontSize: '32px', fill: '#FFF'})
 
         // Music
@@ -81,7 +83,7 @@ class RankedName extends Phaser.Scene {
 
     update() {
         init.monitorMuteStatus(game)
-        
+
         // Movements
         init.setPlayerMovements(this)
 
