@@ -10,7 +10,7 @@ let gameConfig = {
         default: 'arcade',
         arcade: {
             gravity: {y: 300},
-            debug: true
+            debug: false
         }
     },
     transparent: true, // Set transparent to true
