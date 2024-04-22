@@ -87,7 +87,7 @@ class RankedMenu extends Phaser.Scene {
 
             // Change starting position
             playerPositionX = 40
-            playerPositionY = 200
+            playerPositionY = 500
 
             init.fadeInScene('MainMenu', this)
         }

@@ -30,8 +30,8 @@ class MainMenu extends Phaser.Scene {
         // Add buttons
         this.buttons = this.physics.add.group()
 
-        this.add.text(20, 170, '<- Ranked Game', {fontSize: '18px', fill: '#FFF'})
-        this.buttons.create(10, 200, 'bomb').setScale(.5).setName('ranked').setImmovable(false).setVisible(false)
+        this.add.text(20, 470, '<- Ranked Game', {fontSize: '18px', fill: '#FFF'})
+        this.buttons.create(10, 500, 'bomb').setScale(.5).setName('ranked').setImmovable(false).setVisible(false)
             .setCollideWorldBounds(true).body.allowGravity = false
 
         this.add.text(710, 140, 'Fork ->', {fontSize: '18px', fill: '#FFF'}).setName('github')
@@ -43,7 +43,7 @@ class MainMenu extends Phaser.Scene {
             .setCollideWorldBounds(true).body.allowGravity = false
 
         // Coming soon
-        this.add.text(20, 470, '<- How to play (Coming Soon...)', {fontSize: '18px', fill: '#FFF'})
+        this.add.text(20, 170, '<- How to play (Coming Soon...)', {fontSize: '18px', fill: '#FFF'})
         this.add.text(515, 470, 'Ruins (Coming Soon...) ->', {fontSize: '18px', fill: '#FFF'})
 
         // The platforms group contains the ground and the 2 ledges we can jump on
@@ -101,7 +101,7 @@ class MainMenu extends Phaser.Scene {
             playerPositionX = 750
             playerPositionY = 200
             // window.location = '/ranked'
-            init.fadeInScene('RankedMenu', this)
+            init.fadeInScene('RankedName', this)
         }
 
         if (menu.name === 'arcade') {

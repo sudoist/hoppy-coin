@@ -71,7 +71,7 @@ class Arcade extends Phaser.Scene {
         // Audio
         sfx = this.cache.json.get('sfx')
 
-        music = this.sound.add('start')
+        music = this.sound.add('start', {volume: 1, loop: true})
         music.play()
 
         // Add buttons after game over

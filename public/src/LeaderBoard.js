@@ -52,16 +52,15 @@ class LeaderBoard extends Phaser.Scene {
         // Audio
         sfx = this.cache.json.get('sfx')
 
-        music = this.sound.add('start')
+        music = this.sound.add('start', {volume: 1, loop: true})
         music.play()
 
         // Add buttons after game over
         this.buttons = this.physics.add.group()
 
-        this.buttons.create(830, 180, 'menu').setScale(.5).setName('menu').setImmovable(false)
-            .body.allowGravity = false
+        this.add.text(500, 470, 'Back to stage selection ->', {fontSize: '18px', fill: '#FFF'})
 
-        this.buttons.create(830, 500, 'ranked').setScale(.5).setName('ranked').setImmovable(false)
+        this.buttons.create(830, 500, 'ranked').setScale(.5).setName('rankedMenu').setImmovable(false)
             .body.allowGravity = false
 
         this.buttons.setVisible(false)
@@ -75,52 +74,26 @@ class LeaderBoard extends Phaser.Scene {
         }
 
         this.physics.add.collider(bombs, platforms)
+
+        this.physics.add.collider(player, this.buttons, this.selectMenu, null, this)
     }
 
     update() {
-        if (gameOver) {
-
-            // Run one time on game over
-            if (gameOverSound) {
-                console.log('game over ranked')
-                instructions.destroy()
-                this.add.text(200, 550, 'Would you like to play again?', {fontSize: '24px', fill: '#FFF'})
-
-                // Add overlap with menu
-                this.physics.add.overlap(player, this.buttons, this.selectMenu, null, this)
-
-                stars.children.iterate(function (child) {
-                    child.disableBody(true, true)
-                })
-
-                // Sounds
-                this.sound.playAudioSprite('sfx', 'death')
-                music.stop()
-                gameOverSound = false
-
-                // Game over texts
-                this.add.text(600, 140, 'Back to ranked ->', {fontSize: '18px', fill: '#FFF'})
-
-                this.add.text(647, 470, 'Play again ->', {fontSize: '18px', fill: '#FFF'})
-            }
-
-            init.setPlayerMovements(this)
-        } else {
             // Movements
             init.setPlayerMovements(this)
-        }
     }
 
     selectMenu(player, menu) {
-        // Reset data
-        score = 0
+        if (menu.name === 'rankedMenu') {
+            this.physics.pause()
+            music.stop()
+            previousSceneKey = this.scene.key
 
-        if (menu.name === 'menu') {
-            init.gameOverReset(this, 'RankedMenu', 60, 170)
-        }
+            // Change starting position
+            playerPositionX = 40
+            playerPositionY = 350
 
-        if (menu.name === 'ranked') {
-            init.gameOverReset(this, 'Ranked', 40, 480)
+            init.fadeInScene('RankedMenu', this)
         }
     }
 
@@ -132,15 +105,5 @@ class LeaderBoard extends Phaser.Scene {
                 this.mobileCursorKeys = `${name}`
             }
         }
-    }
-
-    collectStar(player, star) {
-        init.collectStar(this, player, star)
-    }
-
-    hitBomb(player, bomb) {
-        bomb.destroy()
-
-        gameOver = true
     }
 }

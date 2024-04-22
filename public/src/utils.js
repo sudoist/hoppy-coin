@@ -2,8 +2,8 @@ let init = {}
 
 let player
 let playerName
-let playerPositionX = 750
-let playerPositionY = 200
+let playerPositionX = 100 // 100 default
+let playerPositionY = 450 // 450 default
 let playerSprite
 let stars
 let bombs
@@ -29,15 +29,44 @@ let rankedButton
 let isMute = false
 let previousSceneKey
 // Ranked
+let env
 let level
 let levelLabel
-let env
+let inputKeys
+let inputPlayerNameLabel
+let inputPlayerNameText
+let inputPlayerNameSubmitted = false
+let scene
+let apiResponse
 
-// Get env
-init.apiFetch = async function fetchJSONData(path) {
+// API get
+init.apiFetch = async function getRequest(path) {
     let data
 
     const res = await fetch(path)
+
+    data = await res.json()
+
+    return data
+}
+
+// API post
+init.apiPost = async function postRequest(req) {
+    let data
+
+    const res = await fetch(req.path, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(req),
+    })
+
+    // data.json().then(response => {
+    //
+    //     apiResponse = response.data
+    // })
 
     data = await res.json()
 
@@ -229,7 +258,7 @@ init.collectStar = function (scene, player, star) {
     if (score === 600) {
         music.stop()
 
-        music = scene.sound.add('hard')
+        music = scene.sound.add('hard', {volume: 1, loop: true})
         music.play()
     }
 
@@ -257,7 +286,7 @@ init.collectStar = function (scene, player, star) {
             child.enableBody(true, child.x, 0, true, true)
         })
 
-        init.createBomb(scene, bombs, player, 0)
+        init.createBomb(scene, bombs, player, 0, 'bomb-r')
     }
 
 }
@@ -381,8 +410,8 @@ init.printScores = function (scene, scores) {
     for (const [key, value] of Object.entries(scores.data)) {
         ++rank
 
-        // Only get 9
-        if (rank < 10) {
+        // Only get 10
+        if (rank < 11) {
 
             // Format date
             const date = new Date(`${value.date}`).toISOString().slice(0, 10)
@@ -396,7 +425,176 @@ init.printScores = function (scene, scores) {
             // Set the origin of the text to its center
             score.setOrigin(0.5)
 
-            startingY+= 30
+            startingY += 30
         }
+    }
+}
+
+init.displayInputButtons = function (scene) {
+    inputKeys = scene.physics.add.staticGroup()
+
+    // let inputKeys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',]
+    let inputKeysUpper = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm']
+    let inputKeysLower = ['n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',]
+
+    let startingX = 20
+
+    // for (const [key, value] of Object.entries(inputKeys)) {
+    for (const value of inputKeysUpper) {
+        inputKeys.create(startingX, 100, value).setName(value).setScale(.4).refreshBody()
+
+        startingX += 40
+    }
+
+    // Reset x
+    startingX = 20
+
+    for (const value of inputKeysLower) {
+        inputKeys.create(startingX, 320, value).setName(value).setScale(.4).refreshBody()
+
+        startingX += 40
+    }
+
+    scene.physics.add.collider(scene.player, inputKeys, init.inputPress, null, this)
+}
+
+init.inputPress = function (player, input) {
+    if (!playerName) {
+        playerName = ''
+    }
+
+    if (input.name === 'a') {
+        playerName += input.name.toUpperCase()
+    }
+
+    if (input.name === 'b') {
+        playerName += input.name.toUpperCase()
+    }
+
+    if (input.name === 'c') {
+        playerName += input.name.toUpperCase()
+    }
+
+    if (input.name === 'd') {
+        playerName += input.name.toUpperCase()
+    }
+
+    if (input.name === 'e') {
+        playerName += input.name.toUpperCase()
+    }
+
+    if (input.name === 'f') {
+        playerName += input.name.toUpperCase()
+    }
+
+    if (input.name === 'g') {
+        playerName += input.name.toUpperCase()
+    }
+
+    if (input.name === 'h') {
+        playerName += input.name.toUpperCase()
+    }
+
+    if (input.name === 'i') {
+        playerName += input.name.toUpperCase()
+    }
+
+    if (input.name === 'j') {
+        playerName += input.name.toUpperCase()
+    }
+
+    if (input.name === 'k') {
+        playerName += input.name.toUpperCase()
+    }
+
+    if (input.name === 'l') {
+        playerName += input.name.toUpperCase()
+    }
+
+    if (input.name === 'm') {
+        playerName += input.name.toUpperCase()
+    }
+
+    if (input.name === 'n') {
+        playerName += input.name.toUpperCase()
+    }
+
+    if (input.name === 'o') {
+        playerName += input.name.toUpperCase()
+    }
+
+    if (input.name === 'p') {
+        playerName += input.name.toUpperCase()
+    }
+
+    if (input.name === 'q') {
+        playerName += input.name.toUpperCase()
+    }
+
+    if (input.name === 'r') {
+        playerName += input.name.toUpperCase()
+    }
+
+    if (input.name === 's') {
+        playerName += input.name.toUpperCase()
+    }
+
+    if (input.name === 't') {
+        playerName += input.name.toUpperCase()
+    }
+
+    if (input.name === 'u') {
+        playerName += input.name.toUpperCase()
+    }
+
+    if (input.name === 'v') {
+        playerName += input.name.toUpperCase()
+    }
+
+    if (input.name === 'w') {
+        playerName += input.name.toUpperCase()
+    }
+
+    if (input.name === 'x') {
+        playerName += input.name.toUpperCase()
+    }
+
+    if (input.name === 'y') {
+        playerName += input.name.toUpperCase()
+    }
+
+    if (input.name === 'z') {
+        playerName += input.name.toUpperCase()
+    }
+
+    // Show enter button when at least 3 characters
+    if (playerName.length >= 3) {
+        inputKeys.create(540, 320, 'enter').setName('enter').setScale(.4).refreshBody()
+    }
+
+    if (input.name === 'enter') {
+        // Clear page
+        inputKeys.clear(true, true)
+
+        inputPlayerNameLabel.destroy()
+        inputPlayerNameLabel = scene.add.text(300, 40, 'Hop on!', {fontSize: '24px', fill: '#FFF'})
+
+        inputPlayerNameText.destroy()
+        inputPlayerNameText = scene.add.text(410, 40, playerName, {fontSize: '24px', fill: '#FFF'})
+
+        inputPlayerNameSubmitted = true
+
+        return
+    }
+
+    init.inputLastThree()
+
+    inputPlayerNameText.destroy()
+    inputPlayerNameText = scene.add.text(470, 40, playerName, {fontSize: '24px', fill: '#FFF'})
+}
+
+init.inputLastThree = function () {
+    if (playerName.length > 3) {
+        playerName = playerName.substr(playerName.length - 3)
     }
 }

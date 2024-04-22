@@ -66,7 +66,7 @@ class Ranked extends Phaser.Scene {
         // Audio
         sfx = this.cache.json.get('sfx')
 
-        music = this.sound.add('start')
+        music = this.sound.add('start', {volume: 1, loop: true})
         music.play()
 
         // Add buttons after game over
@@ -87,11 +87,6 @@ class Ranked extends Phaser.Scene {
             // Run one time on game over
             if (gameOverSound) {
                 console.log('game over ranked')
-                instructions.destroy()
-                this.add.text(200, 550, 'Would you like to play again?', {fontSize: '24px', fill: '#FFF'})
-
-                // Add overlap with menu
-                this.physics.add.overlap(player, this.buttons, this.selectMenu, null, this)
 
                 stars.children.iterate(function (child) {
                     child.disableBody(true, true)
@@ -102,10 +97,69 @@ class Ranked extends Phaser.Scene {
                 music.stop()
                 gameOverSound = false
 
-                // Game over texts
-                this.add.text(600, 140, 'Back to ranked ->', {fontSize: '18px', fill: '#FFF'})
+                // Send score to API
+                const req = {
+                    "path": env.API_URL + '/scores',
+                    "name": playerName,
+                    "score": score,
+                }
 
-                this.add.text(647, 470, 'Play again ->', {fontSize: '18px', fill: '#FFF'})
+                init.apiPost(req).then((data) => {
+                    // Print updated score
+                    init.printScores(this, data)
+
+                    // After saving score, show menu
+
+                    // Game over texts
+                    this.add.text(600, 140, 'Back to ranked ->', {fontSize: '18px', fill: '#FFF'})
+
+                    this.add.text(647, 470, 'Play again ->', {fontSize: '18px', fill: '#FFF'})
+
+                    // Add overlap with menu
+                    this.physics.add.overlap(player, this.buttons, this.selectMenu, null, this)
+
+                    // Score message text below... The effort to just say git gud!
+                    let rank = 0
+                    let lastPlaceScore
+
+                    for (const [key, value] of Object.entries(data.data)) {
+                        ++rank
+
+                        // Get last score of top 10
+                        if (rank < 11) {
+                            console.log('in')
+                            lastPlaceScore = value.score
+                        }
+                    }
+
+                    // Print message
+                    instructions.destroy()
+
+                    if (score >= lastPlaceScore) {
+                        let text = this.add.text(200, 570, 'Congratulations!', {fontSize: '24px', fill: '#FFF'})
+
+                        // Center
+                        text.setOrigin(0.5);
+                        text.x = this.cameras.main.width / 2
+                    }
+
+                    if (score >= (lastPlaceScore - 200)) {
+                        let text = this.add.text(200, 570, 'Almost there!', {fontSize: '24px', fill: '#FFF'})
+
+                        // Center
+                        text.setOrigin(0.5);
+                        text.x = this.cameras.main.width / 2
+                    }
+
+                    if (score < (lastPlaceScore - 200)) {
+                        let text = this.add.text(200, 570, 'Git gud...', {fontSize: '24px', fill: '#FFF'})
+
+                        // Center
+                        text.setOrigin(0.5);
+                        text.x = this.cameras.main.width / 2
+                    }
+
+                })
             }
 
             init.setPlayerMovements(this)
