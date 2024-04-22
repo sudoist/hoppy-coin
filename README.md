@@ -127,7 +127,7 @@ Clone or download a copy of this project.
 
 ### Prerequisites
 
-You will need at least basic HTML Javascript, CSS and web server for Phaser.
+At least basic knowledge of HTML, Javascript, CSS and web server for Phaser.
 
 Here are several options:
 
@@ -172,6 +172,7 @@ Install docker using [Docker Desktop](https://www.docker.com/products/docker-des
 - [] Add a way to play old versions
 - [] Create new API instances for testing
 - [] Create new repo for the Laravel API
+- [] Add a little story to practice making scenes
 
 See the [open issues](https://github.com/sudoist/hoppy-coin/issues) for a full list of proposed features (and known issues).
 

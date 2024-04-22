@@ -71,7 +71,7 @@ class MainMenu extends Phaser.Scene {
         // Input Events (Moved to setupScene)
 
         // Instructions (Moved to setupScene)
-        this.add.text(200, 550, 'Move with W, A, S, D', {fontSize: '32px', fill: '#FFF'})
+        // instructions = this.add.text(200, 550, 'Move with W, A, S, D', {fontSize: '32px', fill: '#FFF'})
 
         // Music
         this.titleMusic = this.sound.add('intro', {volume: 1, loop: true})

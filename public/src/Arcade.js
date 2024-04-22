@@ -63,7 +63,7 @@ class Arcade extends Phaser.Scene {
         this.physics.add.collider(player, bombs, this.hitBomb, null, this)
 
         // Instructions
-        instructions = this.add.text(200, 550, 'Move with W, A, S, D', {fontSize: '32px', fill: '#fff'})
+        // instructions = this.add.text(200, 550, 'Move with W, A, S, D', {fontSize: '32px', fill: '#fff'})
 
         // Start game with bomb after 3 seconds
         init.createBomb(this, bombs, player, 3000, 'bomb-r')

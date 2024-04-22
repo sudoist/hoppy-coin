@@ -38,6 +38,9 @@ let inputPlayerNameText
 let inputPlayerNameSubmitted = false
 let scene
 let apiResponse
+// Mobile
+let isMobile = false
+let joystickPressed
 
 // API get
 init.apiFetch = async function getRequest(path) {
@@ -110,6 +113,29 @@ init.setupScene = function (scene, player) {
     init.setInputEvents(scene)
     init.addMuteButton(scene)
     init.setSceneBackground(scene.scene.key)
+    // Create joystick on mobile
+    if (init.isMobile()) {
+        isMobile = true
+        init.createJoystick(scene)
+    }
+    init.setInstructions(scene)
+}
+
+// Get device
+init.isMobile = function () {
+    const isMobile = /Android|Tablet|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (isMobile) {
+        // User is accessing the page on a mobile device
+        // console.log("Mobile device detected");
+
+        return true
+    } else {
+        // User is accessing the page on a desktop device
+        // console.log("Desktop device detected");
+
+        return false
+    }
 }
 
 init.addBorders = function (scene) {
@@ -205,6 +231,45 @@ init.setInputEvents = function (scene) {
     })
 }
 
+init.setInstructions = function (scene) {
+    // Set instructions
+    if (isMobile) {
+        instructions = scene.add.text(200, 570, 'Move by using the joystick', {fontSize: '32px', fill: '#fff'})
+    } else {
+        instructions = scene.add.text(200, 570, 'Move with W, A, S, D', {fontSize: '32px', fill: '#fff'})
+    }
+
+    instructions.setDepth(7)
+
+    // Center
+    instructions.setOrigin(0.5);
+    instructions.x = scene.cameras.main.width / 2
+}
+
+init.createJoystick = function (scene) {
+    scene.joyStick = scene.plugins.get('rexvirtualjoystickplugin').add(scene, {
+        x: scene.cameras.main.width / 2,
+        y: 480,
+        radius: 100,
+        base: scene.add.circle(0, 0, 40, 0x888888),
+        thumb: scene.add.circle(0, 0, 30, 0xcccccc),
+    })
+        .on('update', init.getJoystickState, scene)
+}
+
+init.getJoystickState = function joyStickState() {
+    const cursorKeys = this.joyStick.createCursorKeys()
+    let pressed = ''
+    for (const name in cursorKeys) {
+        if (cursorKeys[name].isDown) {
+            pressed = `${name}`
+        } else {
+            this.mobileCursorKeys = undefined
+        }
+    }
+    joystickPressed = pressed
+}
+
 init.setPlayerMovements = function (scene) {
     let animations
     let alive = ['left', 'right', 'turn']
@@ -216,11 +281,11 @@ init.setPlayerMovements = function (scene) {
         animations = alive
     }
 
-    if (scene.cursors.left.isDown) {
+    if (scene.cursors.left.isDown || joystickPressed === 'left') {
         scene.player.setVelocityX(-160)
 
         scene.player.anims.play(animations[0], true)
-    } else if (scene.cursors.right.isDown) {
+    } else if (scene.cursors.right.isDown || joystickPressed === 'right') {
         scene.player.setVelocityX(160)
 
         scene.player.anims.play(animations[1], true)
@@ -230,7 +295,7 @@ init.setPlayerMovements = function (scene) {
         scene.player.anims.play(animations[2])
     }
 
-    if (scene.cursors.up.isDown && scene.player.body.touching.down) {
+    if ((scene.cursors.up.isDown || joystickPressed === 'up') && scene.player.body.touching.down) {
         scene.player.setVelocityY(-330)
         scene.sound.playAudioSprite('sfx', 'squit');
     }
@@ -339,6 +404,9 @@ init.setSceneBackground = function (sceneName) {
             break
         case 'Arcade':
             init.changeBackground('sky.png', 'cover', 'no-repeat')
+            break
+        case 'RankedName':
+            init.changeBackground('john-cosio-xCZ8ynsCfrw-unsplash.jpg', 'cover', 'no-repeat')
             break
         case 'RankedMenu':
             init.changeBackground('john-cosio-xCZ8ynsCfrw-unsplash.jpg', 'cover', 'no-repeat')
