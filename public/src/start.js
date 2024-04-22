@@ -10,10 +10,11 @@ let gameConfig = {
         default: 'arcade',
         arcade: {
             gravity: {y: 300},
-            debug: false
+            debug: true
         }
     },
-    scene: [Boot, Preloader, MainMenu, Game]
+    transparent: true, // Set transparent to true
+    scene: [Boot, Preloader, MainMenu, Arcade, RankedName, RankedMenu, Ranked, LeaderBoard]
 }
 game = new Phaser.Game(gameConfig);
 window.focus();
