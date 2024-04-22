@@ -80,6 +80,8 @@ class RankedName extends Phaser.Scene {
     }
 
     update() {
+        init.monitorMuteStatus(game)
+        
         // Movements
         init.setPlayerMovements(this)
 

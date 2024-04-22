@@ -440,6 +440,14 @@ init.toggleSound = function () {
     muteButton.setTexture('mute', 0)
 }
 
+init.monitorMuteStatus = function (game) {
+    if (isMute) {
+        game.sound.mute = true;
+    } else {
+        game.sound.mute = false;
+    }
+}
+
 // Game over
 init.gameOverReset = function (scene, newScene, newPositionX, newPositionY) {
     scene.physics.pause()

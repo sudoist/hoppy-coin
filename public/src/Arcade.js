@@ -114,6 +114,8 @@ class Arcade extends Phaser.Scene {
 
             init.setPlayerMovements(this)
         } else {
+            init.monitorMuteStatus(game)
+
             // Movements
             init.setPlayerMovements(this)
         }

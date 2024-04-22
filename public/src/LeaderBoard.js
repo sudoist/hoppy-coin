@@ -79,8 +79,10 @@ class LeaderBoard extends Phaser.Scene {
     }
 
     update() {
-            // Movements
-            init.setPlayerMovements(this)
+        init.monitorMuteStatus(game)
+
+        // Movements
+        init.setPlayerMovements(this)
     }
 
     selectMenu(player, menu) {

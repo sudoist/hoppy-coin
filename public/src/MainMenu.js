@@ -79,6 +79,8 @@ class MainMenu extends Phaser.Scene {
     }
 
     update() {
+        init.monitorMuteStatus(game)
+
         // Movements
         init.setPlayerMovements(this)
     }
