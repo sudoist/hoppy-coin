@@ -63,14 +63,20 @@ init.apiPost = async function postRequest(req) {
         body: JSON.stringify(req),
     })
 
-    // data.json().then(response => {
-    //
-    //     apiResponse = response.data
-    // })
-
     data = await res.json()
 
     return data
+}
+
+init.bootFadeOutScene = function (sceneName, context) {
+    context.cameras.main.fadeOut(7000)
+    context.time.addEvent({
+        delay: 7000,
+        callback: function () {
+            context.scene.start(sceneName)
+        },
+        callbackScope: context
+    })
 }
 
 init.fadeOutScene = function (sceneName, context) {

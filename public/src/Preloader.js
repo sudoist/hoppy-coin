@@ -14,6 +14,6 @@ class Preloader extends Phaser.Scene {
         let sudoist = this.add.image(350, 300, 'sudoist')
         sudoist.setScale(.5)
 
-        init.fadeOutScene('MainMenu', this)
+        init.bootFadeOutScene('MainMenu', this)
     }
 }

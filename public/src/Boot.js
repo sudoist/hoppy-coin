@@ -79,6 +79,7 @@ class Boot extends Phaser.Scene {
         this.load.audio('rankedMenu', '/assets/music/Worldmap Theme.mp3')
         this.load.audio('start', ['/assets/audio/music/Hawaii.mp3'])
         this.load.audio('hard', ['/assets/audio/music/Tyechestra.mp3'])
+        this.load.audio('boot', ['/assets/music/hoppy-boot.mp3'])
 
         // Plugins
 
@@ -99,6 +100,10 @@ class Boot extends Phaser.Scene {
             centerX: this.cameras.main.centerX,
             centerY: this.cameras.main.centerY
         }
+
+        // Play boot music
+        music = this.sound.add('boot', {volume: 1.2, loop: false})
+        music.play()
 
         this.scene.start('Preloader')
         // this.scene.start('MainMenu')
