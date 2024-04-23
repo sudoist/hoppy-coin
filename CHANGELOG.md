@@ -1,3 +1,4 @@
+[![Laravel Forge Site Deployment Status](https://img.shields.io/endpoint?url=https%3A%2F%2Fforge.laravel.com%2Fsite-badges%2F7658f3e7-a4bc-4c1d-96dc-7f1281e3c5c4%3Fdate%3D1%26commit%3D1&style=plastic)](https://forge.laravel.com/servers/733512/sites/2326639)
 
 # Change Log
 All notable changes to this project will be documented in this file.
