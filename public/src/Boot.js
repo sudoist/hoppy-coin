@@ -10,15 +10,15 @@ class Boot extends Phaser.Scene {
         this.load.image('default', '/assets/bg/pattern.webp')
 
         // Sprites
-        this.load.image('star', '/assets/objects/star.png')
-        this.load.image('coin', '/assets/objects/coin.png')
-        this.load.image('bomb', '/assets/objects/bomb.png')
-        this.load.image('bomb-r', '/assets/objects/bomb-r.png')
+        this.load.image('star', '/assets/sprites/star.png')
+        this.load.image('coin', '/assets/sprites/coin.png')
+        this.load.image('bomb', '/assets/sprites/bomb.png')
+        this.load.image('bomb-r', '/assets/sprites/bomb-r.png')
         this.load.image('bomb-ball', '/assets/sprites/bomb-ball.png')
         this.load.image('leaderboard', '/assets/sprites/leaderboard-32.png')
-        this.load.image('ground', '/assets/objects/platforms/platform.png')
-        this.load.image('ground-m', '/assets/objects/platforms/platform-50.png')
-        this.load.image('ground-s', '/assets/objects/platforms/platform-25.png')
+        this.load.image('ground', '/assets/sprites/platform.png')
+        this.load.image('ground-m', '/assets/sprites/platform-50.png')
+        this.load.image('ground-s', '/assets/sprites/platform-25.png')
 
         // Player
         this.load.spritesheet('dude', '/assets/players/dude.png', {frameWidth: 32, frameHeight: 48})
@@ -69,16 +69,16 @@ class Boot extends Phaser.Scene {
         this.load.image('enter', '/assets/buttons/button_enter.png')
 
         // SFX
-        this.load.audioSprite('sfx', '/assets/audio/sfx/fx_mixdown.json', [
-            '/assets/audio/sfx/fx_mixdown.ogg',
-            '/assets/audio/sfx/fx_mixdown.mp3'
+        this.load.audioSprite('sfx', '/assets/sfx/fx_mixdown.json', [
+            '/assets/sfx/fx_mixdown.ogg',
+            '/assets/sfx/fx_mixdown.mp3'
         ])
 
         // Music
         this.load.audio('intro', '/assets/music/Intro Theme.mp3')
         this.load.audio('rankedMenu', '/assets/music/Worldmap Theme.mp3')
-        this.load.audio('start', ['/assets/audio/music/Hawaii.mp3'])
-        this.load.audio('hard', ['/assets/audio/music/Tyechestra.mp3'])
+        this.load.audio('start', ['/assets/music/Hawaii.mp3'])
+        this.load.audio('hard', ['/assets/music/Tyechestra.mp3'])
         this.load.audio('boot', ['/assets/music/hoppy-boot.mp3'])
 
         // Plugins

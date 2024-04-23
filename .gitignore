@@ -3,7 +3,4 @@
 /.idea
 
 # Env
-/public/env.js
 /public/env.json
-
-/public/assets/dls

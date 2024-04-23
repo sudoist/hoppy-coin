@@ -72,7 +72,6 @@ class LeaderBoard extends Phaser.Scene {
         bombs = this.physics.add.group()
 
         for (let i = 0; i < 7; i++) {
-            console.log('create')
             init.createBomb(this, bombs, player, 0, 'bomb-ball')
         }
 
