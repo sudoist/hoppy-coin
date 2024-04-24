@@ -1,4 +1,4 @@
-[![Laravel Forge Site Deployment Status](https://img.shields.io/endpoint?url=https%3A%2F%2Fforge.laravel.com%2Fsite-badges%2Fc5a678a3-9d39-4254-b682-7275f336bfd9%3Fdate%3D1%26commit%3D1&style=plastic)](https://forge.laravel.com/servers/733512/sites/2327253)
+[![Laravel Forge Site Deployment Status](https://img.shields.io/endpoint?url=https%3A%2F%2Fforge.laravel.com%2Fsite-badges%2F05bb90ea-6b4e-4956-b111-17a65b568ead%3Fdate%3D1%26commit%3D1&style=plastic)](https://forge.laravel.com/servers/733512/sites/2320288)
 
 <!-- Improved compatibility of back to top link: See: https://github.com/sudoist/hoppy-coin/pull/73 -->
 <a name="readme-top"></a>
