@@ -154,7 +154,7 @@ class Ranked extends Phaser.Scene {
                         let text = this.add.text(200, 570, 'Git gud...', {fontSize: '24px', fill: '#FFF'})
 
                         // Center
-                        text.setOrigin(0.5);
+                        text.setOrigin(0.5)
                         text.x = this.cameras.main.width / 2
                     }
 

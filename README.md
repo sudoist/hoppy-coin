@@ -243,6 +243,7 @@ Thanks and credits for the resources used in this project.
     - https://unsplash.com/@danasaki
     - https://unsplash.com/@xaprrr
      - https://unsplash.com/@nate_dumlao
+- [Creative_hat](https://www.freepik.com/free-vector/brown-torn-paper-design-transparent-background_27923998.htm#query=jagged%20edge&position=36&from_view=keyword&track=ais&uuid=2a5cafbf-70c5-46d5-9a17-3c1e77f9003c)
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

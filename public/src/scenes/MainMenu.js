@@ -30,8 +30,12 @@ class MainMenu extends Phaser.Scene {
         // Add buttons
         this.buttons = this.physics.add.group()
 
+        // this.add.text(20, 470, '<- Ranked Game', {fontSize: '18px', fill: '#FFF'})
+        // this.buttons.create(15, 500, 'bomb').setScale(.5).setName('ranked').setImmovable(false).setVisible(false)
+        //     .setCollideWorldBounds(true).body.allowGravity = false
+
         this.add.text(20, 470, '<- Ranked Game', {fontSize: '18px', fill: '#FFF'})
-        this.buttons.create(10, 500, 'bomb').setScale(.5).setName('ranked').setImmovable(false).setVisible(false)
+        this.buttons.create(15, 500, 'tutorial').setScale(.5).setName('tutorial').setImmovable(false).setVisible(false)
             .setCollideWorldBounds(true).body.allowGravity = false
 
         this.add.text(710, 140, 'Fork ->', {fontSize: '18px', fill: '#FFF'}).setName('github')
@@ -39,7 +43,7 @@ class MainMenu extends Phaser.Scene {
             .setCollideWorldBounds(true).body.allowGravity = false
 
         this.add.text(690, 320, 'Arcade ->', {fontSize: '18px', fill: '#FFF'})
-        this.buttons.create(790, 350, 'bomb').setScale(.5).setName('arcade').setImmovable(false).setVisible(false)
+        this.buttons.create(785, 350, 'bomb').setScale(.5).setName('arcade').setImmovable(false).setVisible(false)
             .setCollideWorldBounds(true).body.allowGravity = false
 
         // Coming soon
@@ -60,11 +64,41 @@ class MainMenu extends Phaser.Scene {
 
         // The player and its settings (Moved to setupScene)
 
+        // Set camera bounds
+        // this.cameras.main.setBounds(0, 0, 3200, 600); // Adjust as needed
+
+        // Set camera to follow player with vertical follow enabled
+        // this.cameras.main.startFollow(player, true, 0.08, 0.08);
+
         // Add colliders
         this.physics.add.collider(this.player, platforms)
 
         // Add menu collider to press buttons
         this.physics.add.overlap(this.player, this.buttons, this.selectMenu, null, this)
+
+        // Add portals for navigation
+
+        portals.create(20, 500, 'portal').setImmovable(false)
+        portals.create(780, 350, 'portal').setImmovable(false)
+
+        portals = this.physics.add.group()
+
+        // Define animations if needed
+        this.anims.create({
+            key: 'portalAnimation',
+            frames: this.anims.generateFrameNumbers('portal', { start: 0, end: 7 }), // Assuming frames 0 to 3 are part of the animation
+            frameRate: 10,
+            repeat: -1 // Repeat indefinitely
+        })
+
+        // Play animation for portals
+        portals.children.iterate(function (child) {
+            child.play('portalAnimation')
+        })
+
+        this.physics.add.collider(portals, platforms)
+
+        player.setDepth(4)
 
         // Our player animations, turning, walking left and walking right. (Moved to setupScene)
 
@@ -102,7 +136,6 @@ class MainMenu extends Phaser.Scene {
             previousSceneKey = this.scene.key
             playerPositionX = 750
             playerPositionY = 200
-            // window.location = '/ranked'
             init.fadeInScene('RankedName', this)
         }
 
@@ -111,6 +144,15 @@ class MainMenu extends Phaser.Scene {
             this.titleMusic.stop()
             previousSceneKey = this.scene.key
             init.fadeInScene('Arcade', this)
+        }
+
+        if (menu.name === 'tutorial') {
+            this.physics.pause()
+            this.titleMusic.stop()
+            previousSceneKey = this.scene.key
+            playerPositionX = 750
+            playerPositionY = 500
+            init.fadeInScene('Tutorial', this)
         }
     }
 }
