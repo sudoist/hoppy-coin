@@ -11,10 +11,9 @@ class Tutorial extends Phaser.Scene {
         playerSprite = init.randomizePlayerSprite() // Random or select
 
         // Check if playing again from same scene
-        // console.log('Previous scene key:', previousSceneKey)
         // if (previousSceneKey === 'MainMenu') {
         playerPositionX = 2300
-        playerPositionY = 360
+        playerPositionY = 500
         // }
 
         // Adjust boundary
@@ -22,6 +21,11 @@ class Tutorial extends Phaser.Scene {
         xAddBounds = 1600
 
         init.setupScene(this, init.randomizePlayerSprite(), false)
+
+        // Get scores
+        init.apiFetch(env.API_URL + '/scores').then((data) => {
+            init.printScores(this, data, 400, 100)
+        })
 
         // NPC
         npc = this.physics.add.staticGroup()
@@ -33,7 +37,7 @@ class Tutorial extends Phaser.Scene {
 
         this.physics.add.collider(player, npc, this.showGameModes, null, this)
 
-        // leftBarrier = barriers.create(-50 + xAddBounds, 300, 'left-barrier').setImmovable(true).setDepth(5)
+        leftBarrier = barriers.create(-50 + xAddBounds, 300, 'left-barrier').setImmovable(true).setDepth(5)
         rightBarrier = barriers.create(50 + gameWidth + xAddBounds, 300, 'right-barrier').setImmovable(true).setDepth(5)
 
         // Set up collisions between the player and the barriers
@@ -41,10 +45,6 @@ class Tutorial extends Phaser.Scene {
 
         // Set up the camera bounds
         this.cameras.main.setBounds(0, 0, gameWidth + xAddBounds, 600)
-
-        // Adjust the initial camera position to show the player sprite
-        // this.cameras.main.scrollX = gameWidth + xAddBounds // Adjust as needed
-        // this.cameras.main.scrollY = 0
 
         // Ensure that the initial camera position is within the bounds
         // this.cameras.main.centerToBounds()
@@ -62,16 +62,11 @@ class Tutorial extends Phaser.Scene {
         platforms.create(2000, 568, 'ground').setScale(2).refreshBody()
         platforms.create(2400, 568, 'ground').setScale(2).refreshBody()
 
-        //  Now let's create some ledges
-        // platforms.create(200, 400, 'ground')
-        // platforms.create(745, 250, 'ground')
-        // platforms.create(60, 220, 'ground')
-
         // Animations
 
-        // Portals
-        portals.create(20, 500 + xAddBounds, 'portal').setImmovable(false)
-        portals.create(20, 2300, 'portal').setImmovable(false)
+        // Add portals for navigation
+        this.add.text(45,  470, '<- Main Menu', {fontSize: '18px', fill: '#FFF'})
+        portals.create(60, 500, 'portal').setImmovable(false).setName('title')
 
         // Play animation for portals
         portals.children.iterate(function (child) {
@@ -79,6 +74,7 @@ class Tutorial extends Phaser.Scene {
         })
 
         this.physics.add.collider(portals, platforms)
+        this.physics.add.collider(player, portals, this.selectMenu, null, this)
 
         // Speech bubbles
         init.setSpeechBubbleAnimations(this, 'silent', 1.5, -1)
@@ -93,10 +89,10 @@ class Tutorial extends Phaser.Scene {
         bombs = this.physics.add.group()
 
         //  The score
-        scoreText = this.add.text(16 + xAddBounds + xAddBounds, 16, 'Score: 0', {fontSize: '32px', fill: '#FFF'})
+        scoreText = this.add.text(60 + gameWidth + gameWidth, 16, 'Score: 0', {fontSize: '32px', fill: '#FFF'})
 
         //  The stage
-        stageText = this.add.text(16 + xAddBounds + xAddBounds, 46, 'Stage: 1', {fontSize: '32px', fill: '#FFF'})
+        stageText = this.add.text(60 + gameWidth + gameWidth, 46, 'Stage: 1', {fontSize: '32px', fill: '#FFF'})
 
         //  Collide the player and the stars with the platforms
         this.physics.add.collider(player, platforms)
@@ -112,11 +108,11 @@ class Tutorial extends Phaser.Scene {
 
         this.physics.add.collider(player, bombs, this.hitBomb, null, this)
 
-        tutorialStage = 1
         // tutorialText = this.add.text(gameWidth + 900 + xAddBounds, 140, 'Hop around to collect coins.', {
         tutorialText = this.add.text(2500, 140, 'Hop around to collect coins.', {
             fontSize: '24px',
-            fill: '#FFF'
+            fill: '#FFF',
+            align: 'center'
         })
 
         // Center
@@ -158,50 +154,29 @@ class Tutorial extends Phaser.Scene {
 
         this.followPlayerSpeech()
 
-        if (gameOver) {
+        this.followPlayerScore()
 
-            // Run one time on game over
-            if (gameOverSound) {
-                instructions.destroy()
-                this.add.text(200, 550, 'Would you like to play again?', {fontSize: '24px', fill: '#FFF'})
+        init.monitorMuteStatus(game)
 
-                // Add overlap with menu
-                this.physics.add.overlap(player, this.buttons, this.selectMenu, null, this)
-
-                stars.children.iterate(function (child) {
-                    child.disableBody(true, true)
-                })
-
-                // Sounds
-                this.sound.playAudioSprite('sfx', 'death')
-                music.stop()
-                gameOverSound = false
-
-                // Game over texts
-                this.add.text(20, 320, '<- Back to title', {fontSize: '18px', fill: '#FFF'})
-
-                this.add.text(647, 470, 'Play again ->', {fontSize: '18px', fill: '#FFF'})
-            }
-
-            init.setPlayerMovements(this)
-        } else {
-            init.monitorMuteStatus(game)
-
-            // Movements
-            init.setPlayerMovements(this)
-        }
+        // Movements
+        init.setPlayerMovements(this)
     }
 
     selectMenu(player, menu) {
         // Reset data
         score = 0
 
-        if (menu.name === 'menu') {
-            init.gameOverReset(this, 'MainMenu', 670, 360)
-        }
+        if (menu.name === 'title') {
 
-        if (menu.name === 'arcade') {
-            init.gameOverReset(this, 'Arcade', 40, 500)
+            this.physics.pause()
+            music.stop()
+            previousSceneKey = this.scene.key
+
+            // Change starting position
+            playerPositionX = 100
+            playerPositionY = 500
+
+            init.fadeInScene('MainMenu', this)
         }
     }
 
@@ -209,6 +184,19 @@ class Tutorial extends Phaser.Scene {
         if (playerSpeechBubble) {
             playerSpeechBubble.x = player.x + 20
             playerSpeechBubble.y = player.y - 25
+        }
+    }
+
+    followPlayerScore() {
+        if (followCamera) {
+            // For reference later
+            // if (player.x < 400) {
+            //     scoreText.x = 60
+            //     stageText.x = 60
+            // } else {
+            //     scoreText.x = player.x - 300
+            //     stageText.x = player.x - 300
+            // }
         }
     }
 
@@ -221,7 +209,6 @@ class Tutorial extends Phaser.Scene {
 
         stars.children.iterate(function (child) {
 
-            console.log(child.x)
             //  Give each star a slightly different bounce
             child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8))
 
@@ -231,6 +218,10 @@ class Tutorial extends Phaser.Scene {
     }
 
     collectStar(player, star) {
+        //  Add and update the score
+        score += 10
+        scoreText.setText('Score: ' + score)
+
         this.sound.playAudioSprite('sfx', 'ping')
 
         star.disableBody(true, true)
@@ -239,7 +230,7 @@ class Tutorial extends Phaser.Scene {
             tutorialStage++
             if (tutorialStage === 2) {
 
-                tutorialText.setText('Collecting all coins will make a bomb appear.')
+                tutorialText.setText('Collecting all coins \n will make a bomb appear.')
 
                 tutorialDialogue.setText('Good thing only balls appear in tutorial!')
                 tutorialDialogueText = 'Good thing only balls appear in tutorial!'
@@ -247,7 +238,7 @@ class Tutorial extends Phaser.Scene {
 
             if (tutorialStage === 3) {
 
-                tutorialText.setText('Each star completion will move to next stage.')
+                tutorialText.setText('Each star completion \n will move to next stage.')
 
                 tutorialDialogue.setText(`Seems easy enough. Let's reach stage 4.`)
                 tutorialDialogueText = `Seems easy enough. Let's reach stage 4.`
@@ -257,18 +248,15 @@ class Tutorial extends Phaser.Scene {
 
                 tutorialText.setText('Each star completion will move to next stage.')
 
-                // Add portals for navigation
-                // portals.create(20 + xAddBounds, 500, 'portal').setImmovable(false)
-                // portals.children.iterate(function (child) {
-                //     child.play('portalAnimation')
-                // })
-                // this.physics.add.collider(portals, platforms)
+                // Remove scores and stage
+                scoreText.x = 5000
+                stageText.x = 5000
 
                 // Adjust camera
                 leftBarrier.disableBody(true, true)
                 leftBarrier = barriers.create(-50 + gameWidth, 300, 'left-barrier').setImmovable(true).setDepth(5)
 
-                this.cameras.main.startFollow(player, true, 0.08, 0.08);
+                followCamera = true
 
                 tutorialDialogue.setText(`A path opened up on the left.`)
                 tutorialDialogueText = `A path opened up on the left.`
@@ -279,7 +267,6 @@ class Tutorial extends Phaser.Scene {
 
             //  A new batch of stars to collect
             stars.children.iterate(function (child) {
-                console.log(child.x)
 
                 child.enableBody(true, child.x, 340, true, true)
 
@@ -295,7 +282,6 @@ class Tutorial extends Phaser.Scene {
 
         let bomb = bombs.create(Phaser.Math.Between(gameWidth + xAddBounds + 100, xAddBounds + 300), 16, sprite)
         bomb.setBounce(1)
-        // bomb.setCollideWorldBounds(true)
         bomb.setVelocity(Phaser.Math.Between(-200, 200), 20)
         bomb.allowGravity = false
 
@@ -303,13 +289,6 @@ class Tutorial extends Phaser.Scene {
     }
 
     hitBomb(player, bomb) {
-
-        // tutorialDialogue.setText('Ow!')
-        //
-        // setTimeout(() => {
-        //     tutorialDialogue.setText(tutorialDialogueText)
-        // }, 3000)
-
         init.setSpeechBubbleAnimations(this, 'ow', 8, 0)
 
         playerSpeechBubble = speechBubbles.create(player.x - 100, player.y - 100, 'ow').setImmovable(false).setScale(1).setDepth(3)
@@ -322,37 +301,30 @@ class Tutorial extends Phaser.Scene {
     }
 
     showGameModes() {
-        console.log('bump')
 
         followCamera = true
 
-        console.log('bump ' + followCamera)
-
         // Quick play
-        tutorialText.setText('for quick play')
+        tutorialText.setText('Game Modes: \n \n Quick play is \n practice mode \n with the latest \n features included.\n Scores are not recorded. \n \n \n Ranked is playing \n on a single level \n with a set of fixed features. \n \n The goal is to get the highest score.')
         tutorialText.x = (gameWidth + xAddBounds) - 1200
 
-        tutorialDialogue.setText(`What? I moved back...`)
+        tutorialDialogue.setText(`Oh? I moved back... No, wall of texts! Skip!`)
         tutorialDialogue.x = (gameWidth + xAddBounds) - 1200
 
         // Ranked play
-        this.add.text(400, 140, 'ranked.', {
+        this.add.text(120, 30, 'Scores are displayed after ranked game.', {
             fontSize: '24px',
-            fill: '#FFF'
+            fill: '#FFF',
+            align: 'center'
         })
 
-        this.add.text(400, 570, 'Hop around to collect coins.', {
+        this.add.text(400, 570, `Finally, It's done.`, {
             fontSize: '24px',
             fill: '#FFF'
         }).setOrigin(0.5)
 
-        // Disable announcement collider after once
-        // this.physics.world.disableBody(npc)
-        // this.physics.world.disableBody(player)
-
-        // this.physics.world.disableBody(this.player.body)
         // Iterate over each NPC in the static group
-        npc.children.iterate(function(child) {
+        npc.children.iterate(function (child) {
             // Disable collider between player and NPC
             this.physics.world.disableBody(child.body)
         }, this)
@@ -360,51 +332,35 @@ class Tutorial extends Phaser.Scene {
         // Move player
         player.x = 1100
 
-
-
-        // this.cameras.main.startFollow(player, false, 0.08, 0.08)
+        // Remove left barrier
+        leftBarrier.disableBody(true, true)
+        leftBarrier = barriers.create(-50, 300, 'left-barrier').setImmovable(true).setDepth(5)
     }
 
     // Function to update the camera position
     updateCamera() {
-        console.log(this.cameras.main.scrollX)
-
         // Check if the condition to unlock camera movement is met
-        if (this.cameras.main.scrollX < 1100 && this.cameras.main.scrollX > 1050) {
-            console.log('next fixed')
+        if (this.cameras.main.scrollX < 1100) {
 
+            if (tutorialStage === 4) {
+                tutorialStage++
 
-            rightBarrier.disableBody(true, true)
-            rightBarrier = barriers.create(50 + (gameWidth * 2), 300, 'right-barrier').setImmovable(true).setDepth(5)
+                rightBarrier.disableBody(true, true)
+                rightBarrier = barriers.create(50 + (gameWidth * 2), 300, 'right-barrier').setImmovable(true).setDepth(5)
 
-            tutorialText.setText('Check the notice board.')
-            tutorialText.x = (gameWidth + xAddBounds) - 1200
+                tutorialText.setText('Check the notice board.')
+                tutorialText.x = (gameWidth + xAddBounds) - 1200
 
-            tutorialDialogue.setText(`What's in here?`)
-            tutorialDialogue.x = (gameWidth + xAddBounds) - 1200
+                tutorialDialogue.setText(`What's in here?`)
+                tutorialDialogue.x = (gameWidth + xAddBounds) - 1200
 
-            // Update the camera position based on player or other events
-            this.cameras.main.scrollX = 800
-            // this.cameras.main.scrollY = updatedCameraY;
+                // Update the camera position based on player or other events
+                this.cameras.main.scrollX = 800
 
-            // Disable follow
-            followCamera = false
-            // if (followCamera) {
-            //     this.cameras.main.startFollow(player, false, 0.08, 0.08)
-            // } else {
-            //     this.cameras.main.stopFollow()
-            // }
-
-
-            //
-            //     leftBarrier = barriers.create(-50, 300, 'left-barrier').setImmovable(true).setDepth(5)
+                // Disable follow
+                followCamera = false
+            }
         }
-
-        // if (this.cameras.main.scrollX < 810 && this.cameras.main.scrollX < 795) {
-        //
-        // }
-
-        console.log(followCamera)
 
         // Disable follow
         if (followCamera) {

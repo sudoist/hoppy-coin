@@ -55,7 +55,7 @@ let rightBarrier
 let gameWidth
 // Camera
 let currentCamera
-let followCamera = true
+let followCamera = false
 let xAddBounds = 0
 // NPC
 let npc
@@ -556,11 +556,9 @@ init.getScores = async function () {
 }
 
 // Ranked
-init.printScores = function (scene, scores) {
+init.printScores = function (scene, scores, startingX = 400, startingY = 100) {
 
     let rank = 0
-
-    let startingY = 100
 
     for (const [key, value] of Object.entries(scores.data)) {
         ++rank
@@ -572,7 +570,7 @@ init.printScores = function (scene, scores) {
             const date = new Date(`${value.date}`).toISOString().slice(0, 10)
 
             // Score
-            let score = scene.add.text(400, startingY, rank + '    ' + `${value.name}` + '    ' + `${value.score}` + '    ' + date, {
+            let score = scene.add.text(startingX, startingY, rank + '    ' + `${value.name}` + '    ' + `${value.score}` + '    ' + date, {
                 fontSize: '24px',
                 fill: '#fff'
             })
