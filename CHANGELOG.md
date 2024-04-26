@@ -4,6 +4,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] - YYYY-MM-DD
+
+## Added
+
+### Assets
+- Portals
+- Borders
+- Announcement board
+- Speech bubbles
+
+- ### Scenes
+- Tutorial
+  - Added camera controls
+- Title screen
+
+## Changes
+- Moved scenes to own directory
+- Moved ranked to own directory
+- Replaced borders with backgrounds
+
+## Removed
+- Clean up unused files
+- 
+
+---
+
 ## [v0.2.8.2](https://github.com/sudoist/hoppy-coin/releases/tag/v0.2.8.2) - 2024-04-23
 
 ## Added
