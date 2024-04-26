@@ -6,8 +6,11 @@ class Boot extends Phaser.Scene {
     preload() {
         // Backgrounds
         this.load.image('sky', '/assets/bg/sky.png')
+        this.load.image('night', '/assets/bg/night.png')
         this.load.image('planet', '/assets/bg/phaser-planet-small.png')
         this.load.image('default', '/assets/bg/pattern.webp')
+        this.load.image('left-barrier', '/assets/bg/left-barrier.png')
+        this.load.image('right-barrier', '/assets/bg/right-barrier.png')
 
         // Sprites
         this.load.image('star', '/assets/sprites/star.png')
@@ -19,11 +22,19 @@ class Boot extends Phaser.Scene {
         this.load.image('ground', '/assets/sprites/platform.png')
         this.load.image('ground-m', '/assets/sprites/platform-50.png')
         this.load.image('ground-s', '/assets/sprites/platform-25.png')
+        this.load.image('barrier', '/assets/sprites/barrier.png')
+        this.load.spritesheet('portal', '/assets/sprites/portal.png', {frameWidth: 32, frameHeight: 48})
+        // Speech
+        this.load.spritesheet('silent', '/assets/sprites/silent-speech-bubble.png', {frameWidth: 32, frameHeight: 48})
+        this.load.spritesheet('ow', '/assets/sprites/ow-speech-bubble.png', {frameWidth: 32, frameHeight: 48})
 
         // Player
         this.load.spritesheet('dude', '/assets/players/dude.png', {frameWidth: 32, frameHeight: 48})
         this.load.spritesheet('piccolo', '/assets/players/piccolo.png', {frameWidth: 32, frameHeight: 48})
         this.load.spritesheet('explode', '/assets/players/explode.png', {frameWidth: 32, frameHeight: 48})
+
+        // Npc
+        this.load.image('announcement', '/assets/npcs/announcement.png')
 
         // Logos
         this.load.image('phaser', '/assets/logos/phaser.png')
@@ -33,8 +44,8 @@ class Boot extends Phaser.Scene {
         this.load.image('github-white', '/assets/logos/github-mark-white.png')
 
         // Buttons
-        this.load.image('arcade', '/assets/buttons/arcade.png')
-        this.load.image('ranked', '/assets/buttons/ranked.png')
+        this.load.image('quick-play', '/assets/buttons/button_quick-play.png')
+        this.load.image('ranked', '/assets/buttons/button_ranked.png')
         this.load.image('mute', '/assets/buttons/mute-32.png')
         this.load.image('sound', '/assets/buttons/sound-32.png')
         this.load.image('menu', '/assets/buttons/menu.png')
@@ -101,16 +112,6 @@ class Boot extends Phaser.Scene {
             centerY: this.cameras.main.centerY
         }
 
-        // Play boot music
-        music = this.sound.add('boot', {volume: 1.2, loop: false})
-        music.play()
-
         this.scene.start('Preloader')
-        // this.scene.start('MainMenu')
-        // this.scene.start('Arcade')
-        // this.scene.start('RankedName')
-        // this.scene.start('Leaderboard')
-        // this.scene.start('RankedMenu')
-        // this.scene.start('Ranked')
     }
 }

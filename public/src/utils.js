@@ -2,9 +2,10 @@ let init = {}
 
 let player
 let playerName
-let playerPositionX = 100 // 100 default
+let playerPositionX = 400 // 100 default
 let playerPositionY = 450 // 450 default
 let playerSprite
+let playerSpeechBubble
 let stars
 let bombs
 let sky
@@ -26,7 +27,7 @@ let menuButton
 let playButton
 let arcadeButton
 let rankedButton
-let isMute = false
+let isMute = true
 let previousSceneKey
 // Ranked
 let env
@@ -41,6 +42,24 @@ let apiResponse
 // Mobile
 let isMobile = false
 let joystickPressed
+// Tutorial
+let tutorialStage = 1
+let tutorialText
+let tutorialDialogue
+let tutorialDialogueText
+// Navigation
+let portals
+let barriers
+let leftBarrier
+let rightBarrier
+let gameWidth
+// Camera
+let currentCamera
+let followCamera = false
+let xAddBounds = 0
+// NPC
+let npc
+let speechBubbles
 
 // API get
 init.apiFetch = async function getRequest(path) {
@@ -106,9 +125,11 @@ init.fadeInScene = function (sceneName, context) {
 
 // Add functions that should be applied to all scenes
 // E.g. (this, 'dude/Player sprite key')
-init.setupScene = function (scene, player) {
-    init.addBorders(scene)
-    init.setPlayerSprite(scene, player)
+init.setupScene = function (scene, player, playerBounds = true) {
+    if (playerBounds) {
+        init.addBorders(scene)
+    }
+    init.setPlayerSprite(scene, player, playerBounds)
     init.setPlayerAnimations(scene, player)
     init.setInputEvents(scene)
     init.addMuteButton(scene)
@@ -119,6 +140,8 @@ init.setupScene = function (scene, player) {
         init.createJoystick(scene)
     }
     init.setInstructions(scene)
+    init.setPortalAnimations(scene)
+    init.setSpeechBubble(scene)
 }
 
 // Get device
@@ -157,14 +180,25 @@ init.addBorders = function (scene) {
 
     // Draw the right border
     graphics.strokeRect(gameWidth - borderWidth, 0, borderWidth, gameHeight)
+
+    // Draw the top border
+    graphics.beginPath()
+    graphics.moveTo(0, 0) // Start at (0, 0)
+    graphics.lineTo(gameWidth, 0) // Draw line to the right edge of the canvas
+    graphics.closePath()
+    graphics.stroke() // Stroke the line
+
+    // Make sure the border is displayed above other game elements
+    graphics.setDepth(9999) // Set a high depth value
 }
 
-init.setPlayerSprite = function (scene, key) {
+init.setPlayerSprite = function (scene, key, playerBounds = true) {
     player = scene.player = scene.physics.add.sprite(playerPositionX, playerPositionY, key)
 
     // Player physics properties. Give the little guy a slight bounce.
     player = scene.player.setBounce(0.2)
-    player = scene.player.setCollideWorldBounds(true)
+    player = scene.player.setCollideWorldBounds(playerBounds)
+    player.setDepth(4)
 }
 
 init.randomizePlayerSprite = function () {
@@ -217,6 +251,32 @@ init.setPlayerAnimations = function (scene, key) {
         frames: scene.anims.generateFrameNumbers('explode', {start: 5, end: 8}),
         frameRate: 10,
         repeat: -1
+    })
+}
+
+init.setPortalAnimations = function (scene, key = 'portal') {
+    portals = scene.physics.add.group()
+
+    // Define animations if needed
+    scene.anims.create({
+        key: 'portalAnimation',
+        frames: scene.anims.generateFrameNumbers(key, {start: 0, end: 7}), // Assuming frames 0 to 3 are part of the animation
+        frameRate: 10,
+        repeat: -1 // Repeat indefinitely
+    })
+}
+
+init.setSpeechBubble = function (scene) {
+    speechBubbles = scene.physics.add.group()
+}
+
+init.setSpeechBubbleAnimations = function (scene, key, frameRate, repeat) {
+    // Define animations if needed
+    scene.anims.create({
+        key: key,
+        frames: scene.anims.generateFrameNumbers(key, {start: 0, end: 4}),
+        frameRate: frameRate,
+        repeat: repeat
     })
 }
 
@@ -301,17 +361,20 @@ init.setPlayerMovements = function (scene) {
     }
 }
 
-init.createStars = function (scene) {
+init.createStars = function (scene, x = 12, y = 0, gravity = true) {
     stars = scene.physics.add.group({
         key: 'coin',
         repeat: 11,
-        setXY: {x: 12, y: 0, stepX: 70}
+        setXY: {x: x, y: y, stepX: 70}
     })
 
     stars.children.iterate(function (child) {
+        console.log(gravity)
 
         //  Give each star a slightly different bounce
         child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8))
+
+        child.body.allowGravity = gravity
 
     })
 }
@@ -402,6 +465,9 @@ init.setSceneBackground = function (sceneName) {
         case 'MainMenu':
             init.changeBackground('pattern.webp', 'initial', 'repeat')
             break
+        case 'Tutorial':
+            init.changeBackground('night.png', 'cover', 'no-repeat')
+            break
         case 'Arcade':
             init.changeBackground('sky.png', 'cover', 'no-repeat')
             break
@@ -423,7 +489,14 @@ init.addMuteButton = function (scene) {
     if (isMute) {
         soundToggle = 'mute'
     }
-    muteButton = scene.add.image(770, 30, soundToggle)
+
+    let addBounds = -50
+
+    if (xAddBounds > 0) {
+        addBounds = xAddBounds - 50
+    }
+
+    muteButton = scene.add.image(770 + addBounds, 30, soundToggle)
         .setInteractive()
         .on('pointerdown', () => init.toggleSound())
 }
@@ -483,11 +556,9 @@ init.getScores = async function () {
 }
 
 // Ranked
-init.printScores = function (scene, scores) {
+init.printScores = function (scene, scores, startingX = 400, startingY = 100) {
 
     let rank = 0
-
-    let startingY = 100
 
     for (const [key, value] of Object.entries(scores.data)) {
         ++rank
@@ -499,7 +570,7 @@ init.printScores = function (scene, scores) {
             const date = new Date(`${value.date}`).toISOString().slice(0, 10)
 
             // Score
-            let score = scene.add.text(400, startingY, rank + '    ' + `${value.name}` + '    ' + `${value.score}` + '    ' + date, {
+            let score = scene.add.text(startingX, startingY, rank + '    ' + `${value.name}` + '    ' + `${value.score}` + '    ' + date, {
                 fontSize: '24px',
                 fill: '#fff'
             })
