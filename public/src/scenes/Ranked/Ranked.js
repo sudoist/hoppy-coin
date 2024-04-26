@@ -10,13 +10,6 @@ class Ranked extends Phaser.Scene {
         // Init
         playerSprite = init.randomizePlayerSprite() // Random or select
 
-        // Check if playing again from same scene
-        // console.log('Previous scene key:', previousSceneKey)
-        // if (previousSceneKey === 'MainMenu') {
-        //     playerPositionX = 30
-        //     playerPositionY = 360
-        // }
-
         init.setupScene(this, init.randomizePlayerSprite())
 
         //  The platforms group contains the ground and the 2 ledges we can jump on
@@ -57,9 +50,6 @@ class Ranked extends Phaser.Scene {
 
         this.physics.add.collider(player, bombs, this.hitBomb, null, this)
 
-        // Instructions
-        // instructions = this.add.text(200, 550, 'Move with W, A, S, D', {fontSize: '32px', fill: '#fff'})
-
         // Start game with bomb after 3 seconds
         init.createBomb(this, bombs, player, 3000, 'bomb-r')
 
@@ -71,14 +61,6 @@ class Ranked extends Phaser.Scene {
 
         // Add buttons after game over
         this.buttons = this.physics.add.group()
-
-        this.buttons.create(830, 180, 'menu').setScale(.5).setName('menu').setImmovable(false)
-            .body.allowGravity = false
-
-        this.buttons.create(830, 500, 'ranked').setScale(.5).setName('ranked').setImmovable(false)
-            .body.allowGravity = false
-
-        this.buttons.setVisible(false)
     }
 
     update() {
@@ -97,26 +79,9 @@ class Ranked extends Phaser.Scene {
                 music.stop()
                 gameOverSound = false
 
-                // Send score to API
-                const req = {
-                    "path": env.API_URL + '/scores',
-                    "name": playerName,
-                    "score": score,
-                }
-
-                init.apiPost(req).then((data) => {
-                    // Print updated score
+                // Get scores
+                init.apiFetch(env.API_URL + '/scores').then((data) => {
                     init.printScores(this, data)
-
-                    // After saving score, show menu
-
-                    // Game over texts
-                    this.add.text(600, 140, 'Back to ranked ->', {fontSize: '18px', fill: '#FFF'})
-
-                    this.add.text(647, 470, 'Play again ->', {fontSize: '18px', fill: '#FFF'})
-
-                    // Add overlap with menu
-                    this.physics.add.overlap(player, this.buttons, this.selectMenu, null, this)
 
                     // Score message text below... The effort to just say git gud!
                     let rank = 0
@@ -135,22 +100,67 @@ class Ranked extends Phaser.Scene {
                     instructions.destroy()
 
                     if (score >= lastPlaceScore) {
-                        let text = this.add.text(200, 570, 'Congratulations!', {fontSize: '24px', fill: '#FFF'})
+                        // Clear old scores
+                        leaderboard.destroy()
+
+                        // Clear ledges then re add ground
+                        platforms.children.iterate(function (child) {
+                            child.disableBody(true, true)
+                        })
+
+                        platforms.create(400, 568, 'ground').setScale(2).refreshBody()
+
+                        // Now let's create some ledges
+                        platforms.create(100, 280, 'ground')
+                        platforms.create(350, 280, 'ground')
+                        platforms.create(900, 380, 'ground')
+
+                        instructionsText = `Congratulations! \n Don't forget to submit your score.`
+                        instructions = this.add.text(230, 565, instructionsText, {
+                            fontSize: '24px',
+                            fill: '#FFF',
+                            align: 'center'
+                        })
 
                         // Center
-                        text.setOrigin(0.5);
-                        text.x = this.cameras.main.width / 2
-                    }
+                        instructions.setOrigin(0.5);
+                        instructions.x = this.cameras.main.width / 2
 
-                    if (score >= (lastPlaceScore - 200)) {
-                        let text = this.add.text(200, 570, 'Almost there!', {fontSize: '24px', fill: '#FFF'})
+                        // Get player name
+                        setTimeout(() => {
 
-                        // Center
-                        text.setOrigin(0.5);
-                        text.x = this.cameras.main.width / 2
-                    }
+                            // Add input
+                            init.displayInputButtons(this)
+                        }, 2000)
 
-                    if (score < (lastPlaceScore - 200)) {
+                        // Setup scene
+                        scene = this
+
+                        // Add menu collider to press buttons
+                        this.physics.add.overlap(this.player, this.buttons, this.buttonPress, null, this)
+                        console.log(playerName)
+
+                        // Enter name text then save score
+                        inputPlayerNameLabel = this.add.text(200, 40, 'Enter your name:', {
+                            fontSize: '24px',
+                            fill: '#FFF'
+                        })
+                        inputPlayerNameText = this.add.text(470, 40, '_ _ _', {fontSize: '24px', fill: '#FFF'})
+                    } else if (score > 300) {
+                        if (score >= (lastPlaceScore - 200)) {
+                            let text = this.add.text(200, 570, 'Almost there!', {fontSize: '24px', fill: '#FFF'})
+
+                            // Center
+                            text.setOrigin(0.5);
+                            text.x = this.cameras.main.width / 2
+                        } else {
+                            let text = this.add.text(200, 570, 'Git gud...', {fontSize: '24px', fill: '#FFF'})
+
+                            // Center
+                            text.setOrigin(0.5)
+                            text.x = this.cameras.main.width / 2
+                        }
+                    } else if (score < lastPlaceScore) {
                         let text = this.add.text(200, 570, 'Git gud...', {fontSize: '24px', fill: '#FFF'})
 
                         // Center
@@ -158,6 +168,85 @@ class Ranked extends Phaser.Scene {
                         text.x = this.cameras.main.width / 2
                     }
 
+                    // Add portals for navigation
+                    this.add.text(645, 470, 'Play again ->', {fontSize: '18px', fill: '#FFF'})
+                    portals.create(770, 500, 'portal').setImmovable(false).setName('ranked')
+
+                    this.add.text(600, 130, 'Back to ranked ->', {fontSize: '18px', fill: '#FFF'})
+                    portals.create(770, 130, 'portal').setImmovable(false).setName('menu')
+
+                    // Play animation for portals
+                    portals.children.iterate(function (child) {
+                        child.play('portalAnimation')
+                    })
+
+                    this.physics.add.collider(portals, platforms)
+
+                    this.physics.add.collider(player, portals, this.selectMenu, null, this)
+
+                    player.setDepth(4)
+                })
+            }
+
+            if (inputPlayerNameSubmitted) {
+
+                inputPlayerNameSubmitted = false
+
+                // Clear ledges then re add ground
+                platforms.children.iterate(function (child) {
+                    child.disableBody(true, true)
+                })
+
+                platforms.create(400, 568, 'ground').setScale(2).refreshBody()
+
+                // Clear and update texts
+                inputPlayerNameLabel.destroy()
+                inputPlayerNameText.destroy()
+                instructions.destroy()
+
+                instructions = this.add.text(230, 565, `Congratulations ` + playerName + `! \n Don't forget to submit your score.`, {
+                    fontSize: '24px',
+                    fill: '#FFF',
+                    align: 'center'
+                })
+
+                // Center
+                instructions.setOrigin(0.5);
+                instructions.x = this.cameras.main.width / 2
+
+                // Send score to API
+                const req = {
+                    "path": env.API_URL + '/scores',
+                    "name": playerName,
+                    "score": score,
+                }
+
+                init.apiPost(req).then((data) => {
+                    // Clear old scores
+                    leaderboard.destroy()
+
+                    // Print updated score
+                    init.printScores(this, data)
+
+                    // After saving score, show menu
+
+                    // Add portals for navigation
+                    this.add.text(20, 470, '<- Play again', {fontSize: '18px', fill: '#FFF'})
+                    portals.create(35, 500, 'portal').setImmovable(false).setName('ranked')
+
+                    this.add.text(600, 470, 'Back to ranked ->', {fontSize: '18px', fill: '#FFF'})
+                    portals.create(765, 500, 'portal').setImmovable(false).setName('menu')
+
+                    // Play animation for portals
+                    portals.children.iterate(function (child) {
+                        child.play('portalAnimation')
+                    })
+
+                    this.physics.add.collider(portals, platforms)
+
+                    this.physics.add.collider(player, portals, this.selectMenu, null, this)
+
+                    player.setDepth(4)
                 })
             }
 
@@ -175,7 +264,7 @@ class Ranked extends Phaser.Scene {
         score = 0
 
         if (menu.name === 'menu') {
-            init.gameOverReset(this, 'RankedMenu', 60, 170)
+            init.gameOverReset(this, 'StageSelection', 120, 170)
         }
 
         if (menu.name === 'ranked') {

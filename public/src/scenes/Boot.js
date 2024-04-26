@@ -112,6 +112,10 @@ class Boot extends Phaser.Scene {
             centerY: this.cameras.main.centerY
         }
 
+        // Play boot music
+        music = this.sound.add('boot', {volume: 1, loop: false})
+        music.play()
+
         this.scene.start('Preloader')
     }
 }

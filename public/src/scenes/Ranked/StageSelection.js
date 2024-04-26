@@ -1,6 +1,6 @@
-class RankedMenu extends Phaser.Scene {
+class StageSelection extends Phaser.Scene {
     constructor() {
-        super('RankedMenu')
+        super('StageSelection')
     }
 
     preload() {
@@ -10,40 +10,20 @@ class RankedMenu extends Phaser.Scene {
         // Init
         playerSprite = init.randomizePlayerSprite() // Random or select
 
-        // Check if playing again from same scene
-        // console.log('Previous scene key:', previousSceneKey)
-        // if (previousSceneKey === 'MainMenu') {
-        //     playerPositionX = 750
-        //     playerPositionY = 200
-        // }
-        // if (previousSceneKey === 'Ranked') {
-        //     playerPositionX = 750
-        //     playerPositionY = 200
-        // }
-
         init.setupScene(this, 'dude')
 
         // Add buttons
         this.buttons = this.physics.add.group()
 
-        this.add.text(50, 40, '<- Leaderboard', {fontSize: '18px', fill: '#FFF'})
-        this.buttons.create(30, 45, 'leaderboard').setScale(1).setName('phaserInitialRanking').setImmovable(false).setVisible(true)
-            .setCollideWorldBounds(true).body.allowGravity = false
-
-        this.add.text(20, 140, '<- Phaser Initial', {fontSize: '18px', fill: '#FFF'})
-        this.buttons.create(10, 200, 'bomb').setScale(.5).setName('phaserInitial').setImmovable(false).setVisible(false)
-            .setCollideWorldBounds(true).body.allowGravity = false
-
-        this.add.text(610, 170, 'Back to title ->', {fontSize: '18px', fill: '#FFF'})
-        this.buttons.create(790, 210, 'bomb').setScale(.5).setName('title').setImmovable(false).setVisible(false)
-            .setCollideWorldBounds(true).body.allowGravity = false
+        // this.add.text(50, 40, '<- Leaderboard', {fontSize: '18px', fill: '#FFF'})
+        // this.buttons.create(30, 45, 'leaderboard').setScale(1).setName('phaserInitialRanking').setImmovable(false).setVisible(true)
+        //     .setCollideWorldBounds(true).body.allowGravity = false
 
         // Coming soon
         this.add.text(20, 470, '<- Land Mine Beach (Coming Soon...)', {fontSize: '18px', fill: '#FFF'})
         // this.add.text(515, 470, 'Ruins (Coming Soon...) ->', {fontSize: '18px', fill: '#FFF'})
 
-        this.add.text(300, 40, 'Hop on!', {fontSize: '24px', fill: '#FFF'})
-        this.add.text(410, 40, playerName, {fontSize: '24px', fill: '#FFF'})
+        this.add.text(350, 40, 'Hop on!', {fontSize: '24px', fill: '#FFF'})
 
         // The platforms group contains the ground and the 2 ledges we can jump on
         let platforms = this.physics.add.staticGroup()
@@ -57,26 +37,36 @@ class RankedMenu extends Phaser.Scene {
         platforms.create(745, 250, 'ground')
         platforms.create(60, 220, 'ground')
 
-        // The player and its settings (Moved to setupScene)
-
         // Add colliders
         this.physics.add.collider(this.player, platforms)
 
         // Add menu collider to press buttons
         this.physics.add.overlap(this.player, this.buttons, this.selectMenu, null, this)
 
-        // Our player animations, turning, walking left and walking right. (Moved to setupScene)
-
-        // Input Events (Moved to setupScene)
-
-        // Instructions (Moved to setupScene)
-        // Remove instruction overlap
         instructions.destroy()
         this.add.text(280, 550, 'Select stage', {fontSize: '32px', fill: '#FFF'})
 
         // Music
         this.titleMusic = this.sound.add('rankedMenu', {volume: 1, loop: true})
         this.titleMusic.play()
+
+        // Add portals for navigation
+        this.add.text(610, 170, 'Back to title ->', {fontSize: '18px', fill: '#FFF'})
+        portals.create(770, 210, 'portal').setImmovable(false).setName('title')
+
+        this.add.text(20, 140, '<- Phaser Initial', {fontSize: '18px', fill: '#FFF'})
+        portals.create(35, 180, 'portal').setImmovable(false).setName('phaserInitial')
+
+        // Play animation for portals
+        portals.children.iterate(function (child) {
+            child.play('portalAnimation')
+        })
+
+        this.physics.add.collider(portals, platforms)
+
+        this.physics.add.collider(player, portals, this.selectMenu, null, this)
+
+        player.setDepth(4)
     }
 
     update() {
@@ -109,6 +99,7 @@ class RankedMenu extends Phaser.Scene {
             playerPositionY = 140
 
             level = 'phaserInitial'
+            levelLabel = 'Phaser Initial'
 
             init.fadeInScene('Ranked', this)
         }

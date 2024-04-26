@@ -62,6 +62,8 @@ class Title extends Phaser.Scene {
         player.setDepth(4)
 
         // Music
+        music.stop()
+
         this.titleMusic = this.sound.add('intro', {volume: 1, loop: true})
         this.titleMusic.play()
 
@@ -84,7 +86,6 @@ class Title extends Phaser.Scene {
                 playerPositionY = 500
                 previousSceneKey = this.scene.key
                 init.fadeInScene('Arcade', this)
-                console.log('clicekd quick-play')
             })
 
         this.add.image(550, 300, 'ranked')
@@ -92,9 +93,9 @@ class Title extends Phaser.Scene {
             .on('pointerdown', () => {
                 this.titleMusic.stop()
                 previousSceneKey = this.scene.key
-                playerPositionX = 40
-                playerPositionY = 350
-                init.fadeInScene('RankedName', this)
+                playerPositionX = 720
+                playerPositionY = 200
+                init.fadeInScene('StageSelection', this)
             })
     }
 
@@ -122,7 +123,7 @@ class Title extends Phaser.Scene {
             previousSceneKey = this.scene.key
             playerPositionX = 750
             playerPositionY = 200
-            init.fadeInScene('RankedName', this)
+            init.fadeInScene('StageSelection', this)
         }
 
         if (menu.name === 'arcade') {

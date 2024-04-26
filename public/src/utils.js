@@ -27,7 +27,7 @@ let menuButton
 let playButton
 let arcadeButton
 let rankedButton
-let isMute = true
+let isMute = false
 let previousSceneKey
 // Ranked
 let env
@@ -39,6 +39,7 @@ let inputPlayerNameText
 let inputPlayerNameSubmitted = false
 let scene
 let apiResponse
+let leaderboard
 // Mobile
 let isMobile = false
 let joystickPressed
@@ -91,9 +92,9 @@ init.apiPost = async function postRequest(req) {
 }
 
 init.bootFadeOutScene = function (sceneName, context) {
-    context.cameras.main.fadeOut(7000)
+    context.cameras.main.fadeOut(4000)
     context.time.addEvent({
-        delay: 7000,
+        delay: 4000,
         callback: function () {
             context.scene.start(sceneName)
         },
@@ -471,7 +472,7 @@ init.setSceneBackground = function (sceneName) {
         case 'Arcade':
             init.changeBackground('sky.png', 'cover', 'no-repeat')
             break
-        case 'RankedName':
+        case 'StageSelection':
             init.changeBackground('john-cosio-xCZ8ynsCfrw-unsplash.jpg', 'cover', 'no-repeat')
             break
         case 'RankedMenu':
@@ -560,6 +561,19 @@ init.printScores = function (scene, scores, startingX = 400, startingY = 100) {
 
     let rank = 0
 
+    let scoreRows = 'Leaderboard: ' + levelLabel + '\n \n'
+
+    leaderboard = scene.add.text(startingX, startingY, '', {
+        fontSize: '24px',
+        fill: '#fff',
+        align: 'center'
+    })
+
+    // Set the origin of the text to its center
+    leaderboard.setOrigin(0.5)
+
+    startingY += 30
+
     for (const [key, value] of Object.entries(scores.data)) {
         ++rank
 
@@ -570,17 +584,14 @@ init.printScores = function (scene, scores, startingX = 400, startingY = 100) {
             const date = new Date(`${value.date}`).toISOString().slice(0, 10)
 
             // Score
-            let score = scene.add.text(startingX, startingY, rank + '    ' + `${value.name}` + '    ' + `${value.score}` + '    ' + date, {
-                fontSize: '24px',
-                fill: '#fff'
-            })
+            scoreRows += rank + '    ' + `${value.name}` + '    ' + `${value.score}` + '    ' + date + '\n \n'
 
-            // Set the origin of the text to its center
-            score.setOrigin(0.5)
-
-            startingY += 30
+            // startingY += 30
         }
     }
+
+    leaderboard.setText(scoreRows)
+    leaderboard.y = 300
 }
 
 init.displayInputButtons = function (scene) {
@@ -594,7 +605,7 @@ init.displayInputButtons = function (scene) {
 
     // for (const [key, value] of Object.entries(inputKeys)) {
     for (const value of inputKeysUpper) {
-        inputKeys.create(startingX, 100, value).setName(value).setScale(.4).refreshBody()
+        inputKeys.create(startingX, 100, value).setName(value).setScale(.4).refreshBody().setInteractive()
 
         startingX += 40
     }
@@ -603,10 +614,19 @@ init.displayInputButtons = function (scene) {
     startingX = 20
 
     for (const value of inputKeysLower) {
-        inputKeys.create(startingX, 320, value).setName(value).setScale(.4).refreshBody()
+        inputKeys.create(startingX, 320, value).setName(value).setScale(.4).refreshBody().setInteractive()
 
         startingX += 40
     }
+
+    inputKeys.create(540, 320, 'enter').setName('enter').setScale(.4).refreshBody().setInteractive()
+
+    // Assign clickable value
+    inputKeys.children.iterate(function (child) {
+        child.on('pointerdown', () => {
+            init.inputPress(player, child)
+        })
+    })
 
     scene.physics.add.collider(scene.player, inputKeys, init.inputPress, null, this)
 }
@@ -720,22 +740,19 @@ init.inputPress = function (player, input) {
         playerName += input.name.toUpperCase()
     }
 
-    // Show enter button when at least 3 characters
-    if (playerName.length >= 3) {
-        inputKeys.create(540, 320, 'enter').setName('enter').setScale(.4).refreshBody()
-    }
-
     if (input.name === 'enter') {
-        // Clear page
-        inputKeys.clear(true, true)
+        // Show enter button when at least 3 characters
+        if (playerName.length >= 3) {
+            // Clear page
+            inputKeys.clear(true, true)
 
-        inputPlayerNameLabel.destroy()
-        inputPlayerNameLabel = scene.add.text(300, 40, 'Hop on!', {fontSize: '24px', fill: '#FFF'})
-
-        inputPlayerNameText.destroy()
-        inputPlayerNameText = scene.add.text(410, 40, playerName, {fontSize: '24px', fill: '#FFF'})
-
-        inputPlayerNameSubmitted = true
+            inputPlayerNameSubmitted = true
+        } else {
+            instructions.setText('Name must be at least 3 characters.')
+            setTimeout(() => {
+                instructions.setText(instructionsText)
+            }, 3000)
+        }
 
         return
     }

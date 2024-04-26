@@ -4,6 +4,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] - YYYY-MM-DD
+
+## Added
+
+### Assets
+- Portals
+- Borders
+- Announcement board
+- Speech bubbles
+
+- ### Scenes
+- Tutorial
+  - Added camera controls
+- Title screen
+
+## Changes
+- Moved scenes to own directory
+- Moved ranked to own directory
+- Replaced borders with backgrounds
+- Updated ranked games
+  - Going to "ranked" button and portals will move to stage selection screen
+    - After finishing a game and reaching top 10, then the name input will appear
+    - Finishing below top 10 will not send score to API
+  - Input keys for name are now clickable
+
+## Removed
+- Clean up unused files
+- Leaderboard scene, to be moved in explore/main menu scene
+
+---
+
 ## [v0.2.8.2](https://github.com/sudoist/hoppy-coin/releases/tag/v0.2.8.2) - 2024-04-23
 
 ## Added

@@ -31,16 +31,6 @@ class RankedName extends Phaser.Scene {
         // Add input
         init.displayInputButtons(this)
 
-        // Add texts
-        // let name
-        //
-        // if(!playerName){
-        //     name = '_ _ _'
-        //     // name = 'ABC'
-        // }else {
-        //     name = playerName
-        // }
-
         // Enter name text then save score
         inputPlayerNameLabel = this.add.text(200, 40, 'Enter your name:', {fontSize: '24px', fill: '#FFF'})
         inputPlayerNameText = this.add.text(470, 40, '_ _ _', {fontSize: '24px', fill: '#FFF'})
