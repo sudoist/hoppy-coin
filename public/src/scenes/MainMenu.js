@@ -64,7 +64,7 @@ class MainMenu extends Phaser.Scene {
         portals.create(730, 330, 'portal').setImmovable(false).setName('arcade')
 
         this.add.text(45, 170, '<- Ranked Game', {fontSize: '18px', fill: '#FFF'})
-        portals.create(60, 130, 'portal').setImmovable(false).setName('ranked')
+        portals.create(60, 180, 'portal').setImmovable(false).setName('ranked')
 
         // Play animation for portals
         portals.children.iterate(function (child) {
@@ -112,9 +112,9 @@ class MainMenu extends Phaser.Scene {
             this.physics.pause()
             this.titleMusic.stop()
             previousSceneKey = this.scene.key
-            playerPositionX = 750
+            playerPositionX = 720
             playerPositionY = 200
-            init.fadeInScene('RankedName', this)
+            init.fadeInScene('StageSelection', this)
         }
 
         if (menu.name === 'arcade') {

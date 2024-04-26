@@ -23,10 +23,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Moved scenes to own directory
 - Moved ranked to own directory
 - Replaced borders with backgrounds
+- Updated ranked games
+  - Going to "ranked" button and portals will move to stage selection screen
+    - After finishing a game and reaching top 10, then the name input will appear
+    - Finishing below top 10 will not send score to API
+  - Input keys for name are now clickable
 
 ## Removed
 - Clean up unused files
-- 
+- Leaderboard scene, to be moved in explore/main menu scene
 
 ---
 
