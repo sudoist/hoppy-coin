@@ -30,14 +30,6 @@ class MainMenu extends Phaser.Scene {
         // Add buttons
         this.buttons = this.physics.add.group()
 
-        // this.add.text(20, 470, '<- Ranked Game', {fontSize: '18px', fill: '#FFF'})
-        // this.buttons.create(15, 500, 'bomb').setScale(.5).setName('ranked').setImmovable(false).setVisible(false)
-        //     .setCollideWorldBounds(true).body.allowGravity = false
-
-        this.add.text(20, 470, '<- Ranked Game', {fontSize: '18px', fill: '#FFF'})
-        this.buttons.create(15, 500, 'tutorial').setScale(.5).setName('tutorial').setImmovable(false).setVisible(false)
-            .setCollideWorldBounds(true).body.allowGravity = false
-
         this.add.text(710, 140, 'Fork ->', {fontSize: '18px', fill: '#FFF'}).setName('github')
         this.buttons.create(750, 180, 'github').setScale(.2).setName('github').setImmovable(false)
             .setCollideWorldBounds(true).body.allowGravity = false
@@ -51,7 +43,7 @@ class MainMenu extends Phaser.Scene {
         this.add.text(515, 470, 'Ruins (Coming Soon...) ->', {fontSize: '18px', fill: '#FFF'})
 
         // The platforms group contains the ground and the 2 ledges we can jump on
-        let platforms = this.physics.add.staticGroup()
+        platforms = this.physics.add.staticGroup()
 
         // Here we create the ground.
         // Scale it to fit the width of the game (the original sprite is 400x32 in size)
@@ -77,19 +69,8 @@ class MainMenu extends Phaser.Scene {
         this.physics.add.overlap(this.player, this.buttons, this.selectMenu, null, this)
 
         // Add portals for navigation
-
-        portals.create(20, 500, 'portal').setImmovable(false)
-        portals.create(780, 350, 'portal').setImmovable(false)
-
-        portals = this.physics.add.group()
-
-        // Define animations if needed
-        this.anims.create({
-            key: 'portalAnimation',
-            frames: this.anims.generateFrameNumbers('portal', { start: 0, end: 7 }), // Assuming frames 0 to 3 are part of the animation
-            frameRate: 10,
-            repeat: -1 // Repeat indefinitely
-        })
+        this.add.text(45,  470, '<- How to play', {fontSize: '18px', fill: '#FFF'})
+        portals.create(60, 500, 'portal').setImmovable(false).setName('tutorial')
 
         // Play animation for portals
         portals.children.iterate(function (child) {
@@ -98,14 +79,9 @@ class MainMenu extends Phaser.Scene {
 
         this.physics.add.collider(portals, platforms)
 
+        this.physics.add.collider(player, portals, this.selectMenu, null, this)
+
         player.setDepth(4)
-
-        // Our player animations, turning, walking left and walking right. (Moved to setupScene)
-
-        // Input Events (Moved to setupScene)
-
-        // Instructions (Moved to setupScene)
-        // instructions = this.add.text(200, 550, 'Move with W, A, S, D', {fontSize: '32px', fill: '#FFF'})
 
         // Music
         this.titleMusic = this.sound.add('intro', {volume: 1, loop: true})
@@ -150,7 +126,7 @@ class MainMenu extends Phaser.Scene {
             this.physics.pause()
             this.titleMusic.stop()
             previousSceneKey = this.scene.key
-            playerPositionX = 750
+            playerPositionX = 2300
             playerPositionY = 500
             init.fadeInScene('Tutorial', this)
         }

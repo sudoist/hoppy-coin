@@ -10,12 +10,6 @@ class Tutorial extends Phaser.Scene {
         // Init
         playerSprite = init.randomizePlayerSprite() // Random or select
 
-        // Check if playing again from same scene
-        // if (previousSceneKey === 'MainMenu') {
-        playerPositionX = 2300
-        playerPositionY = 500
-        // }
-
         // Adjust boundary
         gameWidth = this.sys.game.config.width
         xAddBounds = 1600
