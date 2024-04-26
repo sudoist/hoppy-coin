@@ -2,7 +2,7 @@ let init = {}
 
 let player
 let playerName
-let playerPositionX = 100 // 100 default
+let playerPositionX = 400 // 100 default
 let playerPositionY = 450 // 450 default
 let playerSprite
 let playerSpeechBubble
@@ -490,7 +490,7 @@ init.addMuteButton = function (scene) {
         soundToggle = 'mute'
     }
 
-    let addBounds = 0
+    let addBounds = -50
 
     if (xAddBounds > 0) {
         addBounds = xAddBounds - 50

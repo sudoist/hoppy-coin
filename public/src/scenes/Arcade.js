@@ -73,17 +73,6 @@ class Arcade extends Phaser.Scene {
 
         music = this.sound.add('start', {volume: 1, loop: true})
         music.play()
-
-        // Add buttons after game over
-        this.buttons = this.physics.add.group()
-
-        this.buttons.create(-20, 350, 'menu').setScale(.5).setName('menu').setImmovable(false)
-            .body.allowGravity = false
-
-        this.buttons.create(830, 500, 'arcade').setScale(.5).setName('arcade').setImmovable(false)
-            .body.allowGravity = false
-
-        this.buttons.setVisible(false)
     }
 
     update() {
@@ -107,9 +96,24 @@ class Arcade extends Phaser.Scene {
                 gameOverSound = false
 
                 // Game over texts
-                this.add.text(20, 320, '<- Back to title', {fontSize: '18px', fill: '#FFF'})
 
-                this.add.text(647, 470, 'Play again ->', {fontSize: '18px', fill: '#FFF'})
+                // Add portals for navigation
+                this.add.text(10,  320, '<- Back to menu', {fontSize: '18px', fill: '#FFF'})
+                portals.create(30, 350, 'portal').setImmovable(false).setName('menu')
+
+                this.add.text(650, 470, 'Play again ->', {fontSize: '18px', fill: '#FFF'})
+                portals.create(780, 500, 'portal').setImmovable(false).setName('arcade')
+
+                // Play animation for portals
+                portals.children.iterate(function (child) {
+                    child.play('portalAnimation')
+                })
+
+                this.physics.add.collider(portals, platforms)
+
+                this.physics.add.collider(player, portals, this.selectMenu, null, this)
+
+                player.setDepth(4)
             }
 
             init.setPlayerMovements(this)

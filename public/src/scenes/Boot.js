@@ -44,8 +44,8 @@ class Boot extends Phaser.Scene {
         this.load.image('github-white', '/assets/logos/github-mark-white.png')
 
         // Buttons
-        this.load.image('arcade', '/assets/buttons/arcade.png')
-        this.load.image('ranked', '/assets/buttons/ranked.png')
+        this.load.image('quick-play', '/assets/buttons/button_quick-play.png')
+        this.load.image('ranked', '/assets/buttons/button_ranked.png')
         this.load.image('mute', '/assets/buttons/mute-32.png')
         this.load.image('sound', '/assets/buttons/sound-32.png')
         this.load.image('menu', '/assets/buttons/menu.png')
@@ -112,16 +112,6 @@ class Boot extends Phaser.Scene {
             centerY: this.cameras.main.centerY
         }
 
-        // Play boot music
-        // music = this.sound.add('boot', {volume: 1.2, loop: false})
-        // music.play()
-
-        // this.scene.start('Preloader')
-        this.scene.start('MainMenu')
-        // this.scene.start('Arcade')
-        // this.scene.start('RankedName')
-        // this.scene.start('Leaderboard')
-        // this.scene.start('RankedMenu')
-        // this.scene.start('Ranked')
+        this.scene.start('Preloader')
     }
 }

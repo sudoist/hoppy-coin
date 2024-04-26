@@ -12,23 +12,36 @@ class MainMenu extends Phaser.Scene {
 
         init.setupScene(this, 'dude')
 
+        let logo = this.add.image(400, 100, 'logo')
+        logo.setScale(.5)
+
+        this.add.text(100, 50, "ⒽⓄⓅⓅⓎ",
+            {
+                fontSize: '40px',
+                fill: '#FFF'
+            })
+
+        this.add.text(500, 50, "ⒸⓄⒾⓃ",
+            {
+                fontSize: '40px',
+                fill: '#FFF'
+            })
+
         // Add buttons
         this.buttons = this.physics.add.group()
 
-        // this.add.text(710, 140, 'Fork ->', {fontSize: '18px', fill: '#FFF'}).setName('github')
-        // this.buttons.create(750, 180, 'github').setScale(.2).setName('github').setImmovable(false)
-        //     .setCollideWorldBounds(true).body.allowGravity = false
+        this.add.text(710, 140, 'Fork ->', {fontSize: '18px', fill: '#FFF'}).setName('github')
+        this.buttons.create(750, 180, 'github').setScale(.2).setName('github').setImmovable(false)
+            .setCollideWorldBounds(true).body.allowGravity = false
 
-        // this.add.text(690, 320, 'Arcade ->', {fontSize: '18px', fill: '#FFF'})
-        // this.buttons.create(705, 530, 'portal').setScale(.5).setName('arcade').setImmovable(false).setVisible(false)
-        //     .setCollideWorldBounds(true).body.allowGravity = false
+        this.add.text(690, 320, 'Arcade ->', {fontSize: '18px', fill: '#FFF'})
+        this.buttons.create(785, 350, 'bomb').setScale(.5).setName('arcade').setImmovable(false).setVisible(false)
+            .setCollideWorldBounds(true).body.allowGravity = false
 
         // Coming soon
         // this.add.text(20, 170, '<- How to play (Coming Soon...)', {fontSize: '18px', fill: '#FFF'})
         // this.add.text(515, 470, 'Ruins (Coming Soon...) ->', {fontSize: '18px', fill: '#FFF'})
-        // this.add.text(515, 470, 'Explore ->', {fontSize: '18px', fill: '#FFF'})
-        // this.buttons.create(705, 530, 'portal').setScale(.5).setName('arcade').setImmovable(false).setVisible(false)
-        //     .setCollideWorldBounds(true).body.allowGravity = false
+        this.add.text(515, 470, 'Explore ->', {fontSize: '18px', fill: '#FFF'})
 
         // The platforms group contains the ground and the 2 ledges we can jump on
         platforms = this.physics.add.staticGroup()
@@ -57,14 +70,8 @@ class MainMenu extends Phaser.Scene {
         this.physics.add.overlap(this.player, this.buttons, this.selectMenu, null, this)
 
         // Add portals for navigation
-        this.add.text(45,  470, '<- Back to title', {fontSize: '18px', fill: '#FFF'})
-        portals.create(60, 500, 'portal').setImmovable(false).setName('title')
-
-        this.add.text(650, 320, 'Arcade ->', {fontSize: '18px', fill: '#FFF'})
-        portals.create(730, 330, 'portal').setImmovable(false).setName('arcade')
-
-        this.add.text(45, 170, '<- Ranked Game', {fontSize: '18px', fill: '#FFF'})
-        portals.create(60, 130, 'portal').setImmovable(false).setName('ranked')
+        this.add.text(45,  470, '<- How to play', {fontSize: '18px', fill: '#FFF'})
+        portals.create(60, 500, 'portal').setImmovable(false).setName('tutorial')
 
         // Play animation for portals
         portals.children.iterate(function (child) {
@@ -80,14 +87,6 @@ class MainMenu extends Phaser.Scene {
         // Music
         this.titleMusic = this.sound.add('intro', {volume: 1, loop: true})
         this.titleMusic.play()
-
-        // Add invisible barriers at the edges of the game world
-        barriers = this.physics.add.staticGroup()
-
-        leftBarrier = barriers.create(-50, 300, 'left-barrier').setImmovable(true).setDepth(5)
-        rightBarrier = barriers.create(850, 300, 'right-barrier').setImmovable(true).setDepth(5)
-
-        this.physics.add.collider(player, barriers)
     }
 
     update() {
@@ -124,13 +123,13 @@ class MainMenu extends Phaser.Scene {
             init.fadeInScene('Arcade', this)
         }
 
-        if (menu.name === 'title') {
+        if (menu.name === 'tutorial') {
             this.physics.pause()
             this.titleMusic.stop()
             previousSceneKey = this.scene.key
-            playerPositionX = 650
+            playerPositionX = 2300
             playerPositionY = 500
-            init.fadeInScene('Title', this)
+            init.fadeInScene('Tutorial', this)
         }
     }
 }

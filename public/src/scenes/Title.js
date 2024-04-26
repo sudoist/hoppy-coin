@@ -1,6 +1,6 @@
-class MainMenu extends Phaser.Scene {
+class Title extends Phaser.Scene {
     constructor() {
-        super('MainMenu')
+        super('Title')
     }
 
     preload() {
@@ -12,23 +12,23 @@ class MainMenu extends Phaser.Scene {
 
         init.setupScene(this, 'dude')
 
+        let logo = this.add.image(400, 100, 'logo')
+        logo.setScale(.5)
+
+        this.add.text(100, 50, "ⒽⓄⓅⓅⓎ",
+            {
+                fontSize: '40px',
+                fill: '#FFF'
+            })
+
+        this.add.text(500, 50, "ⒸⓄⒾⓃ",
+            {
+                fontSize: '40px',
+                fill: '#FFF'
+            })
+
         // Add buttons
         this.buttons = this.physics.add.group()
-
-        // this.add.text(710, 140, 'Fork ->', {fontSize: '18px', fill: '#FFF'}).setName('github')
-        // this.buttons.create(750, 180, 'github').setScale(.2).setName('github').setImmovable(false)
-        //     .setCollideWorldBounds(true).body.allowGravity = false
-
-        // this.add.text(690, 320, 'Arcade ->', {fontSize: '18px', fill: '#FFF'})
-        // this.buttons.create(705, 530, 'portal').setScale(.5).setName('arcade').setImmovable(false).setVisible(false)
-        //     .setCollideWorldBounds(true).body.allowGravity = false
-
-        // Coming soon
-        // this.add.text(20, 170, '<- How to play (Coming Soon...)', {fontSize: '18px', fill: '#FFF'})
-        // this.add.text(515, 470, 'Ruins (Coming Soon...) ->', {fontSize: '18px', fill: '#FFF'})
-        // this.add.text(515, 470, 'Explore ->', {fontSize: '18px', fill: '#FFF'})
-        // this.buttons.create(705, 530, 'portal').setScale(.5).setName('arcade').setImmovable(false).setVisible(false)
-        //     .setCollideWorldBounds(true).body.allowGravity = false
 
         // The platforms group contains the ground and the 2 ledges we can jump on
         platforms = this.physics.add.staticGroup()
@@ -37,19 +37,6 @@ class MainMenu extends Phaser.Scene {
         // Scale it to fit the width of the game (the original sprite is 400x32 in size)
         platforms.create(400, 568, 'ground').setScale(2).refreshBody()
 
-        // Now let's create some ledges
-        platforms.create(600, 400, 'ground')
-        platforms.create(50, 250, 'ground')
-        platforms.create(750, 220, 'ground')
-
-        // The player and its settings (Moved to setupScene)
-
-        // Set camera bounds
-        // this.cameras.main.setBounds(0, 0, 3200, 600); // Adjust as needed
-
-        // Set camera to follow player with vertical follow enabled
-        // this.cameras.main.startFollow(player, true, 0.08, 0.08);
-
         // Add colliders
         this.physics.add.collider(this.player, platforms)
 
@@ -57,14 +44,11 @@ class MainMenu extends Phaser.Scene {
         this.physics.add.overlap(this.player, this.buttons, this.selectMenu, null, this)
 
         // Add portals for navigation
-        this.add.text(45,  470, '<- Back to title', {fontSize: '18px', fill: '#FFF'})
-        portals.create(60, 500, 'portal').setImmovable(false).setName('title')
+        this.add.text(45, 470, '<- How to play', {fontSize: '18px', fill: '#FFF'})
+        portals.create(60, 500, 'portal').setImmovable(false).setName('tutorial')
 
-        this.add.text(650, 320, 'Arcade ->', {fontSize: '18px', fill: '#FFF'})
-        portals.create(730, 330, 'portal').setImmovable(false).setName('arcade')
-
-        this.add.text(45, 170, '<- Ranked Game', {fontSize: '18px', fill: '#FFF'})
-        portals.create(60, 130, 'portal').setImmovable(false).setName('ranked')
+        this.add.text(650, 470, 'Explore ->', {fontSize: '18px', fill: '#FFF'})
+        portals.create(740, 500, 'portal').setImmovable(false).setName('menu')
 
         // Play animation for portals
         portals.children.iterate(function (child) {
@@ -88,6 +72,30 @@ class MainMenu extends Phaser.Scene {
         rightBarrier = barriers.create(850, 300, 'right-barrier').setImmovable(true).setDepth(5)
 
         this.physics.add.collider(player, barriers)
+
+        // Buttons
+        this.add.text(250, 250, 'Click on a game mode to play.', {fontSize: '18px', fill: '#FFF'})
+
+        this.add.image(250, 300, 'quick-play')
+            .setInteractive()
+            .on('pointerdown', () => {
+                this.titleMusic.stop()
+                playerPositionX = 60
+                playerPositionY = 500
+                previousSceneKey = this.scene.key
+                init.fadeInScene('Arcade', this)
+                console.log('clicekd quick-play')
+            })
+
+        this.add.image(550, 300, 'ranked')
+            .setInteractive()
+            .on('pointerdown', () => {
+                this.titleMusic.stop()
+                previousSceneKey = this.scene.key
+                playerPositionX = 40
+                playerPositionY = 350
+                init.fadeInScene('RankedName', this)
+            })
     }
 
     update() {
@@ -124,13 +132,22 @@ class MainMenu extends Phaser.Scene {
             init.fadeInScene('Arcade', this)
         }
 
-        if (menu.name === 'title') {
+        if (menu.name === 'menu') {
             this.physics.pause()
             this.titleMusic.stop()
             previousSceneKey = this.scene.key
-            playerPositionX = 650
+            playerPositionX = 120
             playerPositionY = 500
-            init.fadeInScene('Title', this)
+            init.fadeInScene('MainMenu', this)
+        }
+
+        if (menu.name === 'tutorial') {
+            this.physics.pause()
+            this.titleMusic.stop()
+            previousSceneKey = this.scene.key
+            playerPositionX = 2300
+            playerPositionY = 500
+            init.fadeInScene('Tutorial', this)
         }
     }
 }

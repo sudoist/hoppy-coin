@@ -59,8 +59,11 @@ class Tutorial extends Phaser.Scene {
         // Animations
 
         // Add portals for navigation
-        this.add.text(45,  470, '<- Main Menu', {fontSize: '18px', fill: '#FFF'})
+        this.add.text(45,  470, '<- Back to title', {fontSize: '18px', fill: '#FFF'})
         portals.create(60, 500, 'portal').setImmovable(false).setName('title')
+
+        this.add.text(2180, 470, 'Back to title ->', {fontSize: '18px', fill: '#FFF'})
+        portals.create(2340, 500, 'portal').setImmovable(false).setName('title')
 
         // Play animation for portals
         portals.children.iterate(function (child) {
@@ -167,10 +170,10 @@ class Tutorial extends Phaser.Scene {
             previousSceneKey = this.scene.key
 
             // Change starting position
-            playerPositionX = 100
+            playerPositionX = 120
             playerPositionY = 500
 
-            init.fadeInScene('MainMenu', this)
+            init.fadeInScene('Title', this)
         }
     }
 
