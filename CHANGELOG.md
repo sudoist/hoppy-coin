@@ -13,11 +13,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Borders
 - Announcement board
 - Speech bubbles
+- Lock/Unlock buttons
 
-- ### Scenes
+### Scenes
 - Tutorial
   - Added camera controls
 - Title screen
+
+### Controls
+- Draggable joystick controls on mobile
+
 
 ## Changes
 - Moved scenes to own directory
@@ -28,6 +33,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
     - After finishing a game and reaching top 10, then the name input will appear
     - Finishing below top 10 will not send score to API
   - Input keys for name are now clickable
+
 
 ## Removed
 - Clean up unused files
@@ -62,6 +68,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Navigation in game was moved to scenes instead of pages
 - Updated README file
 - Reduce assets directory nesting to 1 level max
+
 
 ## Removed
 - Libraries used for navigating and styling pages

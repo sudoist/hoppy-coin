@@ -42,7 +42,9 @@ let apiResponse
 let leaderboard
 // Mobile
 let isMobile = false
+let lockButton
 let joystickPressed
+let joystickDraggable = false
 // Tutorial
 let tutorialStage = 1
 let tutorialText
@@ -138,6 +140,7 @@ init.setupScene = function (scene, player, playerBounds = true) {
     // Create joystick on mobile
     if (init.isMobile()) {
         isMobile = true
+        init.addLockButton(scene)
         init.createJoystick(scene)
     }
     init.setInstructions(scene)
@@ -295,7 +298,15 @@ init.setInputEvents = function (scene) {
 init.setInstructions = function (scene) {
     // Set instructions
     if (isMobile) {
-        instructions = scene.add.text(200, 570, 'Move by using the joystick', {fontSize: '32px', fill: '#fff'})
+        instructions = scene.add.text(200, 570, 'Move by using the joystick. \n Tap the lock icon to drag joystick.', {
+            fontSize: '20px',
+            fill: '#FFF',
+            align: 'center'
+        })
+
+        // Center
+        instructions.setOrigin(0.5);
+        instructions.x = scene.cameras.main.width / 2
     } else {
         instructions = scene.add.text(200, 570, 'Move with W, A, S, D', {fontSize: '32px', fill: '#fff'})
     }
@@ -312,23 +323,37 @@ init.createJoystick = function (scene) {
         x: scene.cameras.main.width / 2,
         y: 480,
         radius: 100,
-        base: scene.add.circle(0, 0, 40, 0x888888),
+        base: scene.add.circle(0, 0, 40, 0xffffff),
         thumb: scene.add.circle(0, 0, 30, 0xcccccc),
     })
         .on('update', init.getJoystickState, scene)
 }
 
 init.getJoystickState = function joyStickState() {
-    const cursorKeys = this.joyStick.createCursorKeys()
-    let pressed = ''
-    for (const name in cursorKeys) {
-        if (cursorKeys[name].isDown) {
-            pressed = `${name}`
-        } else {
-            this.mobileCursorKeys = undefined
+
+    if (joystickDraggable) {
+        // Make the base draggable
+        this.input.setDraggable(this.joyStick.base)
+
+        // Set up drag events for the base
+        this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
+            gameObject.x = dragX
+            gameObject.y = dragY
+        })
+    } else {
+        this.input.setDraggable(this.joyStick.base, false)
+
+        const cursorKeys = this.joyStick.createCursorKeys()
+        let pressed = ''
+        for (const name in cursorKeys) {
+            if (cursorKeys[name].isDown) {
+                pressed = `${name}`
+            } else {
+                this.mobileCursorKeys = undefined
+            }
         }
+        joystickPressed = pressed
     }
-    joystickPressed = pressed
 }
 
 init.setPlayerMovements = function (scene) {
@@ -520,6 +545,35 @@ init.monitorMuteStatus = function (game) {
     } else {
         game.sound.mute = false;
     }
+}
+
+init.addLockButton = function (scene) {
+    let lockToggle = 'locked'
+    if (joystickDraggable) {
+        lockToggle = 'unlocked'
+    }
+
+    let addBounds = -100
+
+    if (xAddBounds > 0) {
+        addBounds = xAddBounds - 100
+    }
+
+    lockButton = scene.add.image(770 + addBounds, 30, lockToggle)
+        .setInteractive()
+        .on('pointerdown', () => init.toggleLock())
+}
+
+init.toggleLock = function () {
+    if (joystickDraggable) {
+        lockButton.setTexture('locked', 0)
+        joystickDraggable = false
+
+        return
+    }
+
+    joystickDraggable = true
+    lockButton.setTexture('unlocked', 0)
 }
 
 // Game over
