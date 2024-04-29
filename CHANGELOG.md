@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Title screen
 
 ### Controls
-- Draggable joystick controls on mobile
+- Tap anywhere on mobile for joystick controls to display
 
 
 ## Changes
