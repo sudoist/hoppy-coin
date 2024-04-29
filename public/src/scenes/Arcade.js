@@ -128,6 +128,7 @@ class Arcade extends Phaser.Scene {
     selectMenu(player, menu) {
         // Reset data
         score = 0
+        stage = 1
 
         if (menu.name === 'menu') {
             init.gameOverReset(this, 'MainMenu', 670, 360)

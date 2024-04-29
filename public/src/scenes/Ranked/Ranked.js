@@ -262,6 +262,7 @@ class Ranked extends Phaser.Scene {
     selectMenu(player, menu) {
         // Reset data
         score = 0
+        stage = 1
 
         if (menu.name === 'menu') {
             init.gameOverReset(this, 'StageSelection', 120, 170)
