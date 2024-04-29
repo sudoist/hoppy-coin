@@ -140,8 +140,7 @@ init.setupScene = function (scene, player, playerBounds = true) {
     // Create joystick on mobile
     if (init.isMobile()) {
         isMobile = true
-        init.addLockButton(scene)
-        init.createJoystick(scene)
+        init.tapListener(scene)
     }
     init.setInstructions(scene)
     init.setPortalAnimations(scene)
