@@ -298,7 +298,7 @@ init.setInputEvents = function (scene) {
 init.setInstructions = function (scene) {
     // Set instructions
     if (isMobile) {
-        instructions = scene.add.text(200, 570, 'Move by using the joystick. \n Tap the lock icon to drag joystick.', {
+        instructions = scene.add.text(200, 570, 'Tap anywhere on the screen. Move by using the joystick.', {
             fontSize: '20px',
             fill: '#FFF',
             align: 'center'
@@ -318,42 +318,48 @@ init.setInstructions = function (scene) {
     instructions.x = scene.cameras.main.width / 2
 }
 
-init.createJoystick = function (scene) {
-    scene.joyStick = scene.plugins.get('rexvirtualjoystickplugin').add(scene, {
-        x: scene.cameras.main.width / 2,
-        y: 480,
-        radius: 100,
-        base: scene.add.circle(0, 0, 40, 0xffffff),
-        thumb: scene.add.circle(0, 0, 30, 0xcccccc),
-    })
-        .on('update', init.getJoystickState, scene)
+init.tapListener = function (scene) {
+    // Listen for pointer events on the scene
+    scene.input.on('pointerdown', function (pointer) {
+        // Get the position of the tap
+        const tapX = pointer.x
+        const tapY = pointer.y
+
+        // Create the joystick at the position of the tap
+        scene.joyStick = scene.plugins.get('rexvirtualjoystickplugin').add(scene, {
+            x: tapX,
+            y: tapY,
+            radius: 100,
+            base: scene.add.circle(0, 0, 40, 0xffffff),
+            thumb: scene.add.circle(0, 0, 30, 0xcccccc),
+        })
+
+        // Implement joystick functionality
+        // (e.g., movement logic using joystick input)
+        scene.joyStick.on('update', init.getJoystickState, scene)
+
+        // Destroy the joystick when no longer needed
+        scene.input.on('pointerup', function () {
+            if (scene.joyStick) {
+                joystickPressed = undefined
+
+                scene.joyStick.destroy()
+            }
+        })
+    });
 }
 
 init.getJoystickState = function joyStickState() {
-
-    if (joystickDraggable) {
-        // Make the base draggable
-        this.input.setDraggable(this.joyStick.base)
-
-        // Set up drag events for the base
-        this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
-            gameObject.x = dragX
-            gameObject.y = dragY
-        })
-    } else {
-        this.input.setDraggable(this.joyStick.base, false)
-
-        const cursorKeys = this.joyStick.createCursorKeys()
-        let pressed = ''
-        for (const name in cursorKeys) {
-            if (cursorKeys[name].isDown) {
-                pressed = `${name}`
-            } else {
-                this.mobileCursorKeys = undefined
-            }
+    const cursorKeys = this.joyStick.createCursorKeys()
+    let pressed = ''
+    for (const name in cursorKeys) {
+        if (cursorKeys[name].isDown) {
+            pressed = `${name}`
+        } else {
+            this.mobileCursorKeys = undefined
         }
-        joystickPressed = pressed
     }
+    joystickPressed = pressed
 }
 
 init.setPlayerMovements = function (scene) {
@@ -395,8 +401,6 @@ init.createStars = function (scene, x = 12, y = 0, gravity = true) {
     })
 
     stars.children.iterate(function (child) {
-        console.log(gravity)
-
         //  Give each star a slightly different bounce
         child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8))
 
@@ -547,6 +551,7 @@ init.monitorMuteStatus = function (game) {
     }
 }
 
+// TODO: Remove or use later
 init.addLockButton = function (scene) {
     let lockToggle = 'locked'
     if (joystickDraggable) {
