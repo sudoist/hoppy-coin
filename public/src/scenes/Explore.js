@@ -30,24 +30,21 @@ class MainMenu extends Phaser.Scene {
         // Add buttons
         this.buttons = this.physics.add.group()
 
-        this.add.text(20, 470, '<- Ranked Game', {fontSize: '18px', fill: '#FFF'})
-        this.buttons.create(10, 500, 'bomb').setScale(.5).setName('ranked').setImmovable(false).setVisible(false)
-            .setCollideWorldBounds(true).body.allowGravity = false
-
         this.add.text(710, 140, 'Fork ->', {fontSize: '18px', fill: '#FFF'}).setName('github')
         this.buttons.create(750, 180, 'github').setScale(.2).setName('github').setImmovable(false)
             .setCollideWorldBounds(true).body.allowGravity = false
 
         this.add.text(690, 320, 'Arcade ->', {fontSize: '18px', fill: '#FFF'})
-        this.buttons.create(790, 350, 'bomb').setScale(.5).setName('arcade').setImmovable(false).setVisible(false)
+        this.buttons.create(785, 350, 'bomb').setScale(.5).setName('arcade').setImmovable(false).setVisible(false)
             .setCollideWorldBounds(true).body.allowGravity = false
 
         // Coming soon
-        this.add.text(20, 170, '<- How to play (Coming Soon...)', {fontSize: '18px', fill: '#FFF'})
-        this.add.text(515, 470, 'Ruins (Coming Soon...) ->', {fontSize: '18px', fill: '#FFF'})
+        // this.add.text(20, 170, '<- How to play (Coming Soon...)', {fontSize: '18px', fill: '#FFF'})
+        // this.add.text(515, 470, 'Ruins (Coming Soon...) ->', {fontSize: '18px', fill: '#FFF'})
+        this.add.text(515, 470, 'Explore ->', {fontSize: '18px', fill: '#FFF'})
 
         // The platforms group contains the ground and the 2 ledges we can jump on
-        let platforms = this.physics.add.staticGroup()
+        platforms = this.physics.add.staticGroup()
 
         // Here we create the ground.
         // Scale it to fit the width of the game (the original sprite is 400x32 in size)
@@ -60,18 +57,32 @@ class MainMenu extends Phaser.Scene {
 
         // The player and its settings (Moved to setupScene)
 
+        // Set camera bounds
+        // this.cameras.main.setBounds(0, 0, 3200, 600); // Adjust as needed
+
+        // Set camera to follow player with vertical follow enabled
+        // this.cameras.main.startFollow(player, true, 0.08, 0.08);
+
         // Add colliders
         this.physics.add.collider(this.player, platforms)
 
         // Add menu collider to press buttons
         this.physics.add.overlap(this.player, this.buttons, this.selectMenu, null, this)
 
-        // Our player animations, turning, walking left and walking right. (Moved to setupScene)
+        // Add portals for navigation
+        this.add.text(45,  470, '<- How to play', {fontSize: '18px', fill: '#FFF'})
+        portals.create(60, 500, 'portal').setImmovable(false).setName('tutorial')
 
-        // Input Events (Moved to setupScene)
+        // Play animation for portals
+        portals.children.iterate(function (child) {
+            child.play('portalAnimation')
+        })
 
-        // Instructions (Moved to setupScene)
-        // instructions = this.add.text(200, 550, 'Move with W, A, S, D', {fontSize: '32px', fill: '#FFF'})
+        this.physics.add.collider(portals, platforms)
+
+        this.physics.add.collider(player, portals, this.selectMenu, null, this)
+
+        player.setDepth(4)
 
         // Music
         this.titleMusic = this.sound.add('intro', {volume: 1, loop: true})
@@ -102,7 +113,6 @@ class MainMenu extends Phaser.Scene {
             previousSceneKey = this.scene.key
             playerPositionX = 750
             playerPositionY = 200
-            // window.location = '/ranked'
             init.fadeInScene('RankedName', this)
         }
 
@@ -111,6 +121,15 @@ class MainMenu extends Phaser.Scene {
             this.titleMusic.stop()
             previousSceneKey = this.scene.key
             init.fadeInScene('Arcade', this)
+        }
+
+        if (menu.name === 'tutorial') {
+            this.physics.pause()
+            this.titleMusic.stop()
+            previousSceneKey = this.scene.key
+            playerPositionX = 2300
+            playerPositionY = 500
+            init.fadeInScene('Tutorial', this)
         }
     }
 }

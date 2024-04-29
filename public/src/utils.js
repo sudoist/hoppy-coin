@@ -2,9 +2,10 @@ let init = {}
 
 let player
 let playerName
-let playerPositionX = 100 // 100 default
+let playerPositionX = 400 // 100 default
 let playerPositionY = 450 // 450 default
 let playerSprite
+let playerSpeechBubble
 let stars
 let bombs
 let sky
@@ -38,9 +39,30 @@ let inputPlayerNameText
 let inputPlayerNameSubmitted = false
 let scene
 let apiResponse
+let leaderboard
 // Mobile
 let isMobile = false
+let lockButton
 let joystickPressed
+let joystickDraggable = false
+// Tutorial
+let tutorialStage = 1
+let tutorialText
+let tutorialDialogue
+let tutorialDialogueText
+// Navigation
+let portals
+let barriers
+let leftBarrier
+let rightBarrier
+let gameWidth
+// Camera
+let currentCamera
+let followCamera = false
+let xAddBounds = 0
+// NPC
+let npc
+let speechBubbles
 
 // API get
 init.apiFetch = async function getRequest(path) {
@@ -72,9 +94,9 @@ init.apiPost = async function postRequest(req) {
 }
 
 init.bootFadeOutScene = function (sceneName, context) {
-    context.cameras.main.fadeOut(7000)
+    context.cameras.main.fadeOut(4000)
     context.time.addEvent({
-        delay: 7000,
+        delay: 4000,
         callback: function () {
             context.scene.start(sceneName)
         },
@@ -106,9 +128,11 @@ init.fadeInScene = function (sceneName, context) {
 
 // Add functions that should be applied to all scenes
 // E.g. (this, 'dude/Player sprite key')
-init.setupScene = function (scene, player) {
-    init.addBorders(scene)
-    init.setPlayerSprite(scene, player)
+init.setupScene = function (scene, player, playerBounds = true) {
+    if (playerBounds) {
+        init.addBorders(scene)
+    }
+    init.setPlayerSprite(scene, player, playerBounds)
     init.setPlayerAnimations(scene, player)
     init.setInputEvents(scene)
     init.addMuteButton(scene)
@@ -116,9 +140,11 @@ init.setupScene = function (scene, player) {
     // Create joystick on mobile
     if (init.isMobile()) {
         isMobile = true
-        init.createJoystick(scene)
+        init.tapListener(scene)
     }
     init.setInstructions(scene)
+    init.setPortalAnimations(scene)
+    init.setSpeechBubble(scene)
 }
 
 // Get device
@@ -157,14 +183,25 @@ init.addBorders = function (scene) {
 
     // Draw the right border
     graphics.strokeRect(gameWidth - borderWidth, 0, borderWidth, gameHeight)
+
+    // Draw the top border
+    graphics.beginPath()
+    graphics.moveTo(0, 0) // Start at (0, 0)
+    graphics.lineTo(gameWidth, 0) // Draw line to the right edge of the canvas
+    graphics.closePath()
+    graphics.stroke() // Stroke the line
+
+    // Make sure the border is displayed above other game elements
+    graphics.setDepth(9999) // Set a high depth value
 }
 
-init.setPlayerSprite = function (scene, key) {
+init.setPlayerSprite = function (scene, key, playerBounds = true) {
     player = scene.player = scene.physics.add.sprite(playerPositionX, playerPositionY, key)
 
     // Player physics properties. Give the little guy a slight bounce.
     player = scene.player.setBounce(0.2)
-    player = scene.player.setCollideWorldBounds(true)
+    player = scene.player.setCollideWorldBounds(playerBounds)
+    player.setDepth(4)
 }
 
 init.randomizePlayerSprite = function () {
@@ -220,6 +257,32 @@ init.setPlayerAnimations = function (scene, key) {
     })
 }
 
+init.setPortalAnimations = function (scene, key = 'portal') {
+    portals = scene.physics.add.group()
+
+    // Define animations if needed
+    scene.anims.create({
+        key: 'portalAnimation',
+        frames: scene.anims.generateFrameNumbers(key, {start: 0, end: 7}), // Assuming frames 0 to 3 are part of the animation
+        frameRate: 10,
+        repeat: -1 // Repeat indefinitely
+    })
+}
+
+init.setSpeechBubble = function (scene) {
+    speechBubbles = scene.physics.add.group()
+}
+
+init.setSpeechBubbleAnimations = function (scene, key, frameRate, repeat) {
+    // Define animations if needed
+    scene.anims.create({
+        key: key,
+        frames: scene.anims.generateFrameNumbers(key, {start: 0, end: 4}),
+        frameRate: frameRate,
+        repeat: repeat
+    })
+}
+
 init.setInputEvents = function (scene) {
     scene.cursors = scene.input.keyboard.createCursorKeys()
 
@@ -234,7 +297,15 @@ init.setInputEvents = function (scene) {
 init.setInstructions = function (scene) {
     // Set instructions
     if (isMobile) {
-        instructions = scene.add.text(200, 570, 'Move by using the joystick', {fontSize: '32px', fill: '#fff'})
+        instructions = scene.add.text(200, 570, 'Tap anywhere on the screen. Move by using the joystick.', {
+            fontSize: '20px',
+            fill: '#FFF',
+            align: 'center'
+        })
+
+        // Center
+        instructions.setOrigin(0.5);
+        instructions.x = scene.cameras.main.width / 2
     } else {
         instructions = scene.add.text(200, 570, 'Move with W, A, S, D', {fontSize: '32px', fill: '#fff'})
     }
@@ -246,15 +317,35 @@ init.setInstructions = function (scene) {
     instructions.x = scene.cameras.main.width / 2
 }
 
-init.createJoystick = function (scene) {
-    scene.joyStick = scene.plugins.get('rexvirtualjoystickplugin').add(scene, {
-        x: scene.cameras.main.width / 2,
-        y: 480,
-        radius: 100,
-        base: scene.add.circle(0, 0, 40, 0x888888),
-        thumb: scene.add.circle(0, 0, 30, 0xcccccc),
-    })
-        .on('update', init.getJoystickState, scene)
+init.tapListener = function (scene) {
+    // Listen for pointer events on the scene
+    scene.input.on('pointerdown', function (pointer) {
+        // Get the position of the tap
+        const tapX = pointer.x
+        const tapY = pointer.y
+
+        // Create the joystick at the position of the tap
+        scene.joyStick = scene.plugins.get('rexvirtualjoystickplugin').add(scene, {
+            x: tapX,
+            y: tapY,
+            radius: 100,
+            base: scene.add.circle(0, 0, 40, 0xffffff),
+            thumb: scene.add.circle(0, 0, 30, 0xcccccc),
+        })
+
+        // Implement joystick functionality
+        // (e.g., movement logic using joystick input)
+        scene.joyStick.on('update', init.getJoystickState, scene)
+
+        // Destroy the joystick when no longer needed
+        scene.input.on('pointerup', function () {
+            if (scene.joyStick) {
+                joystickPressed = undefined
+
+                scene.joyStick.destroy()
+            }
+        })
+    });
 }
 
 init.getJoystickState = function joyStickState() {
@@ -301,17 +392,18 @@ init.setPlayerMovements = function (scene) {
     }
 }
 
-init.createStars = function (scene) {
+init.createStars = function (scene, x = 12, y = 0, gravity = true) {
     stars = scene.physics.add.group({
         key: 'coin',
         repeat: 11,
-        setXY: {x: 12, y: 0, stepX: 70}
+        setXY: {x: x, y: y, stepX: 70}
     })
 
     stars.children.iterate(function (child) {
-
         //  Give each star a slightly different bounce
         child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8))
+
+        child.body.allowGravity = gravity
 
     })
 }
@@ -402,10 +494,13 @@ init.setSceneBackground = function (sceneName) {
         case 'MainMenu':
             init.changeBackground('pattern.webp', 'initial', 'repeat')
             break
+        case 'Tutorial':
+            init.changeBackground('night.png', 'cover', 'no-repeat')
+            break
         case 'Arcade':
             init.changeBackground('sky.png', 'cover', 'no-repeat')
             break
-        case 'RankedName':
+        case 'StageSelection':
             init.changeBackground('john-cosio-xCZ8ynsCfrw-unsplash.jpg', 'cover', 'no-repeat')
             break
         case 'RankedMenu':
@@ -423,7 +518,14 @@ init.addMuteButton = function (scene) {
     if (isMute) {
         soundToggle = 'mute'
     }
-    muteButton = scene.add.image(770, 30, soundToggle)
+
+    let addBounds = -50
+
+    if (xAddBounds > 0) {
+        addBounds = xAddBounds - 50
+    }
+
+    muteButton = scene.add.image(770 + addBounds, 30, soundToggle)
         .setInteractive()
         .on('pointerdown', () => init.toggleSound())
 }
@@ -446,6 +548,36 @@ init.monitorMuteStatus = function (game) {
     } else {
         game.sound.mute = false;
     }
+}
+
+// TODO: Remove or use later
+init.addLockButton = function (scene) {
+    let lockToggle = 'locked'
+    if (joystickDraggable) {
+        lockToggle = 'unlocked'
+    }
+
+    let addBounds = -100
+
+    if (xAddBounds > 0) {
+        addBounds = xAddBounds - 100
+    }
+
+    lockButton = scene.add.image(770 + addBounds, 30, lockToggle)
+        .setInteractive()
+        .on('pointerdown', () => init.toggleLock())
+}
+
+init.toggleLock = function () {
+    if (joystickDraggable) {
+        lockButton.setTexture('locked', 0)
+        joystickDraggable = false
+
+        return
+    }
+
+    joystickDraggable = true
+    lockButton.setTexture('unlocked', 0)
 }
 
 // Game over
@@ -483,11 +615,22 @@ init.getScores = async function () {
 }
 
 // Ranked
-init.printScores = function (scene, scores) {
+init.printScores = function (scene, scores, startingX = 400, startingY = 100) {
 
     let rank = 0
 
-    let startingY = 100
+    let scoreRows = 'Leaderboard: ' + levelLabel + '\n \n'
+
+    leaderboard = scene.add.text(startingX, startingY, '', {
+        fontSize: '24px',
+        fill: '#fff',
+        align: 'center'
+    })
+
+    // Set the origin of the text to its center
+    leaderboard.setOrigin(0.5)
+
+    startingY += 30
 
     for (const [key, value] of Object.entries(scores.data)) {
         ++rank
@@ -499,17 +642,14 @@ init.printScores = function (scene, scores) {
             const date = new Date(`${value.date}`).toISOString().slice(0, 10)
 
             // Score
-            let score = scene.add.text(400, startingY, rank + '    ' + `${value.name}` + '    ' + `${value.score}` + '    ' + date, {
-                fontSize: '24px',
-                fill: '#fff'
-            })
+            scoreRows += rank + '    ' + `${value.name}` + '    ' + `${value.score}` + '    ' + date + '\n \n'
 
-            // Set the origin of the text to its center
-            score.setOrigin(0.5)
-
-            startingY += 30
+            // startingY += 30
         }
     }
+
+    leaderboard.setText(scoreRows)
+    leaderboard.y = 300
 }
 
 init.displayInputButtons = function (scene) {
@@ -523,7 +663,7 @@ init.displayInputButtons = function (scene) {
 
     // for (const [key, value] of Object.entries(inputKeys)) {
     for (const value of inputKeysUpper) {
-        inputKeys.create(startingX, 100, value).setName(value).setScale(.4).refreshBody()
+        inputKeys.create(startingX, 100, value).setName(value).setScale(.4).refreshBody().setInteractive()
 
         startingX += 40
     }
@@ -532,10 +672,19 @@ init.displayInputButtons = function (scene) {
     startingX = 20
 
     for (const value of inputKeysLower) {
-        inputKeys.create(startingX, 320, value).setName(value).setScale(.4).refreshBody()
+        inputKeys.create(startingX, 320, value).setName(value).setScale(.4).refreshBody().setInteractive()
 
         startingX += 40
     }
+
+    inputKeys.create(540, 320, 'enter').setName('enter').setScale(.4).refreshBody().setInteractive()
+
+    // Assign clickable value
+    inputKeys.children.iterate(function (child) {
+        child.on('pointerdown', () => {
+            init.inputPress(player, child)
+        })
+    })
 
     scene.physics.add.collider(scene.player, inputKeys, init.inputPress, null, this)
 }
@@ -649,22 +798,19 @@ init.inputPress = function (player, input) {
         playerName += input.name.toUpperCase()
     }
 
-    // Show enter button when at least 3 characters
-    if (playerName.length >= 3) {
-        inputKeys.create(540, 320, 'enter').setName('enter').setScale(.4).refreshBody()
-    }
-
     if (input.name === 'enter') {
-        // Clear page
-        inputKeys.clear(true, true)
+        // Show enter button when at least 3 characters
+        if (playerName.length >= 3) {
+            // Clear page
+            inputKeys.clear(true, true)
 
-        inputPlayerNameLabel.destroy()
-        inputPlayerNameLabel = scene.add.text(300, 40, 'Hop on!', {fontSize: '24px', fill: '#FFF'})
-
-        inputPlayerNameText.destroy()
-        inputPlayerNameText = scene.add.text(410, 40, playerName, {fontSize: '24px', fill: '#FFF'})
-
-        inputPlayerNameSubmitted = true
+            inputPlayerNameSubmitted = true
+        } else {
+            instructions.setText('Name must be at least 3 characters.')
+            setTimeout(() => {
+                instructions.setText(instructionsText)
+            }, 3000)
+        }
 
         return
     }
