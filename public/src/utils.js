@@ -141,6 +141,7 @@ init.setupScene = function (scene, player, playerBounds = true) {
     if (init.isMobile()) {
         isMobile = true
         init.tapListener(scene)
+        init.lockLandscape()
     }
     init.setInstructions(scene)
     init.setPortalAnimations(scene)
@@ -161,6 +162,13 @@ init.isMobile = function () {
         // console.log("Desktop device detected");
 
         return false
+    }
+}
+
+// Lock screen orientation to landscape mode
+init.lockLandscape = function () {
+    if (screen.orientation && screen.orientation.lock) {
+        screen.orientation.lock('landscape');
     }
 }
 

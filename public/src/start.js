@@ -1,13 +1,7 @@
-let mode = Phaser.Scale.FIT
-
-if (init.isMobile()) {
-    mode = Phaser.Scale.LANDSCAPE
-}
-
 let gameConfig = {
     type: Phaser.AUTO,
     scale: {
-        mode: mode,
+        mode: Phaser.Scale.EXACT_FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
         width: 800,
         height: 600,
