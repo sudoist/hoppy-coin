@@ -78,6 +78,8 @@ class Boot extends Phaser.Scene {
         this.load.image('y', '/assets/buttons/button_y.png')
         this.load.image('z', '/assets/buttons/button_z.png')
         this.load.image('enter', '/assets/buttons/button_enter.png')
+        this.load.image('locked', '/assets/buttons/locked-32.png')
+        this.load.image('unlocked', '/assets/buttons/unlocked-32.png')
 
         // SFX
         this.load.audioSprite('sfx', '/assets/sfx/fx_mixdown.json', [

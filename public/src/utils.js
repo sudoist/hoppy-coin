@@ -42,7 +42,9 @@ let apiResponse
 let leaderboard
 // Mobile
 let isMobile = false
+let lockButton
 let joystickPressed
+let joystickDraggable = false
 // Tutorial
 let tutorialStage = 1
 let tutorialText
@@ -138,7 +140,7 @@ init.setupScene = function (scene, player, playerBounds = true) {
     // Create joystick on mobile
     if (init.isMobile()) {
         isMobile = true
-        init.createJoystick(scene)
+        init.tapListener(scene)
     }
     init.setInstructions(scene)
     init.setPortalAnimations(scene)
@@ -295,7 +297,15 @@ init.setInputEvents = function (scene) {
 init.setInstructions = function (scene) {
     // Set instructions
     if (isMobile) {
-        instructions = scene.add.text(200, 570, 'Move by using the joystick', {fontSize: '32px', fill: '#fff'})
+        instructions = scene.add.text(200, 570, 'Tap anywhere on the screen. Move by using the joystick.', {
+            fontSize: '20px',
+            fill: '#FFF',
+            align: 'center'
+        })
+
+        // Center
+        instructions.setOrigin(0.5);
+        instructions.x = scene.cameras.main.width / 2
     } else {
         instructions = scene.add.text(200, 570, 'Move with W, A, S, D', {fontSize: '32px', fill: '#fff'})
     }
@@ -307,15 +317,35 @@ init.setInstructions = function (scene) {
     instructions.x = scene.cameras.main.width / 2
 }
 
-init.createJoystick = function (scene) {
-    scene.joyStick = scene.plugins.get('rexvirtualjoystickplugin').add(scene, {
-        x: scene.cameras.main.width / 2,
-        y: 480,
-        radius: 100,
-        base: scene.add.circle(0, 0, 40, 0x888888),
-        thumb: scene.add.circle(0, 0, 30, 0xcccccc),
-    })
-        .on('update', init.getJoystickState, scene)
+init.tapListener = function (scene) {
+    // Listen for pointer events on the scene
+    scene.input.on('pointerdown', function (pointer) {
+        // Get the position of the tap
+        const tapX = pointer.x
+        const tapY = pointer.y
+
+        // Create the joystick at the position of the tap
+        scene.joyStick = scene.plugins.get('rexvirtualjoystickplugin').add(scene, {
+            x: tapX,
+            y: tapY,
+            radius: 100,
+            base: scene.add.circle(0, 0, 40, 0xffffff),
+            thumb: scene.add.circle(0, 0, 30, 0xcccccc),
+        })
+
+        // Implement joystick functionality
+        // (e.g., movement logic using joystick input)
+        scene.joyStick.on('update', init.getJoystickState, scene)
+
+        // Destroy the joystick when no longer needed
+        scene.input.on('pointerup', function () {
+            if (scene.joyStick) {
+                joystickPressed = undefined
+
+                scene.joyStick.destroy()
+            }
+        })
+    });
 }
 
 init.getJoystickState = function joyStickState() {
@@ -370,8 +400,6 @@ init.createStars = function (scene, x = 12, y = 0, gravity = true) {
     })
 
     stars.children.iterate(function (child) {
-        console.log(gravity)
-
         //  Give each star a slightly different bounce
         child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8))
 
@@ -520,6 +548,36 @@ init.monitorMuteStatus = function (game) {
     } else {
         game.sound.mute = false;
     }
+}
+
+// TODO: Remove or use later
+init.addLockButton = function (scene) {
+    let lockToggle = 'locked'
+    if (joystickDraggable) {
+        lockToggle = 'unlocked'
+    }
+
+    let addBounds = -100
+
+    if (xAddBounds > 0) {
+        addBounds = xAddBounds - 100
+    }
+
+    lockButton = scene.add.image(770 + addBounds, 30, lockToggle)
+        .setInteractive()
+        .on('pointerdown', () => init.toggleLock())
+}
+
+init.toggleLock = function () {
+    if (joystickDraggable) {
+        lockButton.setTexture('locked', 0)
+        joystickDraggable = false
+
+        return
+    }
+
+    joystickDraggable = true
+    lockButton.setTexture('unlocked', 0)
 }
 
 // Game over
