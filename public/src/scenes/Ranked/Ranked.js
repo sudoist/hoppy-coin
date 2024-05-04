@@ -12,6 +12,9 @@ class Ranked extends Phaser.Scene {
 
         init.setupScene(this, init.randomizePlayerSprite())
 
+        // Stat game
+        isGameStarted = true
+
         //  The platforms group contains the ground and the 2 ledges we can jump on
         platforms = this.physics.add.staticGroup()
 
@@ -188,9 +191,12 @@ class Ranked extends Phaser.Scene {
                 })
             }
 
-            if (inputPlayerNameSubmitted) {
+            if (inputPlayerNameSubmitted && isGameStarted) {
 
                 inputPlayerNameSubmitted = false
+
+                // Reset game check
+                isGameStarted = false
 
                 // Clear ledges then re add ground
                 platforms.children.iterate(function (child) {
