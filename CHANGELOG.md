@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Tutorial
   - Added camera controls
 - Title screen
+- Check for started ranked game before sending score to API
 
 ### Controls
 - Tap anywhere on mobile for joystick controls to display

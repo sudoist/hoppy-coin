@@ -63,6 +63,8 @@ let xAddBounds = 0
 // NPC
 let npc
 let speechBubbles
+// Game check
+let isGameStarted = false
 
 // API get
 init.apiFetch = async function getRequest(path) {
@@ -129,6 +131,7 @@ init.fadeInScene = function (sceneName, context) {
 // Add functions that should be applied to all scenes
 // E.g. (this, 'dude/Player sprite key')
 init.setupScene = function (scene, player, playerBounds = true) {
+    isGameStarted = false // Game is false when entering other scenes
     if (playerBounds) {
         init.addBorders(scene)
     }
