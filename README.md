@@ -138,7 +138,7 @@ Here are several options:
 
 ### Installation
 
-
+#### Local environment
 
 I personally use Docker/laradock for my environment.
 
@@ -160,6 +160,17 @@ Install docker using [Docker Desktop](https://www.docker.com/products/docker-des
   ```
 
 4. You can now access the game at [localhost](http://localhost/)
+
+#### GitHub Codespaces
+
+When using Codespaces, after creating a new space, we can run this command to have a new environment ready.
+
+```sh
+cd public
+
+docker run -p 80:80 -v $(pwd):/usr/share/nginx/html nginx
+```
+
 
 <!-- ROADMAP -->
 ## Roadmap
