@@ -100,8 +100,7 @@ class Boot extends Phaser.Scene {
         this.load.plugin('rexvirtualjoystickplugin', '/assets/plugins/rexvirtualjoystickplugin.min.js', true)
 
         // Setup api env
-        init.apiFetch('/env.json').then((data) => {
-            // console.log(data)
+        init.getEnv('/env.json').then((data) => {
             env = data
         })
     }

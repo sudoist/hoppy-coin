@@ -172,10 +172,12 @@ class Ranked extends Phaser.Scene {
                     }
 
                     // Add portals for navigation
-                    this.add.text(645, 470, 'Play again ->', {fontSize: '18px', fill: '#FFF'})
+                    let playAgain = this.add.text(645, 470, 'Play again ->', {fontSize: '18px', fill: '#FFF'})
+                    directions.push(playAgain)
                     portals.create(770, 500, 'portal').setImmovable(false).setName('ranked')
 
-                    this.add.text(600, 130, 'Back to ranked ->', {fontSize: '18px', fill: '#FFF'})
+                    let backToRanked = this.add.text(600, 130, 'Back to ranked ->', {fontSize: '18px', fill: '#FFF'})
+                    directions.push(backToRanked)
                     portals.create(770, 130, 'portal').setImmovable(false).setName('menu')
 
                     // Play animation for portals
@@ -210,7 +212,7 @@ class Ranked extends Phaser.Scene {
                 inputPlayerNameText.destroy()
                 instructions.destroy()
 
-                instructions = this.add.text(230, 565, `Congratulations ` + playerName + `! \n Don't forget to submit your score.`, {
+                instructions = this.add.text(230, 565, `Congratulations ` + playerName + `!`, {
                     fontSize: '24px',
                     fill: '#FFF',
                     align: 'center'
@@ -219,6 +221,9 @@ class Ranked extends Phaser.Scene {
                 // Center
                 instructions.setOrigin(0.5);
                 instructions.x = this.cameras.main.width / 2
+
+                scoreText.destroy()
+                stageText.destroy()
 
                 // Send score to API
                 const req = {
@@ -235,6 +240,13 @@ class Ranked extends Phaser.Scene {
                     init.printScores(this, data)
 
                     // After saving score, show menu
+
+                    // Removed the existing portals
+                    portals.children.iterate(function (child) {
+                        child.disableBody(true, true)
+                    })
+
+                    directions.forEach(text => text.destroy());
 
                     // Add portals for navigation
                     this.add.text(20, 470, '<- Play again', {fontSize: '18px', fill: '#FFF'})
