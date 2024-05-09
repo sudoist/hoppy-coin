@@ -56,6 +56,7 @@ let barriers
 let leftBarrier
 let rightBarrier
 let gameWidth
+let directions = []
 // Camera
 let currentCamera
 let followCamera = false
@@ -66,11 +67,28 @@ let speechBubbles
 // Game check
 let isGameStarted = false
 
+// API Env
+init.getEnv = async function getRequest(path) {
+    let data
+
+    const res = await fetch(path)
+
+    data = await res.json()
+
+    return data
+}
+
 // API get
 init.apiFetch = async function getRequest(path) {
     let data
 
-    const res = await fetch(path)
+    const res = await fetch(path, {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'x-api-key': env.API_KEY,
+        }
+    })
 
     data = await res.json()
 
@@ -85,7 +103,8 @@ init.apiPost = async function postRequest(req) {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'x-api-key': env.API_KEY,
         },
         body: JSON.stringify(req),
     })
@@ -619,7 +638,8 @@ init.getScores = async function () {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'x-api-key': env.API_KEY
         },
         body: JSON.stringify(body),
     })
