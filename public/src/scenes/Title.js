@@ -85,7 +85,11 @@ class Title extends Phaser.Scene {
                 playerPositionX = 60
                 playerPositionY = 500
                 previousSceneKey = this.scene.key
-                init.fadeInScene('Arcade', this)
+
+                level = 'quickPlay'
+                levelLabel = 'Quick Play'
+
+                init.fadeInScene('Ranked', this)
             })
 
         this.add.image(550, 300, 'ranked')
@@ -130,7 +134,11 @@ class Title extends Phaser.Scene {
             this.physics.pause()
             this.titleMusic.stop()
             previousSceneKey = this.scene.key
-            init.fadeInScene('Arcade', this)
+
+            level = 'quickPlay'
+            levelLabel = 'Quick Play'
+
+            init.fadeInScene('Ranked', this)
         }
 
         if (menu.name === 'menu') {

@@ -18,7 +18,7 @@ class Ranked extends Phaser.Scene {
         //  The platforms group contains the ground and the 2 ledges we can jump on
         platforms = this.physics.add.staticGroup()
 
-        // Set platforms depending on leve
+        // Set platforms depending on level
         if (level === 'phaserInitial') {
             // Here we create the ground.
             platforms.create(400, 568, 'ground').setScale(2).refreshBody()
@@ -27,6 +27,17 @@ class Ranked extends Phaser.Scene {
             platforms.create(600, 400, 'ground')
             platforms.create(50, 250, 'ground')
             platforms.create(750, 220, 'ground')
+
+            // Change background
+            init.changeBackground('sky.png', 'cover', 'no-repeat')
+        } else if (level === 'quickPlay') {
+            // Here we create the ground.
+            platforms.create(400, 568, 'ground').setScale(2).refreshBody()
+
+            //  Now let's create some ledges
+            platforms.create(200, 400, 'ground')
+            platforms.create(745, 250, 'ground')
+            platforms.create(60, 220, 'ground')
 
             // Change background
             init.changeBackground('sky.png', 'cover', 'no-repeat')
@@ -83,7 +94,7 @@ class Ranked extends Phaser.Scene {
                 gameOverSound = false
 
                 // Get scores
-                init.apiFetch(env.API_URL + '/scores').then((data) => {
+                init.apiFetch(env.API_URL + '/scores?level=' + levelLabel).then((data) => {
                     init.printScores(this, data)
 
                     // Score message text below... The effort to just say git gud!
@@ -230,6 +241,7 @@ class Ranked extends Phaser.Scene {
                     "path": env.API_URL + '/scores',
                     "name": playerName,
                     "score": score,
+                    "level": levelLabel,
                 }
 
                 init.apiPost(req).then((data) => {
