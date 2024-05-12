@@ -10,6 +10,10 @@ class Tutorial extends Phaser.Scene {
         // Init
         playerSprite = init.randomizePlayerSprite() // Random or select
 
+        stage = 1
+        tutorialStage = 1
+        followCamera = false
+
         // Adjust boundary
         gameWidth = this.sys.game.config.width
         xAddBounds = 1600
