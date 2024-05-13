@@ -7,6 +7,7 @@ class Boot extends Phaser.Scene {
         // Backgrounds
         this.load.image('sky', '/assets/bg/sky.png')
         this.load.image('night', '/assets/bg/night.png')
+        this.load.image('arctic', '/assets/bg/aleksandra-khaprenko-0PPw9irzLIw-unsplash.jpg')
         this.load.image('planet', '/assets/bg/phaser-planet-small.png')
         this.load.image('default', '/assets/bg/pattern.webp')
         this.load.image('left-barrier', '/assets/bg/left-barrier.png')

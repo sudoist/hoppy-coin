@@ -18,6 +18,8 @@ class Ranked extends Phaser.Scene {
         //  The platforms group contains the ground and the 2 ledges we can jump on
         platforms = this.physics.add.staticGroup()
 
+        bombs = this.physics.add.group()
+
         // Set platforms depending on level
         if (level === 'phaserInitial') {
             // Here we create the ground.
@@ -34,19 +36,233 @@ class Ranked extends Phaser.Scene {
             // Here we create the ground.
             platforms.create(400, 568, 'ground').setScale(2).refreshBody()
 
-            //  Now let's create some ledges
+            // Now let's create some ledges
             platforms.create(200, 400, 'ground')
             platforms.create(745, 250, 'ground')
             platforms.create(60, 220, 'ground')
 
             // Change background
             init.changeBackground('sky.png', 'cover', 'no-repeat')
+        } else if (level === 'arcticClassic') {
+            // Here we create the ground.
+            platforms.create(400, 568, 'ground').setScale(2).refreshBody()
+
+            // Now let's create some ledges
+            platforms.create(18, 170, 'ground-s')
+            platforms.create(325, 220, 'ground-s')
+            platforms.create(609, 199, 'ground-s')
+            platforms.create(800, 399, 'ground-s')
+            platforms.create(260, 370, 'ground')
+
+            // Change background
+            init.changeBackground('aleksandra-khaprenko-0PPw9irzLIw-unsplash.jpg', 'cover', 'no-repeat')
+        } else if (level === 'landMineBeach') {
+            // Here we create the ground.
+            platforms.create(150, 568, 'ground-s').setScale(2).refreshBody()
+            platforms.create(450, 568, 'ground-s').setScale(2).refreshBody()
+            platforms.create(550, 568, 'ground-s').setScale(2).refreshBody()
+
+            // Now let's create some ledges
+            platforms.create(18, 170, 'ground-s')
+            platforms.create(325, 220, 'ground-s')
+            platforms.create(609, 190, 'ground-s')
+            platforms.create(710, 410, 'ground-s')
+            platforms.create(750, 410, 'ground-s')
+            platforms.create(260, 370, 'ground')
+
+            const levelBombs = [
+                // Left
+                {
+                    x: 3,
+                    y: 595,
+                },
+                {
+                    x: 10,
+                    y: 595,
+                },
+                {
+                    x: 20,
+                    y: 594,
+                },
+                {
+                    x: 30,
+                    y: 598,
+                },
+                {
+                    x: 37,
+                    y: 597,
+                },
+                {
+                    x: 50,
+                    y: 596,
+                },
+                // Mid
+                {
+                    x: 249,
+                    y: 597,
+                },
+                {
+                    x: 260,
+                    y: 595,
+                },
+                {
+                    x: 267,
+                    y: 599,
+                },
+                {
+                    x: 289,
+                    y: 598,
+                },
+                {
+                    x: 280,
+                    y: 595,
+                },
+                {
+                    x: 309,
+                    y: 599,
+                },
+                {
+                    x: 330,
+                    y: 599,
+                },
+                {
+                    x: 330,
+                    y: 594,
+                },
+                {
+                    x: 353,
+                    y: 595,
+                },
+                {
+                    x: 300,
+                    y: 596,
+                },
+                {
+                    x: 320,
+                    y: 594,
+                },
+                {
+                    x: 340,
+                    y: 598,
+                },
+                // Right
+                {
+                    x: 550,
+                    y: 595,
+                },
+                {
+                    x: 560,
+                    y: 596,
+                },
+                {
+                    x: 571,
+                    y: 599,
+                },
+                {
+                    x: 580,
+                    y: 598,
+                },
+                {
+                    x: 589,
+                    y: 598,
+                },
+                {
+                    x: 600,
+                    y: 595,
+                },
+                {
+                    x: 609,
+                    y: 594,
+                },
+                {
+                    x: 620,
+                    y: 597,
+                },
+                {
+                    x: 627,
+                    y: 594,
+                },
+                {
+                    x: 640,
+                    y: 598,
+                },
+                {
+                    x: 651,
+                    y: 594,
+                },
+                {
+                    x: 660,
+                    y: 597,
+                },
+                {
+                    x: 671,
+                    y: 599,
+                },
+                {
+                    x: 680,
+                    y: 597,
+                },
+                {
+                    x: 690,
+                    y: 593,
+                },
+                {
+                    x: 700,
+                    y: 595,
+                },
+                {
+                    x: 710,
+                    y: 599,
+                },
+                {
+                    x: 720,
+                    y: 596,
+                },
+                {
+                    x: 730,
+                    y: 593,
+                },
+                {
+                    x: 740,
+                    y: 600,
+                },
+                {
+                    x: 748,
+                    y: 598,
+                },
+                {
+                    x: 760,
+                    y: 594,
+                },
+                {
+                    x: 772,
+                    y: 596,
+                },
+                {
+                    x: 780,
+                    y: 599,
+                },
+                {
+                    x: 788,
+                    y: 597,
+                },
+                {
+                    x: 792,
+                    y: 597,
+                },
+            ]
+
+            // Add the bombs
+            for (const levelBomb of levelBombs) {
+                init.createLevelBomb(this, bombs, levelBomb.x, levelBomb.y, 'bomb-r')
+            }
+
+            // Change background
+            init.changeBackground('john-cosio-8SWaKcmZC5w-unsplash.jpg', 'cover', 'no-repeat')
         }
 
         //  Some stars to collect, 12 in total, evenly spaced 70 pixels apart along the x axis
         init.createStars(this)
-
-        bombs = this.physics.add.group()
 
         //  The score
         scoreText = this.add.text(16, 16, 'Score: 0', {fontSize: '32px', fill: '#FFF'})
@@ -300,16 +516,6 @@ class Ranked extends Phaser.Scene {
 
         if (menu.name === 'ranked') {
             init.gameOverReset(this, 'Ranked', 40, 480)
-        }
-    }
-
-    // TODO: Re add
-    joyStickState() {
-        const cursorKeys = this.joyStick.createCursorKeys()
-        for (const name in cursorKeys) {
-            if (cursorKeys[name].isDown) {
-                this.mobileCursorKeys = `${name}`
-            }
         }
     }
 
