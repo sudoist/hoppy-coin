@@ -500,6 +500,10 @@ init.createBomb = function (scene, bombs, player, delay, sprite) {
 
 }
 
+init.createLevelBomb = function (scene, bombs , x, y, sprite) {
+    bombs.create(x, y, sprite).setImmovable(false).body.allowGravity = false
+}
+
 init.changeBackground = function (filename, size, repeat) {
     document.getElementById('container').style.backgroundImage = 'url(/assets/bg/' + filename + ')'
     document.getElementById('container').style.backgroundSize = size

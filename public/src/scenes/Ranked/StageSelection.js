@@ -20,7 +20,7 @@ class StageSelection extends Phaser.Scene {
         //     .setCollideWorldBounds(true).body.allowGravity = false
 
         // Coming soon
-        this.add.text(20, 470, '<- Land Mine Beach (Coming Soon...)', {fontSize: '18px', fill: '#FFF'})
+        // this.add.text(20, 470, '<- Land Mine Beach (Coming Soon...)', {fontSize: '18px', fill: '#FFF'})
         // this.add.text(515, 470, 'Ruins (Coming Soon...) ->', {fontSize: '18px', fill: '#FFF'})
 
         this.add.text(350, 40, 'Hop on!', {fontSize: '24px', fill: '#FFF'})
@@ -56,6 +56,13 @@ class StageSelection extends Phaser.Scene {
 
         this.add.text(20, 140, '<- Phaser Initial', {fontSize: '18px', fill: '#FFF'})
         portals.create(35, 180, 'portal').setImmovable(false).setName('phaserInitial')
+
+        this.add.text(20, 320, '<- Arctic Classic', {fontSize: '18px', fill: '#FFF'})
+        portals.create(35, 350, 'portal').setImmovable(false).setName('arcticClassic')
+
+        this.add.text(20, 470, '<- Land Mine Beach', {fontSize: '18px', fill: '#FFF'})
+        portals.create(35, 500, 'portal').setImmovable(false).setName('landMineBeach')
+
 
         // Play animation for portals
         portals.children.iterate(function (child) {
@@ -100,6 +107,36 @@ class StageSelection extends Phaser.Scene {
 
             level = 'phaserInitial'
             levelLabel = 'Phaser Initial'
+
+            init.fadeInScene('Ranked', this)
+        }
+
+        if (menu.name === 'arcticClassic') {
+            this.physics.pause()
+            this.titleMusic.stop()
+            previousSceneKey = this.scene.key
+
+            // Change starting position
+            playerPositionX = 710
+            playerPositionY = 140
+
+            level = 'arcticClassic'
+            levelLabel = 'Arctic Classic'
+
+            init.fadeInScene('Ranked', this)
+        }
+
+        if (menu.name === 'landMineBeach') {
+            this.physics.pause()
+            this.titleMusic.stop()
+            previousSceneKey = this.scene.key
+
+            // Change starting position
+            playerPositionX = 710
+            playerPositionY = 140
+
+            level = 'landMineBeach'
+            levelLabel = 'Land Mine Beach'
 
             init.fadeInScene('Ranked', this)
         }

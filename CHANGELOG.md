@@ -6,10 +6,25 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] - YYYY-MM-DD
 
+## Added
+
+### Assets
+- New backgrounds
+
+### Levels
+- Added 2 levels in ranked
+  - Arctic Classic
+  - Land Mine Beach
+
+
 ## Changes
-- Fixed tutorial reset bug (Init values are not being reset)
+- Fixed tutorial reset bug (Init values not reset)
 - Included Arcade or Quick Play into scoring
 - Added level get param in getScore to add in query
+
+
+## Removed
+- Explore scene
 
 ---
 
