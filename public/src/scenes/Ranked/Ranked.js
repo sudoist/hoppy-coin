@@ -99,7 +99,7 @@ class Ranked extends Phaser.Scene {
 
                     // Score message text below... The effort to just say git gud!
                     let rank = 0
-                    let lastPlaceScore
+                    let lastPlaceScore = 0
 
                     for (const [key, value] of Object.entries(data.data)) {
                         ++rank
