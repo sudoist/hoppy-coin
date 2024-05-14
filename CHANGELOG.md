@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   - Arctic Classic
   - Land Mine Beach
 
+### Gameplay
+- Change background feature check added in levels
+
 
 ## Changes
 - Fixed tutorial reset bug (Init values not reset)

@@ -66,6 +66,8 @@ let npc
 let speechBubbles
 // Game check
 let isGameStarted = false
+// Features
+isChangingBackgroud = false
 
 // API Env
 init.getEnv = async function getRequest(path) {
@@ -456,17 +458,19 @@ init.collectStar = function (scene, player, star) {
     }
 
     // Change background on score
-    if ((score % 360) === 0) {
-        scene.sound.playAudioSprite('sfx', 'numkey')
+    if (isChangingBackgroud) {
+        if ((score % 360) === 0) {
+            scene.sound.playAudioSprite('sfx', 'numkey')
 
-        skyIndex++
+            skyIndex++
 
-        // Reset background
-        if (skyIndex === 6) {
-            skyIndex = 0
+            // Reset background
+            if (skyIndex === 6) {
+                skyIndex = 0
+            }
+
+            init.changeBackgroundOnScore()
         }
-
-        init.changeBackgroundOnScore()
     }
 
     if (stars.countActive(true) === 0) {
@@ -500,7 +504,7 @@ init.createBomb = function (scene, bombs, player, delay, sprite) {
 
 }
 
-init.createLevelBomb = function (scene, bombs , x, y, sprite) {
+init.createLevelBomb = function (scene, bombs, x, y, sprite) {
     bombs.create(x, y, sprite).setImmovable(false).body.allowGravity = false
 }
 
