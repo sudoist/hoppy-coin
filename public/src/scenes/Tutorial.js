@@ -21,7 +21,8 @@ class Tutorial extends Phaser.Scene {
         init.setupScene(this, init.randomizePlayerSprite(), false)
 
         // Get scores
-        init.apiFetch(env.API_URL + '/scores').then((data) => {
+        init.apiFetch(env.API_URL + '/scores?level=Quick Play').then((data) => {
+            levelLabel = 'Quick Play'
             init.printScores(this, data, 400, 100)
         })
 
@@ -306,7 +307,7 @@ class Tutorial extends Phaser.Scene {
         followCamera = true
 
         // Quick play
-        tutorialText.setText('Game Modes: \n \n Quick play is \n practice mode \n with the latest \n features included.\n Scores are not recorded. \n \n \n Ranked is playing \n on a single level \n with a set of fixed features. \n \n The goal is to get the highest score.')
+        tutorialText.setText('Game Modes: \n \n Quick play is \n practice mode \n with the latest \n features included.\n Scores are also recorded. \n \n \n Ranked is playing \n on a single level \n with a set of fixed features. \n \n The goal is to get the highest score.')
         tutorialText.x = (gameWidth + xAddBounds) - 1200
 
         tutorialDialogue.setText(`Oh? I moved back... No, wall of texts! Skip!`)

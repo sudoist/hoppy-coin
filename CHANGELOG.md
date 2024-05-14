@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Fixed tutorial reset bug (Init values not reset)
 - Included Arcade or Quick Play into scoring
 - Added level get param in getScore to add in query
+- Updated tutorial
+  - Quick play text to being recorded
+  - Added api endpoint to get scores
 
 
 ## Removed
