@@ -7,6 +7,7 @@ class MainMenu extends Phaser.Scene {
     }
 
     create() {
+        this.isNavigating = false
         // Init
         playerSprite = init.randomizePlayerSprite() // Random or select
 
