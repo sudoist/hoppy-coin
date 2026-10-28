@@ -59,10 +59,10 @@ class Versions extends Phaser.Scene {
         platforms.create(490, 330, 'ground').setScale(0.27).refreshBody()
 
         // Return through the left-side entry portal.
-        this.add.text(65, 475, 'Back', {
+        this.add.text(65, 485, 'Back to Menu', {
             fontSize: '16px', fill: '#FFF'
         }).setOrigin(0.5).setDepth(6)
-        const backPortal = this.archivePortals.create(65, 535, 'portal')
+        const backPortal = this.archivePortals.create(65, 515, 'portal')
             .setName('back').setImmovable(true)
         backPortal.body.allowGravity = false
         backPortal.play('portalAnimation')
