@@ -10,61 +10,70 @@ class Versions extends Phaser.Scene {
         platforms.create(400, 568, 'ground').setScale(2).refreshBody()
         this.physics.add.collider(this.player, platforms)
 
-        this.add.text(400, 85, 'HOPPY COIN - VERSIONS', {
+        // A simple boss-rematch-inspired chamber, using existing art.
+        this.add.rectangle(400, 285, 650, 395, 0x101b3b, 0.72).setDepth(0)
+        this.add.text(400, 55, 'VERSION CHAMBER', {
             fontSize: '28px', fill: '#FFF'
-        }).setOrigin(0.5)
-
-        this.add.text(400, 140, 'Walk into a portal to explore an older build', {
+        }).setOrigin(0.5).setDepth(5)
+        this.add.text(400, 100, 'Walk into a portal to visit an older build', {
             fontSize: '16px', fill: '#FFF'
-        }).setOrigin(0.5)
+        }).setOrigin(0.5).setDepth(5)
 
-        // Until historical builds are hosted, links are explicitly source archives.
         const archives = [
-            {label: 'v0.0', x: 115},
-            {label: 'v0.1', x: 255},
-            {label: 'v0.2', x: 395},
-            {label: 'v1.0', x: 535}
+            {label: 'v0.0', x: 125},
+            {label: 'v0.1', x: 300},
+            {label: 'v0.2', x: 500},
+            {label: 'v1.0', x: 675}
         ]
 
         this.archivePortals = this.physics.add.group()
         archives.forEach((archive) => {
-            this.add.text(archive.x, 420, archive.label, {
-                fontSize: '20px', fill: '#FFF'
-            }).setOrigin(0.5)
+            this.add.rectangle(archive.x, 310, 125, 310, 0x243b65, 0.9)
+                .setStrokeStyle(3, 0x83c6c4)
+            this.add.text(archive.x, 205, archive.label, {
+                fontSize: '24px', fill: '#FFF'
+            }).setOrigin(0.5).setDepth(5)
+            this.add.text(archive.x, 255, 'ARCHIVE', {
+                fontSize: '13px', fill: '#FFF'
+            }).setOrigin(0.5).setDepth(5)
 
-            const portal = this.archivePortals.create(archive.x, 510, 'portal')
+            const portal = this.archivePortals.create(archive.x, 505, 'portal')
                 .setName(archive.label).setImmovable(true)
             portal.body.allowGravity = false
             portal.play('portalAnimation')
+            portal.setDepth(5)
         })
 
-        this.add.text(400, 345, 'Historical source archives (playable builds coming later)', {
+        this.add.text(400, 380, 'Enter a portal to load its original game', {
             fontSize: '15px', fill: '#FFF'
-        }).setOrigin(0.5)
+        }).setOrigin(0.5).setDepth(5)
 
-        this.add.text(690, 420, 'Back', {
-            fontSize: '20px', fill: '#FFF'
-        }).setOrigin(0.5)
-        const back = this.archivePortals.create(690, 510, 'portal')
-            .setName('back').setImmovable(true)
-        back.body.allowGravity = false
-        back.play('portalAnimation')
+        // Return without navigating away from the current game.
+        const back = this.add.text(400, 155, '<- Back to menu', {
+            fontSize: '18px', fill: '#FFF'
+        }).setOrigin(0.5).setDepth(6).setInteractive({useHandCursor: true})
+        back.on('pointerdown', () => this.returnToMenu())
 
         this.physics.add.overlap(this.player, this.archivePortals, (player, portal) => {
-            if (portal.name === 'back') {
-                this.physics.pause()
-                playerPositionX = 400
-                playerPositionY = 500
-                init.fadeInScene('MainMenu', this)
-                return
-            }
-
-            // Prevent repeat tabs while the player overlaps the same portal.
-            portal.disableBody(true, true)
-            window.open('https://github.com/sudoist/hoppy-coin/tree/' + portal.name,
-                '_blank', 'noopener,noreferrer')
+            if (!portal.active || this.isLeaving) return
+            this.isLeaving = true
+            const version = portal.name
+            const destination = '/versions/' + version + '/'
+            // Same-tab navigation avoids popup blockers and leaves the archive
+            // responsible for providing a Return to Latest link.
+            window.location.assign(destination)
         })
 
+        this.input.keyboard.on('keydown-ESC', () => this.returnToMenu())
+    }
+
+    returnToMenu() {
+        if (this.isLeaving) return
+        this.isLeaving = true
+        this.physics.pause()
+        playerPositionX = 400
+        playerPositionY = 500
+        init.fadeInScene('MainMenu', this)
     }
 
     update() {
