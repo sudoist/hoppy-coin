@@ -4,6 +4,8 @@ class Versions extends Phaser.Scene {
     }
 
     create() {
+        playerPositionX = 145
+        playerPositionY = 500
         init.setupScene(this, 'dude')
 
         platforms = this.physics.add.staticGroup()
@@ -60,10 +62,10 @@ class Versions extends Phaser.Scene {
         }).setOrigin(0.5).setDepth(3)
 
         // Match the rest of the game: walk into a portal to return.
-        this.add.text(400, 520, 'Back to Menu', {
+        this.add.text(65, 495, 'Back', {
             fontSize: '18px', fill: '#FFF'
         }).setOrigin(0.5).setDepth(6)
-        const backPortal = this.archivePortals.create(400, 545, 'portal')
+        const backPortal = this.archivePortals.create(65, 545, 'portal')
             .setName('back').setImmovable(true)
         backPortal.body.allowGravity = false
         backPortal.play('portalAnimation')
@@ -90,7 +92,7 @@ class Versions extends Phaser.Scene {
         if (this.isLeaving && !alreadyLeaving) return
         this.isLeaving = true
         this.physics.pause()
-        playerPositionX = 400
+        playerPositionX = 680
         playerPositionY = 500
         init.fadeInScene('MainMenu', this)
     }

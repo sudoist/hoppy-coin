@@ -31,7 +31,7 @@ for version in VERSIONS:
         # Historical scripts refer to root-relative files in quoted strings.
         # Prefix them so each version loads its own assets and scripts.
         data = re.sub(
-            r"""(?P<quote>["'])/(?P<path>assets|src|libs|play|ranked|config\\.js|env\\.json)(?=/|["'?])""",
+            r"""(?P<quote>["'])/(?P<path>assets|src|libs|play|ranked|config\.js|env\.json)(?=/|["'?])""",
             lambda m: m.group("quote") + prefix + "/" + m.group("path"),
             data,
         )
