@@ -53,6 +53,8 @@ class Versions extends Phaser.Scene {
 
         // Center path provides stepping stones to the raised archive ledges.
         platforms.create(400, 480, 'ground').setScale(0.35).refreshBody()
+        platforms.create(200, 500, 'ground').setScale(0.3).refreshBody()
+        platforms.create(600, 500, 'ground').setScale(0.3).refreshBody()
         this.add.text(400, 410, 'Choose a version', {
             fontSize: '15px', fill: '#FFF'
         }).setOrigin(0.5).setDepth(3)
