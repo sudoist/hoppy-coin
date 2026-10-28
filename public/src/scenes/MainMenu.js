@@ -15,9 +15,14 @@ class MainMenu extends Phaser.Scene {
         // Add buttons
         this.buttons = this.physics.add.group()
 
-        // this.add.text(710, 140, 'Fork ->', {fontSize: '18px', fill: '#FFF'}).setName('github')
-        // this.buttons.create(750, 180, 'github').setScale(.2).setName('github').setImmovable(false)
-        //     .setCollideWorldBounds(true).body.allowGravity = false
+        // Game-world navigation: walk into the portal, just like other menu entries.
+        this.add.text(665, 90, 'GitHub ->', {fontSize: '18px', fill: '#FFF'})
+        this.buttons.create(740, 125, 'github').setScale(.2).setName('github')
+            .setImmovable(true).setCollideWorldBounds(true).body.allowGravity = false
+
+        this.add.text(650, 470, 'Versions ->', {fontSize: '18px', fill: '#FFF'})
+        this.buttons.create(740, 505, 'portal').setName('versions')
+            .setImmovable(true).setCollideWorldBounds(true).body.allowGravity = false
 
         // this.add.text(690, 320, 'Arcade ->', {fontSize: '18px', fill: '#FFF'})
         // this.buttons.create(705, 530, 'portal').setScale(.5).setName('arcade').setImmovable(false).setVisible(false)
@@ -102,10 +107,15 @@ class MainMenu extends Phaser.Scene {
             let URL = 'https://github.com/sudoist/hoppy-coin'
             window.open(URL, '_blank')
             menu.disableBody(true, true)
-            setTimeout(() => {
-                this.buttons.create(750, 180, 'github').setScale(.2).setName('github').setImmovable(false)
-                    .setCollideWorldBounds(true).body.allowGravity = false
-            }, 10000 * 60)
+        }
+
+        if (menu.name === 'versions') {
+            this.physics.pause()
+            this.titleMusic.stop()
+            previousSceneKey = this.scene.key
+            playerPositionX = 400
+            playerPositionY = 500
+            init.fadeInScene('Versions', this)
         }
 
         if (menu.name === 'ranked') {

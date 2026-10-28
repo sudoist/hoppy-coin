@@ -15,17 +15,6 @@
             background: #ccc url(/assets/bg/pattern.webp) repeat;
             overflow: hidden;
         }
-        .site-controls { position: fixed; right: 16px; z-index: 100; font: 14px system-ui, sans-serif; }
-        .site-controls a, .site-controls summary { display: block; color: #fff; background: #21572f; padding: 9px 13px; border-radius: 8px; text-decoration: none; cursor: pointer; }
-        .site-controls a:focus-visible, .site-controls summary:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
-        .site-controls a:hover, .site-controls summary:hover { background: #317b43; }
-        .github-control { top: 16px; }
-        .versions-control { bottom: 16px; }
-        .versions-control details { position: relative; }
-        .versions-control nav { position: absolute; bottom: calc(100% + 8px); right: 0; width: max-content; max-width: min(90vw, 300px); background: #173c24; padding: 6px; border-radius: 8px; box-shadow: 0 4px 18px #0006; }
-        .versions-control nav a { background: transparent; }
-        .versions-control small { display: block; opacity: .75; }
-        @media (max-width: 600px) { .site-controls { right: 8px; font-size: 12px; } .github-control { top: 8px; } .versions-control { bottom: 8px; } }
     </style>
     <meta property="og:image"
           content="/assets/bg/phaser-planet-small.png"/>
@@ -42,6 +31,7 @@
     <script src="/src/scenes/Preloader.js"></script>
     <script src="/src/scenes/Title.js"></script>
     <script src="/src/scenes/MainMenu.js"></script>
+    <script src="/src/scenes/Versions.js"></script>
     <script src="/src/scenes/Arcade.js"></script>
     <script src="/src/scenes/Ranked/RankedName.js"></script>
     <script src="/src/scenes/Ranked/StageSelection.js"></script>
@@ -50,19 +40,6 @@
     <script src="/src/scenes/Tutorial.js"></script>
 </head>
 <body id="container">
-<a class="site-controls github-control" href="https://github.com/sudoist/hoppy-coin" target="_blank" rel="noopener noreferrer" aria-label="View Hoppy Coin source on GitHub">GitHub ↗</a>
-<div class="site-controls versions-control">
-    <details>
-        <summary>Versions</summary>
-        <nav aria-label="Hoppy Coin versions">
-            <a href="/" aria-current="page">Latest <small>Current playable build</small></a>
-            <a href="https://github.com/sudoist/hoppy-coin/tree/v1.0" target="_blank" rel="noopener noreferrer">v1.0 <small>Source archive · playable link pending</small></a>
-            <a href="https://github.com/sudoist/hoppy-coin/tree/v0.2" target="_blank" rel="noopener noreferrer">v0.2 <small>Source archive · playable link pending</small></a>
-            <a href="https://github.com/sudoist/hoppy-coin/tree/v0.1" target="_blank" rel="noopener noreferrer">v0.1 <small>Source archive · playable link pending</small></a>
-            <a href="https://github.com/sudoist/hoppy-coin/tree/v0.0" target="_blank" rel="noopener noreferrer">v0.0 <small>Original tutorial · playable link pending</small></a>
-        </nav>
-    </details>
-</div>
 <script src="/src/start.js"></script>
 </body>
 </html>
