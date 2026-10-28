@@ -70,11 +70,11 @@ class Versions extends Phaser.Scene {
                 this.returnToMenu()
                 return
             }
-            // Require leaving and re-entering the portal before opening again.
-            if (this.archiveOpened) return
+            // One new tab per entry into this chamber, without repeated tabs.
             this.archiveOpened = true
+            if (this.archiveOpened && this.openedVersion) return
+            this.openedVersion = portal.name
             window.open('/versions/' + portal.name + '/', '_blank', 'noopener,noreferrer')
-            this.time.delayedCall(1200, () => { this.archiveOpened = false })
         })
         this.input.keyboard.on('keydown-ESC', () => this.returnToMenu())
     }
