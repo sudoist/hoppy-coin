@@ -4,6 +4,8 @@ class GitHubRoom extends Phaser.Scene {
     }
 
     create() {
+        playerPositionX = 65
+        playerPositionY = 500
         init.setupScene(this, 'dude')
 
         platforms = this.physics.add.staticGroup()
@@ -34,11 +36,11 @@ class GitHubRoom extends Phaser.Scene {
             fontSize: '14px', fill: '#FFF'
         }).setOrigin(0.5)
 
-        this.add.text(400, 485, 'Back to Menu', {
+        this.add.text(75, 485, 'Back', {
             fontSize: '18px', fill: '#FFF'
         }).setOrigin(0.5)
 
-        this.returnPortal = this.physics.add.sprite(400, 535, 'portal')
+        this.returnPortal = this.physics.add.sprite(65, 535, 'portal')
             .setImmovable(true)
         this.returnPortal.body.allowGravity = false
         this.returnPortal.play('portalAnimation')
@@ -50,7 +52,7 @@ class GitHubRoom extends Phaser.Scene {
         if (this.isLeaving) return
         this.isLeaving = true
         this.physics.pause()
-        playerPositionX = 400
+        playerPositionX = 680
         playerPositionY = 500
         init.fadeInScene('MainMenu', this)
     }
