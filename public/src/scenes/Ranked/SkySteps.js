@@ -10,33 +10,25 @@ class SkySteps extends Phaser.Scene {
         this.coinsCollected = 0
         this.highestClimb = 0
         this.worldHeight = 3000
+        this.nextLedgeY = 2815
+        this.lastLedgeX = 400
+        this.ledgeCount = 0
+        this.generated = []
         playerPositionX = 400
         playerPositionY = this.worldHeight - 110
         init.setupScene(this, 'dude')
         init.changeBackground('sky.png', 'cover', 'no-repeat')
 
         this.physics.world.resume()
-        this.physics.world.setBounds(0, 0, 800, this.worldHeight)
-        this.cameras.main.setBounds(0, 0, 800, this.worldHeight)
+        this.physics.world.setBounds(0, -1000000, 800, this.worldHeight + 1000000)
+        this.cameras.main.setBounds(0, -1000000, 800, this.worldHeight + 1000000)
         this.cameras.main.setScroll(0, this.worldHeight - 600)
 
         this.platforms = this.physics.add.staticGroup()
         this.platforms.create(400, this.worldHeight - 40, 'ground').setScale(2).refreshBody()
 
-        // Keep every vertical step below the ~181px maximum jump height.
-        // Alternating short horizontal hops give the player room to land.
-        const ledges = []
-        const positions = [400, 530, 400, 270, 400, 530, 400, 270]
-        for (let i = 0; i < 22; i++) {
-            ledges.push([positions[i % positions.length], 2815 - i * 125])
-        }
         this.coins = this.physics.add.staticGroup()
-        ledges.forEach(([x, y], index) => {
-            this.platforms.create(x, y, 'ground').setScale(0.65, 1).refreshBody()
-            if (index % 2 === 0) {
-                this.coins.create(x, y - 40, 'coin')
-            }
-        })
+        this.generateLedges(this.worldHeight - 1600)
 
         this.physics.add.collider(this.player, this.platforms)
         this.physics.add.overlap(this.player, this.coins, (player, coin) => {
@@ -55,26 +47,54 @@ class SkySteps extends Phaser.Scene {
             .setScrollFactor(0).setDepth(20)
         this.add.text(18, 115, 'ESC: Back to stages', {fontSize: '14px', fill: '#fff'})
             .setScrollFactor(0).setDepth(20)
-        this.input.keyboard.on('keydown-ESC', () => this.leave())
+        this.escapeKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC)
+        this.retryKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R)
 
-        // Finish line at the top of the tower.
-        this.finishMarker = this.add.text(400, 105, 'SUMMIT!', {
-            fontSize: '32px', fill: '#ffe76a'
-        }).setOrigin(0.5)
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
             this.physics.world.setBounds(0, 0, 800, 600)
+            this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.ESC)
+            this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.R)
         })
+    }
+
+    generateLedges(upToY) {
+        // Stay under the ~181px maximum jump; increase spacing gradually.
+        while (this.nextLedgeY > upToY) {
+            const difficulty = Math.min(1, this.ledgeCount / 45)
+            const gap = Math.round(138 + difficulty * 22)
+            const direction = this.ledgeCount % 2 === 0 ? 1 : -1
+            const offset = Math.round(95 + difficulty * 35)
+            const x = Phaser.Math.Clamp(this.lastLedgeX + direction * offset, 145, 655)
+            const platform = this.platforms.create(x, this.nextLedgeY, 'ground')
+                .setScale(0.65, 1).refreshBody()
+            this.generated.push(platform)
+            if (this.ledgeCount % 2 === 0) {
+                const coin = this.coins.create(x, this.nextLedgeY - 42, 'coin')
+                this.generated.push(coin)
+            }
+            this.lastLedgeX = x
+            this.nextLedgeY -= gap
+            this.ledgeCount++
+        }
     }
 
     update() {
         init.monitorMuteStatus(game)
+        if (Phaser.Input.Keyboard.JustDown(this.escapeKey)) {
+            this.leave()
+            return
+        }
         if (this.isLeaving) return
-        if (this.finished) return
+        if (this.finished) {
+            if (Phaser.Input.Keyboard.JustDown(this.retryKey)) this.scene.restart()
+            return
+        }
         init.setPlayerMovements(this)
 
         const climbed = Math.max(0, Math.floor((this.worldHeight - 110 - this.player.y) / 10))
         this.highestClimb = Math.max(this.highestClimb, climbed)
         this.heightLabel.setText('Height: ' + this.highestClimb)
+        this.generateLedges(this.player.y - 1100)
 
         // Scroll only upward, once the player reaches the upper third.
         const camera = this.cameras.main
@@ -83,9 +103,16 @@ class SkySteps extends Phaser.Scene {
             camera.scrollY = Math.max(targetScroll, camera.scrollY - 5)
         }
 
-        if (this.player.y < 165) {
-            this.endRun('Summit reached!')
-        } else if (this.player.y > camera.scrollY + 640) {
+        // Reclaim ledges that have dropped far below the visible camera.
+        this.generated = this.generated.filter(object => {
+            if (object.y > camera.scrollY + 900) {
+                object.destroy()
+                return false
+            }
+            return true
+        })
+
+        if (this.player.y > camera.scrollY + 640) {
             this.endRun('You fell!')
         }
     }
@@ -101,7 +128,7 @@ class SkySteps extends Phaser.Scene {
             .setOrigin(0.5).setScrollFactor(0).setDepth(31)
         this.add.text(400, 325, 'R: Retry     ESC: Stages', {fontSize: '18px', fill: '#fff'})
             .setOrigin(0.5).setScrollFactor(0).setDepth(31)
-        this.input.keyboard.once('keydown-R', () => this.scene.restart())
+
     }
 
     leave() {
