@@ -4,7 +4,7 @@ class GitHubRoom extends Phaser.Scene {
     }
 
     create() {
-        playerPositionX = 65
+        playerPositionX = 145
         playerPositionY = 500
         init.setupScene(this, 'dude')
 
