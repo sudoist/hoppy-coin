@@ -64,6 +64,10 @@ class StageSelection extends Phaser.Scene {
         portals.create(35, 500, 'portal').setImmovable(false).setName('landMineBeach')
 
 
+        // Fourth stage: a vertical-scrolling climbing challenge.
+        this.add.text(600, 470, 'Sky Steps ->', {fontSize: '18px', fill: '#FFF'})
+        portals.create(755, 500, 'portal').setImmovable(false).setName('skySteps')
+
         // Play animation for portals
         portals.children.iterate(function (child) {
             child.play('portalAnimation')
@@ -84,6 +88,14 @@ class StageSelection extends Phaser.Scene {
     }
 
     selectMenu(player, menu) {
+        if (menu.name === 'skySteps') {
+            if (this.isNavigating) return
+            this.isNavigating = true
+            this.titleMusic.stop()
+            this.physics.pause()
+            init.fadeInScene('SkySteps', this)
+            return
+        }
         if (menu.name === 'title') {
             this.physics.pause()
             this.titleMusic.stop()
