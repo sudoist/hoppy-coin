@@ -334,7 +334,13 @@ class Ranked extends Phaser.Scene {
                     // Print message
                     instructions.destroy()
 
-                    if (score >= lastPlaceScore) {
+                    if (data.unavailable) {
+                        // No leaderboard data means no verified qualifying score.
+                        // Keep the skill-based game-over message, not a free qualification.
+                        const text = this.add.text(400, 570, 'Git gud...', {
+                            fontSize: '24px', fill: '#FFF'
+                        }).setOrigin(0.5)
+                    } else if (score >= lastPlaceScore) {
                         // Clear old scores
                         leaderboard.destroy()
 
