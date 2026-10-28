@@ -261,7 +261,7 @@ class Ranked extends Phaser.Scene {
             init.changeBackground('john-cosio-8SWaKcmZC5w-unsplash.jpg', 'cover', 'no-repeat')
         }
 
-        //  Some stars to collect, 12 in total, evenly spaced 70 pixels apart along the x axis
+        // Twelve coins per batch; each completed batch adds one bomb.
         init.createStars(this)
 
         //  The score
@@ -280,7 +280,7 @@ class Ranked extends Phaser.Scene {
 
         this.physics.add.collider(player, bombs, this.hitBomb, null, this)
 
-        // Start game with bomb after 3 seconds
+        // Initial bomb after 3 seconds, then one per 12 collected coins.
         init.createBomb(this, bombs, player, 3000, 'bomb-r')
 
         // Audio
