@@ -142,6 +142,8 @@ class SkySteps extends Phaser.Scene {
     endRun(message) {
         if (this.finished) return
         this.finished = true
+        // Keep guest coins and personal best after refresh or browser restart.
+        GuestProgress.recordRun('SkySteps', this.highestClimb, this.coinsCollected)
         this.player.setVelocity(0, 0)
         this.player.body.enable = false
         // Show the same explosion sprite used by the original Ranked game.
