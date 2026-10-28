@@ -45,7 +45,7 @@ class StageSelection extends Phaser.Scene {
         // Add menu collider to press buttons
         this.physics.add.overlap(this.player, this.buttons, this.selectMenu, null, this)
 
-        instructions.destroy()
+        if (instructions && instructions.active) instructions.destroy()
         this.add.text(280, 550, 'Select stage', {fontSize: '32px', fill: '#FFF'})
 
         // Music
@@ -94,7 +94,6 @@ class StageSelection extends Phaser.Scene {
             if (this.isNavigating) return
             this.isNavigating = true
             this.titleMusic.stop()
-            this.physics.pause()
             init.fadeInScene('SkySteps', this)
             return
         }
