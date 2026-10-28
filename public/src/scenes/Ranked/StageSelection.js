@@ -7,6 +7,8 @@ class StageSelection extends Phaser.Scene {
     }
 
     create() {
+        this.physics.world.resume()
+        this.isNavigating = false
         // Init
         playerSprite = init.randomizePlayerSprite() // Random or select
 
