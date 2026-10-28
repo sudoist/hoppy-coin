@@ -7,6 +7,8 @@ class MainMenu extends Phaser.Scene {
     }
 
     create() {
+        // Reset navigation guard on every return to this scene.
+        this.isNavigating = false
         // Init
         playerSprite = init.randomizePlayerSprite() // Random or select
 
