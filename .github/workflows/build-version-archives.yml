@@ -1,0 +1,52 @@
+name: Build historical game archives
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  archives:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current game
+        uses: actions/checkout@v4
+        with:
+          path: current
+      - name: Checkout v0.0
+        uses: actions/checkout@v4
+        with:
+          ref: v0.0
+          path: current/.build/versions/v0.0
+      - name: Checkout v0.1
+        uses: actions/checkout@v4
+        with:
+          ref: v0.1
+          path: current/.build/versions/v0.1
+      - name: Checkout v0.2
+        uses: actions/checkout@v4
+        with:
+          ref: v0.2
+          path: current/.build/versions/v0.2
+      - name: Checkout v1.0
+        uses: actions/checkout@v4
+        with:
+          ref: v1.0
+          path: current/.build/versions/v1.0
+      - name: Package static archives
+        working-directory: current
+        run: python3 scripts/build_version_archives.py
+      - name: Verify archive entry points
+        working-directory: current
+        run: |
+          for version in v0.0 v0.1 v0.2 v1.0; do
+            test -f "public/versions/$version/index.html"
+          done
+      - name: Upload deployable archives
+        uses: actions/upload-artifact@v4
+        with:
+          name: hoppy-coin-version-archives
+          path: current/public/versions/
+          if-no-files-found: error
+          retention-days: 30
