@@ -35,10 +35,13 @@ class SkySteps extends Phaser.Scene {
         this.physics.add.overlap(this.player, this.coins, (player, coin) => {
             coin.disableBody(true, true)
             this.coinsCollected++
-            if (this.coinsCollected % 10 === 0) this.spawnBomb()
+            if (this.coinsCollected % 12 === 0) this.spawnBomb()
             this.scoreLabel.setText('Coins: ' + this.coinsCollected)
             this.sound.playAudioSprite('sfx', 'ping')
         })
+
+        // Match the original Ranked rule: one initial bomb after 3 seconds.
+        this.time.delayedCall(3000, () => this.spawnBomb())
 
         this.physics.add.collider(this.bombs, this.platforms)
         this.physics.add.collider(this.player, this.bombs, (player, bomb) => {
