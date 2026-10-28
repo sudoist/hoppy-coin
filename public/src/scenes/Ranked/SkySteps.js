@@ -59,13 +59,15 @@ class SkySteps extends Phaser.Scene {
             .setScrollFactor(0).setDepth(20)
         this.add.text(18, 115, 'ESC: Back to stages', {fontSize: '14px', fill: '#fff'})
             .setScrollFactor(0).setDepth(20)
-        this.escapeKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC)
-        this.retryKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R)
+        // Use scene-scoped events rather than JustDown; input may be consumed by
+        // the shared movement controls before the game-over branch runs.
+        this.input.keyboard.on('keydown-ESC', this.leave, this)
+        this.input.keyboard.on('keydown-R', this.retry, this)
 
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
             this.physics.world.setBounds(0, 0, 800, 600)
-            this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.ESC)
-            this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.R)
+            this.input.keyboard.off('keydown-ESC', this.leave, this)
+            this.input.keyboard.off('keydown-R', this.retry, this)
         })
     }
 
@@ -103,15 +105,8 @@ class SkySteps extends Phaser.Scene {
 
     update() {
         init.monitorMuteStatus(game)
-        if (Phaser.Input.Keyboard.JustDown(this.escapeKey)) {
-            this.leave()
-            return
-        }
         if (this.isLeaving) return
-        if (this.finished) {
-            if (Phaser.Input.Keyboard.JustDown(this.retryKey)) this.scene.restart()
-            return
-        }
+        if (this.finished) return
         init.setPlayerMovements(this)
 
         const climbed = Math.max(0, Math.floor((this.worldHeight - 110 - this.player.y) / 10))
@@ -149,13 +144,26 @@ class SkySteps extends Phaser.Scene {
         this.finished = true
         this.player.setVelocity(0, 0)
         this.player.body.enable = false
+        // Show the same explosion sprite used by the original Ranked game.
+        this.player.setTexture('explode', 4)
         this.add.rectangle(400, 300, 480, 190, 0x09284c, 0.92)
             .setScrollFactor(0).setDepth(30)
         this.add.text(400, 270, message, {fontSize: '30px', fill: '#fff'})
             .setOrigin(0.5).setScrollFactor(0).setDepth(31)
         this.add.text(400, 325, 'R: Retry     ESC: Stages', {fontSize: '18px', fill: '#fff'})
             .setOrigin(0.5).setScrollFactor(0).setDepth(31)
+        this.add.text(270, 390, 'Retry', {fontSize: '24px', fill: '#ffe28a'})
+            .setOrigin(0.5).setScrollFactor(0).setDepth(31)
+            .setInteractive({useHandCursor: true}).on('pointerdown', () => this.retry())
+        this.add.text(530, 390, 'Stages', {fontSize: '24px', fill: '#ffe28a'})
+            .setOrigin(0.5).setScrollFactor(0).setDepth(31)
+            .setInteractive({useHandCursor: true}).on('pointerdown', () => this.leave())
 
+    }
+
+    retry() {
+        if (!this.finished || this.isLeaving) return
+        this.scene.restart()
     }
 
     leave() {
