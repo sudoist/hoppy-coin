@@ -23,13 +23,13 @@ class SkySteps extends Phaser.Scene {
         this.platforms = this.physics.add.staticGroup()
         this.platforms.create(400, this.worldHeight - 40, 'ground').setScale(2).refreshBody()
 
-        // Each ledge is reachable with the existing 330px/s jump velocity.
-        const ledges = [
-            [250, 2740], [530, 2580], [280, 2420], [570, 2260],
-            [320, 2100], [110, 1940], [380, 1780], [650, 1620],
-            [420, 1460], [160, 1300], [420, 1140], [670, 980],
-            [420, 820], [180, 660], [430, 500], [650, 340], [400, 180]
-        ]
+        // Keep every vertical step below the ~181px maximum jump height.
+        // Alternating short horizontal hops give the player room to land.
+        const ledges = []
+        const positions = [400, 530, 400, 270, 400, 530, 400, 270]
+        for (let i = 0; i < 22; i++) {
+            ledges.push([positions[i % positions.length], 2815 - i * 125])
+        }
         this.coins = this.physics.add.staticGroup()
         ledges.forEach(([x, y], index) => {
             this.platforms.create(x, y, 'ground').setScale(0.65, 1).refreshBody()
