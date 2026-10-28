@@ -111,7 +111,7 @@ class MainMenu extends Phaser.Scene {
             this.isNavigating = true
             this.titleMusic.stop()
             playerPositionX = 90
-            playerPositionY = 205
+            playerPositionY = 165
             init.fadeInScene('GitHubRoom', this)
         }
 
