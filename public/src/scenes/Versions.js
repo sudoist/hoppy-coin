@@ -71,8 +71,7 @@ class Versions extends Phaser.Scene {
                 return
             }
             // One new tab per entry into this chamber, without repeated tabs.
-            this.archiveOpened = true
-            if (this.archiveOpened && this.openedVersion) return
+            if (this.openedVersion) return
             this.openedVersion = portal.name
             window.open('/versions/' + portal.name + '/', '_blank', 'noopener,noreferrer')
         })
