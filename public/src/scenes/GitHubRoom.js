@@ -7,7 +7,7 @@ class GitHubRoom extends Phaser.Scene {
         // Phaser reuses scene instances; reset navigation state on each entry.
         this.isLeaving = false
         playerPositionX = 90
-        playerPositionY = 205
+        playerPositionY = 165
         init.setupScene(this, 'dude')
 
         platforms = this.physics.add.staticGroup()
@@ -18,10 +18,10 @@ class GitHubRoom extends Phaser.Scene {
         // Re-arm the Arcade world and collision bodies after scene shutdown/restart.
         this.physics.world.resume()
         this.player.body.enable = true
-        this.player.setPosition(90, 205)
+        this.player.setPosition(90, 165)
         this.player.setVelocity(0, 0)
         this.player.setAcceleration(0, 0)
-        this.player.body.reset(90, 205)
+        this.player.body.reset(90, 165)
 
         this.add.text(400, 65, 'HOPPY COIN ON GITHUB', {
             fontSize: '27px', fill: '#FFF'
