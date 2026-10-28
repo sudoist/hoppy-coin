@@ -318,29 +318,12 @@ class Ranked extends Phaser.Scene {
                         }).setOrigin(0.5)
                     }
 
-                    // Score message text below... The effort to just say git gud!
-                    let rank = 0
-                    let lastPlaceScore = 0
-
-                    for (const [key, value] of Object.entries(data.data)) {
-                        ++rank
-
-                        // Get last score of top 10
-                        if (rank < 11) {
-                            lastPlaceScore = value.score
-                        }
-                    }
+                    const result = RankedResults.qualification(data, score)
 
                     // Print message
                     instructions.destroy()
 
-                    if (data.unavailable) {
-                        // No leaderboard data means no verified qualifying score.
-                        // Keep the skill-based game-over message, not a free qualification.
-                        const text = this.add.text(400, 570, 'Git gud...', {
-                            fontSize: '24px', fill: '#FFF'
-                        }).setOrigin(0.5)
-                    } else if (score >= lastPlaceScore) {
+                    if (result.qualified) {
                         // Clear old scores
                         leaderboard.destroy()
 
@@ -387,26 +370,8 @@ class Ranked extends Phaser.Scene {
                             fill: '#FFF'
                         })
                         inputPlayerNameText = this.add.text(470, 40, '_ _ _', {fontSize: '24px', fill: '#FFF'})
-                    } else if (score > 300) {
-                        if (score >= (lastPlaceScore - 200)) {
-                            let text = this.add.text(200, 570, 'Almost there!', {fontSize: '24px', fill: '#FFF'})
-
-                            // Center
-                            text.setOrigin(0.5);
-                            text.x = this.cameras.main.width / 2
-                        } else {
-                            let text = this.add.text(200, 570, 'Git gud...', {fontSize: '24px', fill: '#FFF'})
-
-                            // Center
-                            text.setOrigin(0.5)
-                            text.x = this.cameras.main.width / 2
-                        }
-                    } else if (score < lastPlaceScore) {
-                        let text = this.add.text(200, 570, 'Git gud...', {fontSize: '24px', fill: '#FFF'})
-
-                        // Center
-                        text.setOrigin(0.5)
-                        text.x = this.cameras.main.width / 2
+                    } else {
+                        RankedResults.showFeedback(this, result.message)
                     }
 
                     // Add portals for navigation
