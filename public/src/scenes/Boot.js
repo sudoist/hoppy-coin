@@ -101,6 +101,13 @@ class Boot extends Phaser.Scene {
         this.load.plugin('rexvirtualjoystickplugin', '/assets/plugins/rexvirtualjoystickplugin.min.js', true)
 
         // Load configuration through Phaser before choosing the initial scene.
+        // A missing deployment-generated env.json must not prevent gameplay.
+        // Scores remain unavailable until Forge restores the configuration.
+        this.load.on('loaderror', file => {
+            if (file.key === 'runtime-env') {
+                console.warn('Runtime config missing; starting without leaderboard')
+            }
+        })
         this.load.json('runtime-env', '/env.json')
     }
 
@@ -113,7 +120,7 @@ class Boot extends Phaser.Scene {
         }
 
         env = this.cache.json.get('runtime-env') || {}
-        // Fast-start is the current testing default; set true in env.json to restore intro.
+        // Intro defaults to enabled even when runtime config is unavailable.
         const introEnabled = env.IS_INTRO_ENABLED !== false
         if (introEnabled) {
             music = this.sound.add('boot', {volume: 1, loop: false})
