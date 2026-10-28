@@ -41,7 +41,7 @@ class Versions extends Phaser.Scene {
             }).setOrigin(0.5).setDepth(5)
 
             platforms.create(archive.x, archive.ledgeY, 'ground')
-                .setScale(0.5).refreshBody()
+                .setScale(0.5, 1.0).refreshBody()
 
             const portal = this.archivePortals.create(
                 archive.x, archive.ledgeY - 26, 'portal'
@@ -52,7 +52,7 @@ class Versions extends Phaser.Scene {
         })
 
         // One continuous center ledge replaces the four small stepping stones.
-        platforms.create(400, 340, 'ground').setScale(1.25).refreshBody()
+        platforms.create(400, 340, 'ground').setScale(0.8, 0.8).refreshBody()
 
         // Return through the left-side entry portal.
         this.add.text(85, 480, 'Back to Menu', {
@@ -70,8 +70,11 @@ class Versions extends Phaser.Scene {
                 this.returnToMenu()
                 return
             }
-            this.isLeaving = true
-            window.location.assign('/versions/' + portal.name + '/')
+            // Require leaving and re-entering the portal before opening again.
+            if (this.archiveOpened) return
+            this.archiveOpened = true
+            window.open('/versions/' + portal.name + '/', '_blank', 'noopener,noreferrer')
+            this.time.delayedCall(1200, () => { this.archiveOpened = false })
         })
         this.input.keyboard.on('keydown-ESC', () => this.returnToMenu())
     }
