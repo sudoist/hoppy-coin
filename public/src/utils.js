@@ -81,39 +81,44 @@ init.getEnv = async function getRequest(path) {
 }
 
 // API get
-init.apiFetch = async function getRequest(path) {
-    let data
-
-    const res = await fetch(path, {
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'x-api-key': env.API_KEY,
-        }
-    })
-
-    data = await res.json()
-
-    return data
+// Keep the game-over flow usable when the optional score API is unavailable.
+init.scoreApiReady = function () {
+    return Boolean(env && typeof env.API_URL === 'string' &&
+        /^https?:\\/\\//.test(env.API_URL) && env.API_KEY && env.API_KEY !== 'YOUR_API_KEY')
 }
 
-// API post
-init.apiPost = async function postRequest(req) {
-    let data
+init.apiFetch = async function (path) {
+    if (!init.scoreApiReady()) return {data: [], unavailable: true}
+    try {
+        const res = await fetch(path, {
+            headers: {'Accept': 'application/json', 'x-api-key': env.API_KEY}
+        })
+        if (!res.ok) throw new Error('Scores HTTP ' + res.status)
+        const data = await res.json()
+        if (!data || !Array.isArray(data.data)) throw new Error('Invalid scores response')
+        return data
+    } catch (error) {
+        console.warn('Leaderboard unavailable:', error)
+        return {data: [], unavailable: true}
+    }
+}
 
-    const res = await fetch(req.path, {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'x-api-key': env.API_KEY,
-        },
-        body: JSON.stringify(req),
-    })
-
-    data = await res.json()
-
-    return data
+init.apiPost = async function (req) {
+    if (!init.scoreApiReady()) return {data: [], unavailable: true}
+    try {
+        const res = await fetch(req.path, {
+            method: 'POST',
+            headers: {'Accept': 'application/json', 'Content-Type': 'application/json', 'x-api-key': env.API_KEY},
+            body: JSON.stringify(req)
+        })
+        if (!res.ok) throw new Error('Score submission HTTP ' + res.status)
+        const data = await res.json()
+        if (!data || !Array.isArray(data.data)) throw new Error('Invalid score submission response')
+        return data
+    } catch (error) {
+        console.warn('Score submission unavailable:', error)
+        return {data: [], unavailable: true}
+    }
 }
 
 init.bootFadeOutScene = function (sceneName, context) {
