@@ -7,7 +7,7 @@ cd "$(dirname "$0")/.."
 versions=(v0.0 v0.1 v0.2 v1.0)
 
 # Forge checkouts may not contain tags locally.
-git fetch --no-recurse-submodules origin ${versions[@]/#/refs/tags/} >/dev/null
+git fetch --no-recurse-submodules --tags origin >/dev/null
 
 for version in "${versions[@]}"; do
     target=".build/versions/$version"
