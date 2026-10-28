@@ -36,7 +36,7 @@ class GitHubRoom extends Phaser.Scene {
             fontSize: '14px', fill: '#FFF'
         }).setOrigin(0.5)
 
-        this.add.text(75, 485, 'Back', {
+        this.add.text(65, 465, 'Back', {
             fontSize: '18px', fill: '#FFF'
         }).setOrigin(0.5)
 
