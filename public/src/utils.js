@@ -427,7 +427,7 @@ init.setPlayerMovements = function (scene) {
 init.createStars = function (scene, x = 12, y = 0, gravity = true) {
     stars = scene.physics.add.group({
         key: 'coin',
-        repeat: 11,
+        repeat: 9,
         setXY: {x: x, y: y, stepX: 70}
     })
 
@@ -448,6 +448,11 @@ init.collectStar = function (scene, player, star) {
     //  Add and update the score
     score += 10
     scoreText.setText('Score: ' + score)
+
+    // One additional bomb for every ten collected coins (10 points each).
+    if (score % 100 === 0) {
+        init.createBomb(scene, bombs, player, 0, 'bomb-r')
+    }
 
     // Switch music when reaching stage 5
     if (score === 600) {
@@ -483,7 +488,6 @@ init.collectStar = function (scene, player, star) {
             child.enableBody(true, child.x, 0, true, true)
         })
 
-        init.createBomb(scene, bombs, player, 0, 'bomb-r')
     }
 
 }
