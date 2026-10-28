@@ -29,6 +29,7 @@ class Versions extends Phaser.Scene {
         ]
 
         this.archivePortals = this.physics.add.group()
+        this.portalContacts = new Set()
         archives.forEach((archive) => {
             this.add.text(archive.x, archive.ledgeY - 100, archive.label, {
                 fontSize: '23px', fill: '#FFF'
@@ -46,6 +47,8 @@ class Versions extends Phaser.Scene {
             portal.body.allowGravity = false
             portal.play('portalAnimation')
             portal.setDepth(5)
+            portal.setInteractive({useHandCursor: true})
+            portal.on('pointerdown', () => this.openArchive(archive.label))
         })
 
         // Shorter, thicker middle platform as marked in the reference.
@@ -67,12 +70,16 @@ class Versions extends Phaser.Scene {
                 this.returnToMenu()
                 return
             }
-            // Open the historical build separately, leaving this chamber playable.
-            if (this.openedArchive) return
-            this.openedArchive = true
-            window.open('/versions/' + portal.name + '/', '_blank', 'noopener,noreferrer')
+            // Trigger only once per contact; moving away re-arms this portal.
+            if (this.portalContacts.has(portal.name)) return
+            this.portalContacts.add(portal.name)
+            this.openArchive(portal.name)
         })
         this.input.keyboard.on('keydown-ESC', () => this.returnToMenu())
+    }
+
+    openArchive(version) {
+        window.open('/versions/' + version + '/', '_blank', 'noopener,noreferrer')
     }
 
     returnToMenu() {
@@ -85,6 +92,13 @@ class Versions extends Phaser.Scene {
     }
 
     update() {
+        if (this.portalContacts) {
+            this.archivePortals.children.iterate((portal) => {
+                if (portal.name !== 'back' && !this.physics.overlap(this.player, portal)) {
+                    this.portalContacts.delete(portal.name)
+                }
+            })
+        }
         init.monitorMuteStatus(game)
         init.setPlayerMovements(this)
     }
