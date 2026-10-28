@@ -114,7 +114,7 @@ class Boot extends Phaser.Scene {
 
         env = this.cache.json.get('runtime-env') || {}
         // Fast-start is the current testing default; set true in env.json to restore intro.
-        const introEnabled = env.IS_INTRO_ENABLED === true
+        const introEnabled = env.IS_INTRO_ENABLED !== false
         if (introEnabled) {
             music = this.sound.add('boot', {volume: 1, loop: false})
             music.play()
