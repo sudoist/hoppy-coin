@@ -8,7 +8,6 @@ class SkySteps extends Phaser.Scene {
         this.isLeaving = false
         this.finished = false
         this.coinsCollected = 0
-        this.bombsUnlocked = false
         this.highestClimb = 0
         this.worldHeight = 3000
         this.nextLedgeY = 2815
@@ -36,16 +35,7 @@ class SkySteps extends Phaser.Scene {
         this.physics.add.overlap(this.player, this.coins, (player, coin) => {
             coin.disableBody(true, true)
             this.coinsCollected++
-            if (this.coinsCollected === 10) {
-                this.bombsUnlocked = true
-                this.spawnBomb()
-                this.bombTimer = this.time.addEvent({
-                    delay: 5000,
-                    loop: true,
-                    callback: this.spawnBomb,
-                    callbackScope: this
-                })
-            }
+            if (this.coinsCollected % 10 === 0) this.spawnBomb()
             this.scoreLabel.setText('Coins: ' + this.coinsCollected)
             this.sound.playAudioSprite('sfx', 'ping')
         })
@@ -70,7 +60,6 @@ class SkySteps extends Phaser.Scene {
         this.retryKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R)
 
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
-            if (this.bombTimer) this.bombTimer.remove()
             this.physics.world.setBounds(0, 0, 800, 600)
             this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.ESC)
             this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.R)
@@ -78,7 +67,7 @@ class SkySteps extends Phaser.Scene {
     }
 
     spawnBomb() {
-        if (!this.bombsUnlocked || this.finished || this.isLeaving) return
+        if (this.finished || this.isLeaving) return
         const camera = this.cameras.main
         const x = Phaser.Math.Between(80, 720)
         const bomb = this.bombs.create(x, camera.scrollY - 35, 'bomb-r')
@@ -155,7 +144,6 @@ class SkySteps extends Phaser.Scene {
     endRun(message) {
         if (this.finished) return
         this.finished = true
-        if (this.bombTimer) this.bombTimer.remove()
         this.player.setVelocity(0, 0)
         this.player.body.enable = false
         this.add.rectangle(400, 300, 480, 190, 0x09284c, 0.92)
