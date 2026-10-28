@@ -65,7 +65,6 @@ class Versions extends Phaser.Scene {
                 '_blank', 'noopener,noreferrer')
         })
 
-        this.physics.add.collider(this.player, this.archivePortals)
     }
 
     update() {
