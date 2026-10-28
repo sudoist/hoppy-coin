@@ -7,6 +7,8 @@ class Title extends Phaser.Scene {
     }
 
     create() {
+        this.physics.world.resume()
+        this.isNavigating = false
         // Init
         playerSprite = init.randomizePlayerSprite() // Random or select
 
@@ -62,7 +64,7 @@ class Title extends Phaser.Scene {
         player.setDepth(4)
 
         // Music
-        music.stop()
+        if (music && music.isPlaying) music.stop()
 
         this.titleMusic = this.sound.add('intro', {volume: 1, loop: true})
         this.titleMusic.play()
@@ -111,6 +113,7 @@ class Title extends Phaser.Scene {
     }
 
     selectMenu(player, menu) {
+        if (this.isNavigating) return
         if (menu.name === 'github') {
             let URL = 'https://github.com/sudoist/hoppy-coin'
             window.open(URL, '_blank')
@@ -142,6 +145,7 @@ class Title extends Phaser.Scene {
         }
 
         if (menu.name === 'menu') {
+            this.isNavigating = true
             this.physics.pause()
             this.titleMusic.stop()
             previousSceneKey = this.scene.key
@@ -151,6 +155,7 @@ class Title extends Phaser.Scene {
         }
 
         if (menu.name === 'tutorial') {
+            this.isNavigating = true
             this.physics.pause()
             this.titleMusic.stop()
             previousSceneKey = this.scene.key
