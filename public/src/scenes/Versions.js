@@ -4,8 +4,8 @@ class Versions extends Phaser.Scene {
     }
 
     create() {
-        // Arrive from the right-side Versions entrance, as in Stage Selection.
-        playerPositionX = 700
+        // Arrive beside the left-hand return entrance, as in the other rooms.
+        playerPositionX = 145
         playerPositionY = 490
         init.setupScene(this, 'dude')
 
@@ -58,11 +58,11 @@ class Versions extends Phaser.Scene {
         platforms.create(310, 330, 'ground').setScale(0.27).refreshBody()
         platforms.create(490, 330, 'ground').setScale(0.27).refreshBody()
 
-        // Return portal is on the right: the same side as the Main Menu entrance.
-        this.add.text(725, 475, 'Back', {
+        // Return through the left-side entry portal.
+        this.add.text(65, 475, 'Back', {
             fontSize: '16px', fill: '#FFF'
         }).setOrigin(0.5).setDepth(6)
-        const backPortal = this.archivePortals.create(725, 535, 'portal')
+        const backPortal = this.archivePortals.create(65, 535, 'portal')
             .setName('back').setImmovable(true)
         backPortal.body.allowGravity = false
         backPortal.play('portalAnimation')
