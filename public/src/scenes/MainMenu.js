@@ -7,6 +7,8 @@ class MainMenu extends Phaser.Scene {
     }
 
     create() {
+        // Scene transitions stop the previous scene; don't leave its physics paused.
+        this.physics.world.resume()
         this.isNavigating = false
         // Init
         playerSprite = init.randomizePlayerSprite() // Random or select
@@ -107,10 +109,9 @@ class MainMenu extends Phaser.Scene {
         if (menu.name === 'github') {
             if (this.isNavigating) return
             this.isNavigating = true
-            this.physics.pause()
             this.titleMusic.stop()
-            playerPositionX = 400
-            playerPositionY = 500
+            playerPositionX = 90
+            playerPositionY = 205
             init.fadeInScene('GitHubRoom', this)
         }
 
