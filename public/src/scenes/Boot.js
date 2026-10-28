@@ -100,10 +100,8 @@ class Boot extends Phaser.Scene {
         // Joystick
         this.load.plugin('rexvirtualjoystickplugin', '/assets/plugins/rexvirtualjoystickplugin.min.js', true)
 
-        // Setup api env
-        init.getEnv('/env.json').then((data) => {
-            env = data
-        })
+        // Load configuration through Phaser before choosing the initial scene.
+        this.load.json('runtime-env', '/env.json')
     }
 
     create() {
@@ -114,10 +112,17 @@ class Boot extends Phaser.Scene {
             centerY: this.cameras.main.centerY
         }
 
-        // Play boot music
-        music = this.sound.add('boot', {volume: 1, loop: false})
-        music.play()
-
-        this.scene.start('Preloader')
+        env = this.cache.json.get('runtime-env') || {}
+        // Fast-start is the current testing default; set true in env.json to restore intro.
+        const introEnabled = env.IS_INTRO_ENABLED === true
+        if (introEnabled) {
+            music = this.sound.add('boot', {volume: 1, loop: false})
+            music.play()
+            this.scene.start('Preloader')
+        } else {
+            playerPositionX = 400
+            playerPositionY = 500
+            this.scene.start('MainMenu')
+        }
     }
 }

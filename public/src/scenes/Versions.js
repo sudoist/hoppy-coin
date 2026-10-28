@@ -13,7 +13,7 @@ class Versions extends Phaser.Scene {
         platforms.create(400, 568, 'ground').setScale(2).refreshBody()
         this.physics.add.collider(this.player, platforms)
 
-        // Leave the existing stage background visible throughout the chamber.
+        // Match the reference: open background, four thick side ledges, one shorter center ledge.
         this.add.text(400, 52, 'VERSION CHAMBER', {
             fontSize: '26px', fill: '#FFF'
         }).setOrigin(0.5).setDepth(5)
@@ -30,9 +30,6 @@ class Versions extends Phaser.Scene {
 
         this.archivePortals = this.physics.add.group()
         archives.forEach((archive) => {
-            // Outline the capsule without obscuring the existing background.
-            this.add.rectangle(archive.x, archive.ledgeY - 65, 195, 145,
-                0x000000, 0).setStrokeStyle(2, 0x83c6c4).setDepth(1)
             this.add.text(archive.x, archive.ledgeY - 100, archive.label, {
                 fontSize: '23px', fill: '#FFF'
             }).setOrigin(0.5).setDepth(5)
@@ -41,7 +38,7 @@ class Versions extends Phaser.Scene {
             }).setOrigin(0.5).setDepth(5)
 
             platforms.create(archive.x, archive.ledgeY, 'ground')
-                .setScale(0.5).refreshBody()
+                .setScale(0.5, 1.0).refreshBody()
 
             const portal = this.archivePortals.create(
                 archive.x, archive.ledgeY - 26, 'portal'
@@ -51,11 +48,11 @@ class Versions extends Phaser.Scene {
             portal.setDepth(5)
         })
 
-        // One continuous center ledge replaces the four small stepping stones.
-        platforms.create(400, 340, 'ground').setScale(1.25).refreshBody()
+        // Shorter, thicker middle platform as marked in the reference.
+        platforms.create(400, 340, 'ground').setScale(0.75, 1.0).refreshBody()
 
         // Return through the left-side entry portal.
-        this.add.text(85, 480, 'Back to Menu', {
+        this.add.text(95, 480, '<- Back to Menu', {
             fontSize: '16px', fill: '#FFF'
         }).setOrigin(0.5).setDepth(6)
         const backPortal = this.archivePortals.create(65, 515, 'portal')
@@ -70,8 +67,10 @@ class Versions extends Phaser.Scene {
                 this.returnToMenu()
                 return
             }
-            this.isLeaving = true
-            window.location.assign('/versions/' + portal.name + '/')
+            // Open the historical build separately, leaving this chamber playable.
+            if (this.openedArchive) return
+            this.openedArchive = true
+            window.open('/versions/' + portal.name + '/', '_blank', 'noopener,noreferrer')
         })
         this.input.keyboard.on('keydown-ESC', () => this.returnToMenu())
     }
