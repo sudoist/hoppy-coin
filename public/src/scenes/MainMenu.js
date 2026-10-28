@@ -104,9 +104,13 @@ class MainMenu extends Phaser.Scene {
 
     selectMenu(player, menu) {
         if (menu.name === 'github') {
-            let URL = 'https://github.com/sudoist/hoppy-coin'
-            window.open(URL, '_blank', 'noopener,noreferrer')
-            // Keep the icon visible and available for future visits.
+            if (this.isNavigating) return
+            this.isNavigating = true
+            this.physics.pause()
+            this.titleMusic.stop()
+            playerPositionX = 400
+            playerPositionY = 500
+            init.fadeInScene('GitHubRoom', this)
         }
 
         if (menu.name === 'versions') {
