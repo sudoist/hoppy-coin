@@ -17,11 +17,11 @@ class MainMenu extends Phaser.Scene {
 
         // Game-world navigation: walk into the portal, just like other menu entries.
         this.add.text(665, 90, 'GitHub ->', {fontSize: '18px', fill: '#FFF'})
-        this.buttons.create(740, 125, 'github').setScale(.2).setName('github')
+        this.buttons.create(740, 160, 'github').setScale(.2).setName('github')
             .setImmovable(true).setCollideWorldBounds(true).body.allowGravity = false
 
         this.add.text(650, 470, 'Versions ->', {fontSize: '18px', fill: '#FFF'})
-        this.buttons.create(740, 505, 'portal').setName('versions')
+        this.buttons.create(740, 505, 'portal').setName('versions').play('portalAnimation')
             .setImmovable(true).setCollideWorldBounds(true).body.allowGravity = false
 
         // this.add.text(690, 320, 'Arcade ->', {fontSize: '18px', fill: '#FFF'})
@@ -105,8 +105,8 @@ class MainMenu extends Phaser.Scene {
     selectMenu(player, menu) {
         if (menu.name === 'github') {
             let URL = 'https://github.com/sudoist/hoppy-coin'
-            window.open(URL, '_blank')
-            menu.disableBody(true, true)
+            window.open(URL, '_blank', 'noopener,noreferrer')
+            // Keep the icon visible and available for future visits.
         }
 
         if (menu.name === 'versions') {
