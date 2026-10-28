@@ -31,6 +31,11 @@ class MainMenu extends Phaser.Scene {
         // this.buttons.create(705, 530, 'portal').setScale(.5).setName('arcade').setImmovable(false).setVisible(false)
         //     .setCollideWorldBounds(true).body.allowGravity = false
 
+        // Stage selection is accessible from the lower-right of the menu.
+        this.add.text(505, 470, 'Stages ->', {fontSize: '18px', fill: '#FFF'})
+        this.buttons.create(590, 505, 'portal').setName('stages').play('portalAnimation')
+            .setImmovable(true).setCollideWorldBounds(true).body.allowGravity = false
+
         // Coming soon
         // this.add.text(20, 170, '<- How to play (Coming Soon...)', {fontSize: '18px', fill: '#FFF'})
         // this.add.text(515, 470, 'Ruins (Coming Soon...) ->', {fontSize: '18px', fill: '#FFF'})
@@ -113,6 +118,16 @@ class MainMenu extends Phaser.Scene {
             playerPositionX = 90
             playerPositionY = 165
             init.fadeInScene('GitHubRoom', this)
+        }
+
+        if (menu.name === 'stages') {
+            if (this.isNavigating) return
+            this.isNavigating = true
+            this.titleMusic.stop()
+            previousSceneKey = this.scene.key
+            playerPositionX = 720
+            playerPositionY = 200
+            init.fadeInScene('StageSelection', this)
         }
 
         if (menu.name === 'versions') {
