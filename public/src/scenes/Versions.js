@@ -4,6 +4,9 @@ class Versions extends Phaser.Scene {
     }
 
     create() {
+        // Phaser reuses scene instances; reset navigation state on each entry.
+        this.isLeaving = false
+        this.physics.resume()
         // Arrive beside the left-hand return entrance, as in the other rooms.
         playerPositionX = 145
         playerPositionY = 490
