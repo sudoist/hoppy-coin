@@ -57,8 +57,7 @@ class GitHubRoom extends Phaser.Scene {
         this.openingRepository = true
         window.open('https://github.com/sudoist/hoppy-coin',
             '_blank', 'noopener,noreferrer')
-        // Prevent continuous physics overlaps from opening multiple tabs.
-        this.time.delayedCall(1200, () => { this.openingRepository = false })
+        // Keep the icon visible; one activation per room visit avoids tab spam.
     }
 
     returnToMenu() {
