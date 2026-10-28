@@ -28,9 +28,11 @@ for version in VERSIONS:
             continue
         data = path.read_text(encoding="utf-8")
         # Rewrite only root-relative paths, not //CDN URLs or external links.
+        # Historical scripts refer to root-relative files in quoted strings.
+        # Prefix them so each version loads its own assets and scripts.
         data = re.sub(
-            r'(?<![\w:/])/(?!/)(assets|src|libs|play|ranked|config\\.js|env\\.json)(?=[/\\\"\\\'\\?]|$)',
-            lambda m: prefix + "/" + m.group(1),
+            r"""(?P<quote>["'])/(?P<path>assets|src|libs|play|ranked|config\\.js|env\\.json)(?=/|["'?])""",
+            lambda m: m.group("quote") + prefix + "/" + m.group("path"),
             data,
         )
         path.write_text(data, encoding="utf-8")
