@@ -17,7 +17,16 @@ class GitHubRoom extends Phaser.Scene {
         this.add.text(400, 65, 'HOPPY COIN ON GITHUB', {
             fontSize: '27px', fill: '#FFF'
         }).setOrigin(0.5)
-        this.add.image(400, 145, 'github-white').setScale(0.25)
+        this.githubPortal = this.physics.add.sprite(400, 145, 'github-white')
+            .setScale(0.25).setImmovable(true)
+        this.githubPortal.body.allowGravity = false
+        this.githubPortal.setInteractive({useHandCursor: true})
+        this.githubPortal.on('pointerdown', () => this.openRepository())
+        this.physics.add.overlap(this.player, this.githubPortal, () => {
+            if (this.githubContact) return
+            this.githubContact = true
+            this.openRepository()
+        })
         this.add.text(400, 230, 'A free experimental game, built in public.', {
             fontSize: '17px', fill: '#FFF'
         }).setOrigin(0.5)
@@ -28,10 +37,7 @@ class GitHubRoom extends Phaser.Scene {
         const link = this.add.text(400, 320, 'github.com/sudoist/hoppy-coin', {
             fontSize: '19px', fill: '#a6f3ff'
         }).setOrigin(0.5).setInteractive({useHandCursor: true})
-        link.on('pointerdown', () => {
-            window.open('https://github.com/sudoist/hoppy-coin',
-                '_blank', 'noopener,noreferrer')
-        })
+        link.on('pointerdown', () => this.openRepository())
         this.add.text(400, 365, 'Click the link above to open the repository', {
             fontSize: '14px', fill: '#FFF'
         }).setOrigin(0.5)
@@ -48,6 +54,10 @@ class GitHubRoom extends Phaser.Scene {
         this.input.keyboard.on('keydown-ESC', () => this.returnToMenu())
     }
 
+    openRepository() {
+        window.open('https://github.com/sudoist/hoppy-coin', '_blank', 'noopener,noreferrer')
+    }
+
     returnToMenu() {
         if (this.isLeaving) return
         this.isLeaving = true
@@ -58,6 +68,9 @@ class GitHubRoom extends Phaser.Scene {
     }
 
     update() {
+        if (this.githubContact && !this.physics.overlap(this.player, this.githubPortal)) {
+            this.githubContact = false
+        }
         init.monitorMuteStatus(game)
         init.setPlayerMovements(this)
     }
