@@ -35,6 +35,12 @@ for version in VERSIONS:
             lambda m: m.group("quote") + prefix + "/" + m.group("path"),
             data,
         )
+        # Also rewrite unquoted CSS background URLs (url(/assets/...)).
+        data = re.sub(
+            r"url\\(\\s*/(?P<path>assets|src|libs)(?=/)",
+            lambda m: "url(" + prefix + "/" + m.group("path"),
+            data,
+        )
         path.write_text(data, encoding="utf-8")
 
     # Archive-specific entry point. Historical gameplay remains untouched.
