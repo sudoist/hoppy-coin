@@ -4,3 +4,7 @@
 
 # Env
 /public/env.json
+
+# Generated historical builds (created during deployment)
+/.build/
+/public/versions/
