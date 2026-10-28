@@ -8,6 +8,7 @@ class SkySteps extends Phaser.Scene {
         this.isLeaving = false
         this.finished = false
         this.coinsCollected = 0
+        this.bombsUnlocked = false
         this.highestClimb = 0
         this.worldHeight = 3000
         this.nextLedgeY = 2815
@@ -28,14 +29,32 @@ class SkySteps extends Phaser.Scene {
         this.platforms.create(400, this.worldHeight - 40, 'ground').setScale(2).refreshBody()
 
         this.coins = this.physics.add.staticGroup()
+        this.bombs = this.physics.add.group()
         this.generateLedges(this.worldHeight - 1600)
 
         this.physics.add.collider(this.player, this.platforms)
         this.physics.add.overlap(this.player, this.coins, (player, coin) => {
             coin.disableBody(true, true)
             this.coinsCollected++
+            if (this.coinsCollected === 10) {
+                this.bombsUnlocked = true
+                this.spawnBomb()
+                this.bombTimer = this.time.addEvent({
+                    delay: 5000,
+                    loop: true,
+                    callback: this.spawnBomb,
+                    callbackScope: this
+                })
+            }
             this.scoreLabel.setText('Coins: ' + this.coinsCollected)
             this.sound.playAudioSprite('sfx', 'ping')
+        })
+
+        this.physics.add.collider(this.bombs, this.platforms)
+        this.physics.add.collider(this.player, this.bombs, (player, bomb) => {
+            if (this.finished || this.isLeaving) return
+            bomb.destroy()
+            this.endRun('Hit by a bomb!')
         })
 
         // HUD is camera-fixed, unlike the platforms.
@@ -51,10 +70,22 @@ class SkySteps extends Phaser.Scene {
         this.retryKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R)
 
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+            if (this.bombTimer) this.bombTimer.remove()
             this.physics.world.setBounds(0, 0, 800, 600)
             this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.ESC)
             this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.R)
         })
+    }
+
+    spawnBomb() {
+        if (!this.bombsUnlocked || this.finished || this.isLeaving) return
+        const camera = this.cameras.main
+        const x = Phaser.Math.Between(80, 720)
+        const bomb = this.bombs.create(x, camera.scrollY - 35, 'bomb-r')
+        bomb.setBounce(0.4)
+        bomb.setCollideWorldBounds(false)
+        bomb.setVelocity(Phaser.Math.Between(-35, 35), 0)
+        this.sound.playAudioSprite('sfx', 'shot')
     }
 
     generateLedges(upToY) {
@@ -112,6 +143,10 @@ class SkySteps extends Phaser.Scene {
             return true
         })
 
+        this.bombs.children.iterate(bomb => {
+            if (bomb && bomb.active && bomb.y > camera.scrollY + 850) bomb.destroy()
+        })
+
         if (this.player.y > camera.scrollY + 640) {
             this.endRun('You fell!')
         }
@@ -120,6 +155,7 @@ class SkySteps extends Phaser.Scene {
     endRun(message) {
         if (this.finished) return
         this.finished = true
+        if (this.bombTimer) this.bombTimer.remove()
         this.player.setVelocity(0, 0)
         this.player.body.enable = false
         this.add.rectangle(400, 300, 480, 190, 0x09284c, 0.92)
