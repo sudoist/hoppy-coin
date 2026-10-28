@@ -13,8 +13,7 @@ class Versions extends Phaser.Scene {
         platforms.create(400, 568, 'ground').setScale(2).refreshBody()
         this.physics.add.collider(this.player, platforms)
 
-        // Two vertical banks of archive chambers, with a clear central shaft.
-        this.add.rectangle(400, 290, 730, 400, 0x101b3b, 0.72).setDepth(0)
+        // Leave the existing stage background visible throughout the chamber.
         this.add.text(400, 52, 'VERSION CHAMBER', {
             fontSize: '26px', fill: '#FFF'
         }).setOrigin(0.5).setDepth(5)
@@ -31,9 +30,9 @@ class Versions extends Phaser.Scene {
 
         this.archivePortals = this.physics.add.group()
         archives.forEach((archive) => {
-            // Decoration stays behind the gameplay. Never cover the walkway.
+            // Outline the capsule without obscuring the existing background.
             this.add.rectangle(archive.x, archive.ledgeY - 65, 195, 145,
-                0x243b65, 0.94).setStrokeStyle(3, 0x83c6c4).setDepth(1)
+                0x000000, 0).setStrokeStyle(2, 0x83c6c4).setDepth(1)
             this.add.text(archive.x, archive.ledgeY - 100, archive.label, {
                 fontSize: '23px', fill: '#FFF'
             }).setOrigin(0.5).setDepth(5)
@@ -52,14 +51,11 @@ class Versions extends Phaser.Scene {
             portal.setDepth(5)
         })
 
-        // Short steps make the upper ledges reachable without a new movement system.
-        platforms.create(310, 465, 'ground').setScale(0.27).refreshBody()
-        platforms.create(490, 465, 'ground').setScale(0.27).refreshBody()
-        platforms.create(310, 330, 'ground').setScale(0.27).refreshBody()
-        platforms.create(490, 330, 'ground').setScale(0.27).refreshBody()
+        // One continuous center ledge replaces the four small stepping stones.
+        platforms.create(400, 340, 'ground').setScale(1.25).refreshBody()
 
         // Return through the left-side entry portal.
-        this.add.text(65, 485, 'Back to Menu', {
+        this.add.text(85, 480, 'Back to Menu', {
             fontSize: '16px', fill: '#FFF'
         }).setOrigin(0.5).setDepth(6)
         const backPortal = this.archivePortals.create(65, 515, 'portal')
