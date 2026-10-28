@@ -84,7 +84,8 @@ init.getEnv = async function getRequest(path) {
 // Keep the game-over flow usable when the optional score API is unavailable.
 init.scoreApiReady = function () {
     return Boolean(env && typeof env.API_URL === 'string' &&
-        /^https?:\\/\\//.test(env.API_URL) && env.API_KEY && env.API_KEY !== 'YOUR_API_KEY')
+        (env.API_URL.startsWith('https://') || env.API_URL.startsWith('http://')) &&
+        env.API_KEY && env.API_KEY !== 'YOUR_API_KEY')
 }
 
 init.apiFetch = async function (path) {
