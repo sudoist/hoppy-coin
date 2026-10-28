@@ -312,6 +312,11 @@ class Ranked extends Phaser.Scene {
                 // Get scores
                 init.apiFetch(env.API_URL + '/scores?level=' + levelLabel).then((data) => {
                     init.printScores(this, data)
+                    if (data.unavailable) {
+                        this.add.text(400, 225, 'Leaderboard offline - scores cannot be saved', {
+                            fontSize: '17px', fill: '#ffe28a'
+                        }).setOrigin(0.5)
+                    }
 
                     // Score message text below... The effort to just say git gud!
                     let rank = 0
@@ -461,6 +466,11 @@ class Ranked extends Phaser.Scene {
                 }
 
                 init.apiPost(req).then((data) => {
+                    if (data.unavailable) {
+                        this.add.text(400, 220, 'Score not saved: leaderboard unavailable', {
+                            fontSize: '18px', fill: '#ffe28a'
+                        }).setOrigin(0.5)
+                    }
                     // Clear old scores
                     leaderboard.destroy()
 
