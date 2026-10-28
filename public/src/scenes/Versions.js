@@ -62,7 +62,7 @@ class Versions extends Phaser.Scene {
         }).setOrigin(0.5).setDepth(3)
 
         // Match the rest of the game: walk into a portal to return.
-        this.add.text(75, 520, 'Back', {
+        this.add.text(65, 495, 'Back', {
             fontSize: '18px', fill: '#FFF'
         }).setOrigin(0.5).setDepth(6)
         const backPortal = this.archivePortals.create(65, 545, 'portal')
