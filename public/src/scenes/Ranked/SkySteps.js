@@ -61,13 +61,10 @@ class SkySteps extends Phaser.Scene {
             .setScrollFactor(0).setDepth(20)
         // Use scene-scoped events rather than JustDown; input may be consumed by
         // the shared movement controls before the game-over branch runs.
-        this.input.keyboard.on('keydown-ESC', this.leave, this)
-        this.input.keyboard.on('keydown-R', this.retry, this)
+        GameNavigation.bind(this, {retry: () => this.retry(), stages: () => this.leave()})
 
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
             this.physics.world.setBounds(0, 0, 800, 600)
-            this.input.keyboard.off('keydown-ESC', this.leave, this)
-            this.input.keyboard.off('keydown-R', this.retry, this)
         })
     }
 
@@ -140,26 +137,15 @@ class SkySteps extends Phaser.Scene {
     }
 
     endRun(message) {
-        if (this.finished) return
-        this.finished = true
-        // Keep guest coins and personal best after refresh or browser restart.
-        GuestProgress.recordRun('SkySteps', this.highestClimb, this.coinsCollected)
-        this.player.setVelocity(0, 0)
-        this.player.body.enable = false
-        // Show the same explosion sprite used by the original Ranked game.
-        this.player.setTexture('explode', 4)
+        if (!GameRun.finish(this, () => {
+            // Keep guest coins and personal best after refresh or browser restart.
+            GuestProgress.recordRun('SkySteps', this.highestClimb, this.coinsCollected)
+        })) return
         this.add.rectangle(400, 300, 480, 190, 0x09284c, 0.92)
             .setScrollFactor(0).setDepth(30)
         this.add.text(400, 270, message, {fontSize: '30px', fill: '#fff'})
             .setOrigin(0.5).setScrollFactor(0).setDepth(31)
-        this.add.text(400, 325, 'R: Retry     ESC: Stages', {fontSize: '18px', fill: '#fff'})
-            .setOrigin(0.5).setScrollFactor(0).setDepth(31)
-        this.add.text(270, 390, 'Retry', {fontSize: '24px', fill: '#ffe28a'})
-            .setOrigin(0.5).setScrollFactor(0).setDepth(31)
-            .setInteractive({useHandCursor: true}).on('pointerdown', () => this.retry())
-        this.add.text(530, 390, 'Stages', {fontSize: '24px', fill: '#ffe28a'})
-            .setOrigin(0.5).setScrollFactor(0).setDepth(31)
-            .setInteractive({useHandCursor: true}).on('pointerdown', () => this.leave())
+        GameNavigation.results(this, {retry: () => this.retry(), stages: () => this.leave()})
 
     }
 
