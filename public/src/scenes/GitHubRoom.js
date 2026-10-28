@@ -4,6 +4,9 @@ class GitHubRoom extends Phaser.Scene {
     }
 
     create() {
+        // Phaser reuses scene instances; reset navigation state on each entry.
+        this.isLeaving = false
+        this.physics.resume()
         playerPositionX = 90
         playerPositionY = 205
         init.setupScene(this, 'dude')
@@ -11,12 +14,13 @@ class GitHubRoom extends Phaser.Scene {
         platforms = this.physics.add.staticGroup()
         platforms.create(400, 568, 'ground').setScale(2).refreshBody()
         // Top-left arrival ledge, like the reference scene.
-        platforms.create(90, 240, 'ground').setScale(0.46).refreshBody()
+        platforms.create(90, 240, 'ground').setScale(0.46, 1).refreshBody()
         this.physics.add.collider(this.player, platforms)
 
         this.add.text(400, 65, 'HOPPY COIN ON GITHUB', {
             fontSize: '27px', fill: '#FFF'
         }).setOrigin(0.5)
+        this.githubContact = false
         this.githubPortal = this.physics.add.sprite(400, 145, 'github-white')
             .setScale(0.25).setImmovable(true)
         this.githubPortal.body.allowGravity = false
