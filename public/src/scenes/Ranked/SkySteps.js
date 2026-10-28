@@ -7,6 +7,7 @@ class SkySteps extends Phaser.Scene {
     create() {
         this.isLeaving = false
         this.finished = false
+        this.isRestarting = false
         this.coinsCollected = 0
         this.highestClimb = 0
         this.worldHeight = 3000
@@ -141,7 +142,7 @@ class SkySteps extends Phaser.Scene {
             // Keep guest coins and personal best after refresh or browser restart.
             GuestProgress.recordRun('SkySteps', this.highestClimb, this.coinsCollected)
         })) return
-        this.add.rectangle(400, 300, 480, 190, 0x09284c, 0.92)
+        this.add.rectangle(400, 300, 560, 220, 0x09284c, 0.92)
             .setScrollFactor(0).setDepth(30)
         this.add.text(400, 270, message, {fontSize: '30px', fill: '#fff'})
             .setOrigin(0.5).setScrollFactor(0).setDepth(31)
@@ -150,7 +151,8 @@ class SkySteps extends Phaser.Scene {
     }
 
     retry() {
-        if (!this.finished || this.isLeaving) return
+        if (!this.finished || this.isLeaving || this.isRestarting) return
+        this.isRestarting = true
         this.scene.restart()
     }
 
