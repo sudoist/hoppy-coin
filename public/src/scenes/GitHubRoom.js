@@ -15,8 +15,13 @@ class GitHubRoom extends Phaser.Scene {
         // Top-left arrival ledge, like the reference scene.
         platforms.create(90, 240, 'ground').setScale(0.46, 1).refreshBody()
         this.physics.add.collider(this.player, platforms)
-        // Ensure the newly created physics bodies are active on every visit.
+        // Re-arm the Arcade world and collision bodies after scene shutdown/restart.
         this.physics.world.resume()
+        this.player.body.enable = true
+        this.player.setPosition(90, 205)
+        this.player.setVelocity(0, 0)
+        this.player.setAcceleration(0, 0)
+        this.player.body.reset(90, 205)
 
         this.add.text(400, 65, 'HOPPY COIN ON GITHUB', {
             fontSize: '27px', fill: '#FFF'
@@ -66,7 +71,7 @@ class GitHubRoom extends Phaser.Scene {
     returnToMenu() {
         if (this.isLeaving) return
         this.isLeaving = true
-        // Do not pause the scene physics world: it is reused on re-entry.
+        // Let the scene shutdown cleanly instead of pausing physics.
         playerPositionX = 690
         playerPositionY = 175
         init.fadeInScene('MainMenu', this)
