@@ -66,6 +66,10 @@ class StageSelection extends Phaser.Scene {
         portals.create(35, 500, 'portal').setImmovable(false).setName('landMineBeach')
 
 
+        // Reuse the former Sky Steps portal position for leaderboards.
+        this.add.text(570, 470, 'Leaderboards ->', {fontSize: '18px', fill: '#FFF'})
+        portals.create(755, 500, 'portal').setImmovable(false).setName('leaderboards')
+
         // Play animation for portals
         portals.children.iterate(function (child) {
             child.play('portalAnimation')
@@ -143,18 +147,16 @@ class StageSelection extends Phaser.Scene {
             init.fadeInScene('Ranked', this)
         }
 
-        if (menu.name === 'phaserInitialRanking') {
+        if (menu.name === 'leaderboards') {
+            if (this.isNavigating) return
+            this.isNavigating = true
             this.physics.pause()
             this.titleMusic.stop()
             previousSceneKey = this.scene.key
-
-            // Change starting position
-            playerPositionX = 710
-            playerPositionY = 140
-
-            level = 'phaserInitialRanking'
-
+            playerPositionX = 400
+            playerPositionY = 490
             init.fadeInScene('LeaderBoard', this)
         }
+
     }
 }
