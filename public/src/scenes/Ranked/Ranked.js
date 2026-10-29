@@ -312,6 +312,21 @@ class Ranked extends Phaser.Scene {
                 music.stop()
                 gameOverSound = false
 
+                // Beach gameplay stays unchanged until death. After death, clear
+                // the minefield and provide a stable floor for portal navigation.
+                if (level === 'landMineBeach') {
+                    bombs.children.iterate(child => {
+                        if (child && child.active) child.disableBody(true, true)
+                    })
+                    platforms.children.iterate(child => {
+                        if (child && child.active) child.disableBody(true, true)
+                    })
+                    platforms.create(400, 568, 'ground').setScale(2).refreshBody()
+                    this.player.setPosition(400, 475)
+                    this.player.setVelocity(0, 0)
+                    this.player.setCollideWorldBounds(true)
+                }
+
                 // Get scores
                 init.apiFetch(init.scoreApiUrl() + '/scores?level=' + encodeURIComponent(levelLabel)).then((data) => {
                     init.printScores(this, data)
