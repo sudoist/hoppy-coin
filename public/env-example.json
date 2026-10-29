@@ -1,5 +1,4 @@
 {
-    "API_KEY": "YOUR_API_KEY",
-    "API_URL": "YOUR_API_URL",
+    "API_URL": "https://api.hoppy.co.in/api/v1",
     "IS_INTRO_ENABLED": true
 }
