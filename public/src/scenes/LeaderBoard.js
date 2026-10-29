@@ -13,7 +13,7 @@ class LeaderBoard extends Phaser.Scene {
         init.setupScene(this, init.randomizePlayerSprite())
 
         // Get scores
-        init.apiFetch(env.API_URL + '/scores').then((data) => {
+        init.apiFetch(init.scoreApiUrl() + '/scores?level=' + encodeURIComponent(levelLabel)).then((data) => {
             init.printScores(this, data)
         })
 
