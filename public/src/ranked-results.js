@@ -18,7 +18,7 @@ const RankedResults = {
     },
 
     showFeedback(scene, message) {
-        return scene.add.text(400, 570, message, {fontSize: '24px', fill: '#FFF'})
+        return scene.add.text(400, 570, message, {fontSize: '24px', fill: '#FFF', stroke: '#152b3d', strokeThickness: 3})
             .setOrigin(0.5)
     }
 }
