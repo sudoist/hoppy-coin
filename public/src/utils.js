@@ -693,8 +693,8 @@ init.printScores = function (scene, scores, startingX = 400, startingY = 100) {
     for (const [key, value] of Object.entries(scores.data)) {
         ++rank
 
-        // Only get 10
-        if (rank < 11) {
+        // Keep the in-game results readable; retain all scores in the API.
+        if (rank <= 4) {
 
             // Format date
             const date = new Date(`${value.date}`).toISOString().slice(0, 10)
