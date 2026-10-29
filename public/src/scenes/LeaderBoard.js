@@ -32,9 +32,9 @@ class LeaderBoard extends Phaser.Scene {
             tab.on('pointerdown', () => this.showStage(index))
         })
 
-        this.scoreText = this.add.text(400, 310, 'Loading scores...', {
-            fontSize: '19px', fill: '#fff', align: 'center',
-            lineSpacing: 7
+        this.scoreText = this.add.text(400, 315, 'Loading scores...', {
+            fontSize: '18px', fill: '#fff', align: 'center',
+            lineSpacing: 4
         }).setOrigin(0.5)
 
         this.add.text(610, 480, 'Back to stages ->', {
@@ -68,8 +68,8 @@ class LeaderBoard extends Phaser.Scene {
         const rows = scores.data.slice(0, 10).map((item, i) =>
             (i + 1) + '.  ' + item.name + '   ' + item.score
         )
-        this.scoreText.setText(stageName + '\\n\\n' +
-            (rows.length ? rows.join('\\n') : 'No scores yet'))
+        this.scoreText.setText(stageName + '\n\n' +
+            (rows.length ? rows.join('\n') : 'No scores yet'))
     }
 
     goBack() {
