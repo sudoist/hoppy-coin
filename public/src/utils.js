@@ -80,20 +80,17 @@ init.getEnv = async function getRequest(path) {
     return data
 }
 
-// API get
-// Keep the game-over flow usable when the optional score API is unavailable.
-init.scoreApiReady = function () {
-    return Boolean(env && typeof env.API_URL === 'string' &&
-        (env.API_URL.startsWith('https://') || env.API_URL.startsWith('http://')) &&
-        env.API_KEY && env.API_KEY !== 'YOUR_API_KEY')
+// Public score API; no API keys or secrets in browser code.
+init.scoreApiUrl = function () {
+    const configured = env && typeof env.API_URL === 'string' ? env.API_URL : ''
+    return /^https?:\/\//.test(configured) ? configured.replace(/\/$/, '') : 'https://api.hoppy.co.in/api/v1'
 }
 
+init.scoreApiReady = function () { return true }
+
 init.apiFetch = async function (path) {
-    if (!init.scoreApiReady()) return {data: [], unavailable: true}
     try {
-        const res = await fetch(path, {
-            headers: {'Accept': 'application/json', 'x-api-key': env.API_KEY}
-        })
+        const res = await fetch(path, {headers: {'Accept': 'application/json'}})
         if (!res.ok) throw new Error('Scores HTTP ' + res.status)
         const data = await res.json()
         if (!data || !Array.isArray(data.data)) throw new Error('Invalid scores response')
@@ -104,13 +101,29 @@ init.apiFetch = async function (path) {
     }
 }
 
+init.startRankedRun = async function (stageLevel) {
+    try {
+        const res = await fetch(init.scoreApiUrl() + '/runs', {
+            method: 'POST',
+            headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
+            body: JSON.stringify({level: stageLevel})
+        })
+        if (!res.ok) throw new Error('Run start HTTP ' + res.status)
+        const data = await res.json()
+        return typeof data.token === 'string' ? data.token : null
+    } catch (error) {
+        console.warn('Ranked run token unavailable:', error)
+        return null
+    }
+}
+
 init.apiPost = async function (req) {
-    if (!init.scoreApiReady()) return {data: [], unavailable: true}
+    if (!req.token) return {data: [], unavailable: true}
     try {
         const res = await fetch(req.path, {
             method: 'POST',
-            headers: {'Accept': 'application/json', 'Content-Type': 'application/json', 'x-api-key': env.API_KEY},
-            body: JSON.stringify(req)
+            headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
+            body: JSON.stringify({name: req.name, score: req.score, level: req.level, token: req.token})
         })
         if (!res.ok) throw new Error('Score submission HTTP ' + res.status)
         const data = await res.json()
