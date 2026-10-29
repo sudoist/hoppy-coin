@@ -330,6 +330,9 @@ class Ranked extends Phaser.Scene {
                         // Clear old scores
                         leaderboard.destroy()
 
+                        // Keep Land Mine Beach's hazard layout intact; only rebuild
+                        // the standard results arena for other stages.
+                        if (level !== 'landMineBeach') {
                         // Clear ledges then re add ground
                         platforms.children.iterate(function (child) {
                             child.disableBody(true, true)
@@ -341,6 +344,7 @@ class Ranked extends Phaser.Scene {
                         platforms.create(100, 280, 'ground')
                         platforms.create(350, 280, 'ground')
                         platforms.create(900, 380, 'ground')
+                        }
 
                         instructionsText = `Congratulations! \n Don't forget to submit your score.`
                         instructions = this.add.text(230, 565, instructionsText, {
@@ -406,12 +410,15 @@ class Ranked extends Phaser.Scene {
                 // Reset game check
                 isGameStarted = false
 
+                // Preserve Land Mine Beach's original platform and mine layout.
+                if (level !== 'landMineBeach') {
                 // Clear ledges then re add ground
                 platforms.children.iterate(function (child) {
                     child.disableBody(true, true)
                 })
 
                 platforms.create(400, 568, 'ground').setScale(2).refreshBody()
+                }
 
                 // Clear and update texts
                 inputPlayerNameLabel.destroy()
