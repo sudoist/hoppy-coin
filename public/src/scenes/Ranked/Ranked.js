@@ -314,10 +314,10 @@ class Ranked extends Phaser.Scene {
         init.createStars(this)
 
         //  The score
-        scoreText = this.add.text(16, 16, 'Score: 0', {fontSize: '32px', fill: '#FFF'})
+        scoreText = this.add.text(16, 16, 'Score: 0', {fontSize: '32px', fill: '#FFF', stroke: '#152b3d', strokeThickness: 4})
 
         //  The stage
-        stageText = this.add.text(16, 46, 'Stage: 1', {fontSize: '32px', fill: '#FFF'})
+        stageText = this.add.text(16, 46, 'Stage: 1', {fontSize: '32px', fill: '#FFF', stroke: '#152b3d', strokeThickness: 4})
 
         //  Collide the player and the stars with the platforms
         this.physics.add.collider(player, platforms)
@@ -411,6 +411,7 @@ class Ranked extends Phaser.Scene {
                         instructions = this.add.text(230, 565, instructionsText, {
                             fontSize: '24px',
                             fill: '#FFF',
+                            stroke: '#152b3d', strokeThickness: 3,
                             align: 'center'
                         })
 
@@ -437,17 +438,17 @@ class Ranked extends Phaser.Scene {
                             fontSize: '24px',
                             fill: '#FFF'
                         })
-                        inputPlayerNameText = this.add.text(470, 40, '_ _ _', {fontSize: '24px', fill: '#FFF'})
+                        inputPlayerNameText = this.add.text(470, 40, '_ _ _', {fontSize: '24px', fill: '#FFF', stroke: '#152b3d', strokeThickness: 3})
                     } else {
                         RankedResults.showFeedback(this, result.message)
                     }
 
                     // Add portals for navigation
-                    let playAgain = this.add.text(645, 470, 'Play again ->', {fontSize: '18px', fill: '#FFF'})
+                    let playAgain = this.add.text(645, 470, 'Play again ->', {fontSize: '18px', fill: '#FFF', stroke: '#152b3d', strokeThickness: 3})
                     directions.push(playAgain)
                     portals.create(770, 500, 'portal').setImmovable(false).setName('ranked')
 
-                    let backToRanked = this.add.text(600, 130, 'Back to ranked ->', {fontSize: '18px', fill: '#FFF'})
+                    let backToRanked = this.add.text(600, 130, 'Back to ranked ->', {fontSize: '18px', fill: '#FFF', stroke: '#152b3d', strokeThickness: 3})
                     directions.push(backToRanked)
                     portals.create(770, 130, 'portal').setImmovable(false).setName('menu')
 
@@ -529,10 +530,10 @@ class Ranked extends Phaser.Scene {
                     directions.forEach(text => text.destroy());
 
                     // Add portals for navigation
-                    this.add.text(20, 470, '<- Play again', {fontSize: '18px', fill: '#FFF'})
+                    this.add.text(20, 470, '<- Play again', {fontSize: '18px', fill: '#FFF', stroke: '#152b3d', strokeThickness: 3})
                     portals.create(35, 500, 'portal').setImmovable(false).setName('ranked')
 
-                    this.add.text(600, 470, 'Back to ranked ->', {fontSize: '18px', fill: '#FFF'})
+                    this.add.text(600, 470, 'Back to ranked ->', {fontSize: '18px', fill: '#FFF', stroke: '#152b3d', strokeThickness: 3})
                     portals.create(765, 500, 'portal').setImmovable(false).setName('menu')
 
                     // Play animation for portals
