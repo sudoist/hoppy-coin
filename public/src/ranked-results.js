@@ -4,10 +4,12 @@ const RankedResults = {
         if (!scores || scores.unavailable || !Array.isArray(scores.data)) {
             return {qualified: false, message: 'Git gud...', unavailable: true}
         }
-        const topFour = scores.data.slice(0, 4)
-        const cutoff = topFour.length === 0 ? 0 : Number(topFour[topFour.length - 1].score)
-        // Strictly beat the existing score, including when fewer than 10 entries exist.
-        const qualified = score > 0 && Number.isFinite(cutoff) && score > cutoff
+        // The results screen displays four rows, but the leaderboard holds ten.
+        // Until all ten slots are filled, any positive score may enter.
+        const topTen = scores.data.slice(0, 10)
+        const cutoff = topTen.length === 10 ? Number(topTen[9].score) : 0
+        const qualified = score > 0 && Number.isFinite(cutoff) &&
+            (topTen.length < 10 || score > cutoff)
         if (qualified) return {qualified: true, message: 'Congratulations!', unavailable: false}
         if (score > 0 && cutoff - score <= 20) {
             return {qualified: false, message: 'Almost there!', unavailable: false}
