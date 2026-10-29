@@ -45,6 +45,7 @@ class SkySteps extends Phaser.Scene {
         this.time.delayedCall(3000, () => this.spawnBomb())
 
         this.physics.add.collider(this.bombs, this.platforms)
+        this.physics.add.collider(this.bombs, this.bombs)
         this.physics.add.collider(this.player, this.bombs, (player, bomb) => {
             if (this.finished || this.isLeaving) return
             bomb.destroy()
@@ -74,9 +75,10 @@ class SkySteps extends Phaser.Scene {
         const camera = this.cameras.main
         const x = Phaser.Math.Between(80, 720)
         const bomb = this.bombs.create(x, camera.scrollY - 35, 'bomb-r')
-        bomb.setBounce(0.4)
-        bomb.setCollideWorldBounds(false)
-        bomb.setVelocity(Phaser.Math.Between(-35, 35), 0)
+        bomb.setBounce(0.95, 0.9)
+        bomb.setCollideWorldBounds(true)
+        bomb.setVelocity(Phaser.Math.Between(-170, 170), Phaser.Math.Between(-90, 20))
+        bomb.setMaxVelocity(240, 420)
         this.sound.playAudioSprite('sfx', 'shot')
     }
 
@@ -104,7 +106,11 @@ class SkySteps extends Phaser.Scene {
     update() {
         init.monitorMuteStatus(game)
         if (this.isLeaving) return
-        if (this.finished) return
+        if (this.finished) {
+            // Results arena uses the same movement-based portal selection as Ranked.
+            init.setPlayerMovements(this)
+            return
+        }
         init.setPlayerMovements(this)
 
         const climbed = Math.max(0, Math.floor((this.worldHeight - 110 - this.player.y) / 10))
@@ -142,11 +148,43 @@ class SkySteps extends Phaser.Scene {
             // Keep guest coins and personal best after refresh or browser restart.
             GuestProgress.recordRun('SkySteps', this.highestClimb, this.coinsCollected)
         })) return
-        this.add.rectangle(400, 300, 560, 220, 0x09284c, 0.92)
-            .setScrollFactor(0).setDepth(30)
-        this.add.text(400, 270, message, {fontSize: '30px', fill: '#fff'})
-            .setOrigin(0.5).setScrollFactor(0).setDepth(31)
-        GameNavigation.results(this, {retry: () => this.retry(), stages: () => this.leave()})
+        // Return to a stable, camera-local arcade arena after death.
+        // The player remains controllable to enter either portal.
+        this.cameras.main.stopFollow()
+        this.cameras.main.setScroll(0, this.worldHeight - 600)
+        this.physics.world.setBounds(0, 0, 800, this.worldHeight)
+        this.platforms.clear(true, true)
+        this.coins.clear(true, true)
+        this.bombs.clear(true, true)
+        this.generated = []
+        this.platforms.create(400, this.worldHeight - 40, 'ground').setScale(2).refreshBody()
+        this.player.body.enable = true
+        this.player.setPosition(400, this.worldHeight - 100)
+        this.player.setVelocity(0, 0)
+        this.player.setCollideWorldBounds(true)
+        this.player.setTexture('dude', 4)
+        this.player.setDepth(4)
+        this.add.text(400, this.worldHeight - 520, message, {fontSize: '30px', fill: '#fff'})
+            .setOrigin(0.5)
+        this.add.text(400, this.worldHeight - 480, 'Coins: ' + this.coinsCollected + '    Height: ' + this.highestClimb, {
+            fontSize: '20px', fill: '#fff'
+        }).setOrigin(0.5)
+        // Upper-left portal returns to stage selection; right portal retries.
+        this.add.text(120, this.worldHeight - 310, 'Back to ranked', {fontSize: '19px', fill: '#fff'})
+            .setOrigin(0.5)
+        this.add.text(660, this.worldHeight - 130, 'Try again', {fontSize: '19px', fill: '#fff'})
+            .setOrigin(0.5)
+        this.resultsPortals = this.physics.add.staticGroup()
+        const back = this.resultsPortals.create(100, this.worldHeight - 260, 'portal').setName('stages')
+        const again = this.resultsPortals.create(680, this.worldHeight - 85, 'portal').setName('retry')
+        for (const portal of [back, again]) {
+            portal.refreshBody()
+            portal.play('portalAnimation')
+        }
+        this.physics.add.overlap(this.player, this.resultsPortals, (player, portal) => {
+            if (portal.name === 'retry') this.retry()
+            if (portal.name === 'stages') this.leave()
+        })
 
     }
 
