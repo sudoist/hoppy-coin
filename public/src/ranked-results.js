@@ -5,10 +5,11 @@ const RankedResults = {
             return {qualified: false, message: 'Git gud...', unavailable: true}
         }
         const topTen = scores.data.slice(0, 10)
-        const cutoff = topTen.length < 10 ? 0 : Number(topTen[topTen.length - 1].score)
-        const qualified = score > 0 && Number.isFinite(cutoff) && score >= cutoff
+        const cutoff = topTen.length === 0 ? 0 : Number(topTen[topTen.length - 1].score)
+        // Strictly beat the existing score, including when fewer than 10 entries exist.
+        const qualified = score > 0 && Number.isFinite(cutoff) && score > cutoff
         if (qualified) return {qualified: true, message: 'Congratulations!', unavailable: false}
-        if (score > 300 && score >= cutoff - 200) {
+        if (score > 0 && cutoff - score <= 20) {
             return {qualified: false, message: 'Almost there!', unavailable: false}
         }
         return {qualified: false, message: 'Git gud...', unavailable: false}
