@@ -1,3 +1,37 @@
+// Recolor the existing platform sprites without changing their dimensions or physics.
+// The base art is flat green; separate cached textures keep stage palettes isolated.
+function ensureRankedPlatformPalette(scene, theme) {
+    const palette = theme === 'arcticClassic'
+        ? {top: [240, 249, 255], side: [168, 198, 217]}
+        : {top: [223, 183, 117], side: [143, 96, 55]}
+
+    for (const base of ['ground', 'ground-s']) {
+        const key = theme + '-' + base
+        if (scene.textures.exists(key)) continue
+
+        const source = scene.textures.get(base).getSourceImage()
+        const width = source.width
+        const height = source.height
+        const texture = scene.textures.createCanvas(key, width, height)
+        const ctx = texture.getContext()
+        ctx.drawImage(source, 0, 0)
+
+        const pixels = ctx.getImageData(0, 0, width, height)
+        const data = pixels.data
+        for (let i = 0; i < data.length; i += 4) {
+            if (data[i + 3] === 0) continue
+            const brightness = (data[i] + data[i + 1] + data[i + 2]) / 765
+            const shade = brightness > 0.35 ? palette.top : palette.side
+            const factor = 0.75 + brightness * 0.35
+            data[i] = Math.min(255, Math.round(shade[0] * factor))
+            data[i + 1] = Math.min(255, Math.round(shade[1] * factor))
+            data[i + 2] = Math.min(255, Math.round(shade[2] * factor))
+        }
+        ctx.putImageData(pixels, 0, 0)
+        texture.refresh()
+    }
+}
+
 class Ranked extends Phaser.Scene {
     constructor() {
         super('Ranked')
@@ -264,6 +298,18 @@ class Ranked extends Phaser.Scene {
             init.changeBackground('john-cosio-8SWaKcmZC5w-unsplash.jpg', 'cover', 'no-repeat')
         }
 
+        // Stage-specific platform art; existing bodies and placement stay untouched.
+        if (level === 'arcticClassic' || level === 'landMineBeach') {
+            ensureRankedPlatformPalette(this, level)
+            platforms.children.iterate(child => {
+                if (!child) return
+                const base = child.texture.key
+                if (base === 'ground' || base === 'ground-s') {
+                    child.setTexture(level + '-' + base)
+                }
+            })
+        }
+
         // Twelve coins per batch; each completed batch adds one bomb.
         init.createStars(this)
 
@@ -321,7 +367,7 @@ class Ranked extends Phaser.Scene {
                     platforms.children.iterate(child => {
                         if (child && child.active) child.disableBody(true, true)
                     })
-                    platforms.create(400, 568, 'ground').setScale(2).refreshBody()
+                    platforms.create(400, 568, 'landMineBeach-ground').setScale(2).refreshBody()
                     this.player.setPosition(400, 475)
                     this.player.setVelocity(0, 0)
                     this.player.setCollideWorldBounds(true)
@@ -353,12 +399,12 @@ class Ranked extends Phaser.Scene {
                             child.disableBody(true, true)
                         })
 
-                        platforms.create(400, 568, 'ground').setScale(2).refreshBody()
+                        platforms.create(400, 568, level === 'arcticClassic' ? 'arcticClassic-ground' : 'ground').setScale(2).refreshBody()
 
                         // Now let's create some ledges
-                        platforms.create(100, 280, 'ground')
-                        platforms.create(350, 280, 'ground')
-                        platforms.create(900, 380, 'ground')
+                        platforms.create(100, 280, level === 'arcticClassic' ? 'arcticClassic-ground' : 'ground')
+                        platforms.create(350, 280, level === 'arcticClassic' ? 'arcticClassic-ground' : 'ground')
+                        platforms.create(900, 380, level === 'arcticClassic' ? 'arcticClassic-ground' : 'ground')
                         }
 
                         instructionsText = `Congratulations! \n Don't forget to submit your score.`
@@ -432,7 +478,7 @@ class Ranked extends Phaser.Scene {
                     child.disableBody(true, true)
                 })
 
-                platforms.create(400, 568, 'ground').setScale(2).refreshBody()
+                platforms.create(400, 568, level === 'arcticClassic' ? 'arcticClassic-ground' : 'ground').setScale(2).refreshBody()
                 }
 
                 // Clear and update texts
