@@ -12,6 +12,9 @@ class Ranked extends Phaser.Scene {
 
         init.setupScene(this, init.randomizePlayerSprite())
 
+        // Obtain a server-issued token at the start of each competitive run.
+        this.runTokenPromise = init.startRankedRun(levelLabel)
+
         // Stat game
         isGameStarted = true
 
@@ -310,7 +313,7 @@ class Ranked extends Phaser.Scene {
                 gameOverSound = false
 
                 // Get scores
-                init.apiFetch(env.API_URL + '/scores?level=' + levelLabel).then((data) => {
+                init.apiFetch(init.scoreApiUrl() + '/scores?level=' + encodeURIComponent(levelLabel)).then((data) => {
                     init.printScores(this, data)
                     if (data.unavailable) {
                         this.add.text(400, 225, 'Leaderboard offline - scores cannot be saved', {
@@ -430,13 +433,13 @@ class Ranked extends Phaser.Scene {
 
                 // Send score to API
                 const req = {
-                    "path": env.API_URL + '/scores',
+                    "path": init.scoreApiUrl() + '/scores',
                     "name": playerName,
                     "score": score,
                     "level": levelLabel,
                 }
 
-                init.apiPost(req).then((data) => {
+                this.runTokenPromise.then(token => init.apiPost({...req, token})).then((data) => {
                     if (data.unavailable) {
                         this.add.text(400, 220, 'Score not saved: leaderboard unavailable', {
                             fontSize: '18px', fill: '#ffe28a'
